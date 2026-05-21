@@ -1,0 +1,30 @@
+{
+  "name": "discord-bot-completo",
+  "version": "1.0.0",
+  "description": "Bot Discord completo - comunidade gamer, namoro, economia, dark love, moderação",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.16.3",
+    "mongoose": "^8.9.0",
+    "dotenv": "^16.4.7",
+    "canvas": "^2.11.2",
+    "@napi-rs/canvas": "^0.1.57",
+    "axios": "^1.7.9",
+    "moment": "^2.30.1",
+    "ms": "^2.1.3",
+    "winston": "^3.17.0",
+    "node-cron": "^3.0.3",
+    "sharp": "^0.33.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "MIT"
+}
