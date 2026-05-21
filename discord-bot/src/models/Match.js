@@ -1,22 +1,14 @@
-const mongoose = require("mongoose");
+const JsonDB = require("../utils/JsonDB");
 
-const matchSchema = new mongoose.Schema(
-  {
-    guildId: { type: String, required: true },
-    type: { type: String, enum: ["dating", "duo", "gf", "darkLove"], required: true },
-    user1Id: { type: String, required: true },
-    user2Id: { type: String, required: true },
-    compatibility: { type: Number, default: 0 },
-    channelId: { type: String, default: null },
-    callId: { type: String, default: null },
-    status: {
-      type: String,
-      enum: ["pending", "active", "ended"],
-      default: "active",
-    },
-    endedAt: { type: Date, default: null },
+const db = new JsonDB("matches");
+
+const Match = {
+  async findOne(query) { return db.findOne(query); },
+  find(query) { return db.find(query); },
+  async create(data) { return db.create(data); },
+  async findOneAndUpdate(query, update, options = {}) {
+    return db.findOneAndUpdate(query, update, options);
   },
-  { timestamps: true }
-);
+};
 
-module.exports = mongoose.model("Match", matchSchema);
+module.exports = Match;

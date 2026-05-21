@@ -1,22 +1,15 @@
-const mongoose = require("mongoose");
+const JsonDB = require("../utils/JsonDB");
 
-const shopSchema = new mongoose.Schema(
-  {
-    guildId: { type: String, required: true },
-    itemId: { type: String, required: true, unique: true },
-    name: { type: String, required: true },
-    description: String,
-    type: {
-      type: String,
-      enum: ["furniture", "clothing", "decoration", "pet", "effect", "role", "other"],
-      default: "other",
-    },
-    price: { type: Number, required: true },
-    emoji: { type: String, default: "📦" },
-    available: { type: Boolean, default: true },
-    stock: { type: Number, default: -1 },
+const db = new JsonDB("shop");
+
+const Shop = {
+  async findOne(query) { return db.findOne(query); },
+  find(query) { return db.find(query); },
+  async create(data) { return db.create(data); },
+  async insertMany(items) { return db.insertMany(items); },
+  async findOneAndUpdate(query, update, options = {}) {
+    return db.findOneAndUpdate(query, update, options);
   },
-  { timestamps: true }
-);
+};
 
-module.exports = mongoose.model("Shop", shopSchema);
+module.exports = Shop;

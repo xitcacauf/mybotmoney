@@ -1,6 +1,5 @@
 require("dotenv").config();
 const { Client, GatewayIntentBits, Partials, Collection } = require("discord.js");
-const mongoose = require("mongoose");
 const logger = require("./utils/logger");
 const config = require("./config/config");
 
@@ -50,16 +49,17 @@ process.on("unhandledRejection", (reason) => {
   logger.error("UnhandledRejection:", reason);
 });
 
-mongoose
-  .connect(config.mongoUri)
-  .then(() => {
-    logger.info("✅ MongoDB conectado com sucesso!");
-    client.login(config.token).then(() => {
-      logger.info("✅ Bot iniciado com sucesso!");
-    });
-  })
+logger.info("🗄️  Usando banco de dados local (JSON files)");
+
+if (!config.token) {
+  logger.error("❌ DISCORD_TOKEN não definido! Configure a variável de ambiente.");
+  process.exit(1);
+}
+
+client.login(config.token)
+  .then(() => logger.info("✅ Bot iniciado com sucesso!"))
   .catch((err) => {
-    logger.error("❌ Erro ao conectar MongoDB:", err);
+    logger.error(`❌ Erro ao iniciar o bot: ${err.message || String(err)}`);
     process.exit(1);
   });
 
