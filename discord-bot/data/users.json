@@ -16,7 +16,7 @@
       "reputation": 0
     },
     "economy": {
-      "wallet": 1000,
+      "wallet": 910,
       "bank": 0,
       "totalEarned": 0,
       "lastDaily": null,
@@ -38,9 +38,9 @@
       "children": []
     },
     "social": {
-      "xp": 2,
+      "xp": 6,
       "level": 1,
-      "messages": 1,
+      "messages": 3,
       "voiceMinutes": 0
     },
     "darkLove": {
@@ -60,6 +60,89 @@
     "punishments": [],
     "warnings": [],
     "createdAt": "2026-05-21T20:12:49.462Z",
-    "updatedAt": "2026-05-21T20:20:26.534Z"
+    "updatedAt": "2026-05-22T16:50:08.828Z",
+    "pet": {
+      "adopted": false,
+      "name": "",
+      "type": "",
+      "emoji": "",
+      "hunger": 100,
+      "happiness": 100,
+      "lastCare": null,
+      "adoptedAt": null
+    }
+  },
+  {
+    "userId": "1494490832064086148",
+    "guildId": "1507041710956351638",
+    "username": "pris.ka",
+    "profile": {
+      "bio": "",
+      "age": 0,
+      "gender": "",
+      "location": "",
+      "photo": "",
+      "personality": "",
+      "hobbies": [],
+      "favoriteGame": "",
+      "badges": [],
+      "reputation": 0
+    },
+    "economy": {
+      "wallet": 1867,
+      "bank": 0,
+      "totalEarned": 777,
+      "lastDaily": "2026-05-22T16:48:58.653Z",
+      "lastWork": "2026-05-22T16:49:11.480Z",
+      "lastCrime": "2026-05-22T16:49:38.687Z"
+    },
+    "inventory": [],
+    "house": {
+      "level": 0,
+      "name": "",
+      "furniture": [],
+      "value": 0
+    },
+    "relationship": {
+      "status": "single",
+      "partnerId": null,
+      "partnerName": "",
+      "marriedAt": null,
+      "children": []
+    },
+    "social": {
+      "xp": 0,
+      "level": 1,
+      "messages": 0,
+      "voiceMinutes": 0
+    },
+    "darkLove": {
+      "role": "none",
+      "coleira": null,
+      "coleiradoAt": null
+    },
+    "dating": {
+      "active": false,
+      "profileData": {},
+      "matches": []
+    },
+    "duo": {
+      "active": false,
+      "profileData": {}
+    },
+    "pet": {
+      "adopted": false,
+      "name": "",
+      "type": "",
+      "emoji": "",
+      "hunger": 100,
+      "happiness": 100,
+      "lastCare": null,
+      "adoptedAt": null
+    },
+    "punishments": [],
+    "warnings": [],
+    "createdAt": "2026-05-22T16:48:26.973Z",
+    "updatedAt": "2026-05-22T16:49:57.656Z"
   }
 ]

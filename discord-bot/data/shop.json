@@ -1,0 +1,134 @@
+[
+  {
+    "itemId": "house_small",
+    "name": "Casa Simples",
+    "type": "house",
+    "price": 5000,
+    "emoji": "🏠",
+    "description": "Uma casa pequena mas aconchegante",
+    "available": true,
+    "guildId": "1507041710956351638",
+    "createdAt": "2026-05-22T16:50:14.158Z"
+  },
+  {
+    "itemId": "house_medium",
+    "name": "Casa Média",
+    "type": "house",
+    "price": 15000,
+    "emoji": "🏡",
+    "description": "Uma casa confortável com jardim",
+    "available": true,
+    "guildId": "1507041710956351638",
+    "createdAt": "2026-05-22T16:50:14.158Z"
+  },
+  {
+    "itemId": "house_big",
+    "name": "Mansão",
+    "type": "house",
+    "price": 50000,
+    "emoji": "🏰",
+    "description": "Uma mansão imponente de luxo",
+    "available": true,
+    "guildId": "1507041710956351638",
+    "createdAt": "2026-05-22T16:50:14.158Z"
+  },
+  {
+    "itemId": "pet_cat",
+    "name": "Gatinho",
+    "type": "pet",
+    "price": 2000,
+    "emoji": "🐱",
+    "description": "Um gatinho fofo para adotar",
+    "available": true,
+    "guildId": "1507041710956351638",
+    "createdAt": "2026-05-22T16:50:14.158Z"
+  },
+  {
+    "itemId": "pet_dog",
+    "name": "Cachorro",
+    "type": "pet",
+    "price": 2500,
+    "emoji": "🐶",
+    "description": "Um cachorro leal e brincalhão",
+    "available": true,
+    "guildId": "1507041710956351638",
+    "createdAt": "2026-05-22T16:50:14.158Z"
+  },
+  {
+    "itemId": "pet_rabbit",
+    "name": "Coelhinho",
+    "type": "pet",
+    "price": 1800,
+    "emoji": "🐰",
+    "description": "Um coelhinho fofinho",
+    "available": true,
+    "guildId": "1507041710956351638",
+    "createdAt": "2026-05-22T16:50:14.158Z"
+  },
+  {
+    "itemId": "effect_vip",
+    "name": "Status VIP",
+    "type": "effect",
+    "price": 3000,
+    "emoji": "👑",
+    "description": "Badge VIP no perfil por 30 dias",
+    "available": true,
+    "guildId": "1507041710956351638",
+    "createdAt": "2026-05-22T16:50:14.158Z"
+  },
+  {
+    "itemId": "ring",
+    "name": "Anel de Noivado",
+    "type": "other",
+    "price": 8000,
+    "emoji": "💍",
+    "description": "Para pedir alguém em casamento",
+    "available": true,
+    "guildId": "1507041710956351638",
+    "createdAt": "2026-05-22T16:50:14.158Z"
+  },
+  {
+    "itemId": "flower",
+    "name": "Buquê de Flores",
+    "type": "other",
+    "price": 500,
+    "emoji": "💐",
+    "description": "Presente romântico para seu par",
+    "available": true,
+    "guildId": "1507041710956351638",
+    "createdAt": "2026-05-22T16:50:14.158Z"
+  },
+  {
+    "itemId": "chocolate",
+    "name": "Caixa de Chocolates",
+    "type": "other",
+    "price": 800,
+    "emoji": "🍫",
+    "description": "Um presente doce e delicioso",
+    "available": true,
+    "guildId": "1507041710956351638",
+    "createdAt": "2026-05-22T16:50:14.158Z"
+  },
+  {
+    "itemId": "crown",
+    "name": "Coroa de Ouro",
+    "type": "other",
+    "price": 12000,
+    "emoji": "👑",
+    "description": "Ostente sua riqueza com uma coroa",
+    "available": true,
+    "guildId": "1507041710956351638",
+    "createdAt": "2026-05-22T16:50:14.158Z"
+  },
+  {
+    "itemId": "potion_xp",
+    "name": "Poção de XP",
+    "type": "consumable",
+    "price": 1500,
+    "emoji": "⚗️",
+    "description": "Dobra XP ganho por 1 hora",
+    "available": true,
+    "guildId": "1507041710956351638",
+    "createdAt": "2026-05-22T16:50:14.158Z"
+  }
+]
