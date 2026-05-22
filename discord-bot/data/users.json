@@ -16,7 +16,7 @@
       "reputation": 0
     },
     "economy": {
-      "wallet": 910,
+      "wallet": 810,
       "bank": 0,
       "totalEarned": 0,
       "lastDaily": null,
@@ -38,9 +38,9 @@
       "children": []
     },
     "social": {
-      "xp": 6,
+      "xp": 12,
       "level": 1,
-      "messages": 3,
+      "messages": 6,
       "voiceMinutes": 0
     },
     "darkLove": {
@@ -60,7 +60,7 @@
     "punishments": [],
     "warnings": [],
     "createdAt": "2026-05-21T20:12:49.462Z",
-    "updatedAt": "2026-05-22T16:50:08.828Z",
+    "updatedAt": "2026-05-22T16:52:17.532Z",
     "pet": {
       "adopted": false,
       "name": "",
@@ -89,7 +89,7 @@
       "reputation": 0
     },
     "economy": {
-      "wallet": 1867,
+      "wallet": 1967,
       "bank": 0,
       "totalEarned": 777,
       "lastDaily": "2026-05-22T16:48:58.653Z",
@@ -111,9 +111,9 @@
       "children": []
     },
     "social": {
-      "xp": 0,
+      "xp": 2,
       "level": 1,
-      "messages": 0,
+      "messages": 1,
       "voiceMinutes": 0
     },
     "darkLove": {
@@ -143,6 +143,6 @@
     "punishments": [],
     "warnings": [],
     "createdAt": "2026-05-22T16:48:26.973Z",
-    "updatedAt": "2026-05-22T16:49:57.656Z"
+    "updatedAt": "2026-05-22T16:52:17.533Z"
   }
 ]

@@ -6,6 +6,9 @@ const { errorEmbed, warningEmbed } = require("../utils/embed");
 const AntiSpamSystem = require("../systems/AntiSpam");
 const User = require("../models/User");
 
+// Deduplicação: evita processar o mesmo comando duas vezes (ex: restart com processo antigo ainda vivo)
+const processedMessages = new Set();
+
 module.exports = {
   name: "messageCreate",
   async execute(message, client) {
@@ -34,6 +37,12 @@ module.exports = {
     }
 
     // A partir daqui só mensagens com prefixo chegam
+
+    // Bloqueia dupla execução do mesmo comando
+    if (processedMessages.has(message.id)) return;
+    processedMessages.add(message.id);
+    setTimeout(() => processedMessages.delete(message.id), 10000);
+
     const args = message.content.slice(prefix.length).trim().split(/\s+/);
     const commandName = args.shift().toLowerCase();
 
@@ -45,7 +54,6 @@ module.exports = {
 
     if (!command) return;
 
-    // Permissões e cooldown fora do try/catch para clareza no log
     if (command.staffOnly && !checkPermission(message, "staff")) {
       return message
         .reply({ embeds: [errorEmbed("Sem Permissão", "Você não tem permissão para usar este comando.")] })
