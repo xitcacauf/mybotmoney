@@ -1,0 +1,65 @@
+[
+  {
+    "userId": "1247947217260515398",
+    "guildId": "1507041710956351638",
+    "username": "trashboyxz",
+    "profile": {
+      "bio": "",
+      "age": 0,
+      "gender": "",
+      "location": "",
+      "photo": "",
+      "personality": "",
+      "hobbies": [],
+      "favoriteGame": "",
+      "badges": [],
+      "reputation": 0
+    },
+    "economy": {
+      "wallet": 1000,
+      "bank": 0,
+      "totalEarned": 0,
+      "lastDaily": null,
+      "lastWork": null,
+      "lastCrime": null
+    },
+    "inventory": [],
+    "house": {
+      "level": 0,
+      "name": "",
+      "furniture": [],
+      "value": 0
+    },
+    "relationship": {
+      "status": "single",
+      "partnerId": null,
+      "partnerName": "",
+      "marriedAt": null,
+      "children": []
+    },
+    "social": {
+      "xp": 2,
+      "level": 1,
+      "messages": 1,
+      "voiceMinutes": 0
+    },
+    "darkLove": {
+      "role": "Dominante",
+      "coleira": null,
+      "coleiradoAt": null
+    },
+    "dating": {
+      "active": false,
+      "profileData": {},
+      "matches": []
+    },
+    "duo": {
+      "active": false,
+      "profileData": {}
+    },
+    "punishments": [],
+    "warnings": [],
+    "createdAt": "2026-05-21T20:12:49.462Z",
+    "updatedAt": "2026-05-21T20:20:26.534Z"
+  }
+]

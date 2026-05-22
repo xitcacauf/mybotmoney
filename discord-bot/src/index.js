@@ -51,12 +51,14 @@ process.on("unhandledRejection", (reason) => {
 
 logger.info("🗄️  Usando banco de dados local (JSON files)");
 
-if (!config.token) {
+const token = (config.token || "").trim();
+
+if (!token) {
   logger.error("❌ DISCORD_TOKEN não definido! Configure a variável de ambiente.");
   process.exit(1);
 }
 
-client.login(config.token)
+client.login(token)
   .then(() => logger.info("✅ Bot iniciado com sucesso!"))
   .catch((err) => {
     logger.error(`❌ Erro ao iniciar o bot: ${err.message || String(err)}`);
