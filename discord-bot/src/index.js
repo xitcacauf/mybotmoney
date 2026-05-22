@@ -27,6 +27,7 @@ client.modals = new Collection();
 client.selectMenus = new Collection();
 client.cooldowns = new Collection();
 client.pendingMarriages = new Map();
+client.pendingCollars = new Map();
 client.privateCallTimers = new Map();
 
 loadCommands(client);

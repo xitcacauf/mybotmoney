@@ -3,9 +3,6 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-  ModalBuilder,
-  TextInputBuilder,
-  TextInputStyle,
 } = require("discord.js");
 const config = require("../../config/config");
 const User = require("../../models/User");
@@ -18,52 +15,30 @@ module.exports = {
   async execute(message, args, client) {
     const dbUser = await User.findOrCreate(message.author.id, message.guild.id, message.author.username);
 
-    if (dbUser.dating.active) {
-      const p = dbUser.dating.profileData;
+    if (dbUser.dating?.active) {
+      const p = dbUser.dating.profileData || {};
       const embed = new EmbedBuilder()
         .setColor(config.colors.secondary)
-        .setTitle(`❤️ ${p.name || message.author.username}`)
-        .setDescription(p.bio || "Sem bio.")
-        .addFields(
-          { name: "🎂 Idade", value: `${p.age || "?"}`, inline: true },
-          { name: "⚧ Gênero", value: p.gender || "?", inline: true },
-          { name: "🔍 Procura", value: p.desiredGender || "Qualquer", inline: true },
-          { name: "💆 Personalidade", value: p.personality || "?", inline: true },
-          { name: "🎮 Jogo favorito", value: p.favoriteGame || "?", inline: true },
-          { name: "📍 Localização", value: p.location || "?", inline: true },
-          { name: "🎯 Hobbies", value: p.hobbies || "?", inline: false }
-        )
-        .setThumbnail(p.photo || message.author.displayAvatarURL({ dynamic: true }))
-        .setFooter({ text: "Reaja para dar match!" });
+        .setTitle(`❤️ ${p.name || message.author.username}, ${p.age || "?"}`)
+        .setDescription(p.bio || "Sem bio definida.")
+        .setThumbnail(message.author.displayAvatarURL({ dynamic: true }))
+        .setAuthor({ name: `Perfil de ${message.author.username}`, iconURL: message.author.displayAvatarURL({ dynamic: true }) });
+
+      const fields = [];
+      if (p.gender) fields.push({ name: "⚧ Gênero", value: p.gender, inline: true });
+      if (p.location) fields.push({ name: "📍 Localização", value: p.location, inline: true });
+      if (p.desiredGender) fields.push({ name: "🔍 Procura", value: p.desiredGender, inline: true });
+      if (fields.length) embed.addFields(fields);
+
+      embed.setFooter({ text: "Perfil ativo • Outros usuários podem dar match!" })
+        .setTimestamp();
 
       const row = new ActionRowBuilder().addComponents(
         new ButtonBuilder().setCustomId("dating_deactivate").setLabel("❌ Desativar Perfil").setStyle(ButtonStyle.Danger),
-        new ButtonBuilder().setCustomId("dating_edit").setLabel("✏️ Editar").setStyle(ButtonStyle.Secondary)
+        new ButtonBuilder().setCustomId("dating_edit").setLabel("✏️ Editar Perfil").setStyle(ButtonStyle.Secondary)
       );
       return message.reply({ embeds: [embed], components: [row] });
     }
-
-    const modal = new ModalBuilder()
-      .setCustomId("dating_create")
-      .setTitle("❤️ Perfil de Web Namoro");
-
-    modal.addComponents(
-      new ActionRowBuilder().addComponents(
-        new TextInputBuilder().setCustomId("name").setLabel("Seu nome").setStyle(TextInputStyle.Short).setRequired(true).setMaxLength(32)
-      ),
-      new ActionRowBuilder().addComponents(
-        new TextInputBuilder().setCustomId("age").setLabel("Sua idade").setStyle(TextInputStyle.Short).setRequired(true).setMaxLength(3)
-      ),
-      new ActionRowBuilder().addComponents(
-        new TextInputBuilder().setCustomId("gender").setLabel("Seu gênero (Homem/Mulher/Outro)").setStyle(TextInputStyle.Short).setRequired(true).setMaxLength(20)
-      ),
-      new ActionRowBuilder().addComponents(
-        new TextInputBuilder().setCustomId("bio").setLabel("Sua bio (hobbies, personalidade, jogo fav)").setStyle(TextInputStyle.Paragraph).setRequired(true).setMaxLength(300)
-      ),
-      new ActionRowBuilder().addComponents(
-        new TextInputBuilder().setCustomId("location").setLabel("Sua localização (cidade/estado)").setStyle(TextInputStyle.Short).setRequired(false).setMaxLength(50)
-      )
-    );
 
     const triggerRow = new ActionRowBuilder().addComponents(
       new ButtonBuilder().setCustomId("dating_open_modal").setLabel("❤️ Criar Perfil de Namoro").setStyle(ButtonStyle.Primary)
@@ -72,8 +47,16 @@ module.exports = {
     const embed = new EmbedBuilder()
       .setColor(config.colors.secondary)
       .setTitle("❤️ Web Namoro")
-      .setDescription("Clique no botão abaixo para criar seu perfil e encontrar alguém especial!")
-      .setFooter({ text: "Apenas maiores de 18 anos" });
+      .setDescription(
+        "Crie seu perfil e apareça para outros usuários do servidor!\n\n" +
+        "Quando alguém der match em você, um **chat privado** é criado automaticamente.\n\n" +
+        "Clique no botão abaixo para começar:"
+      )
+      .addFields(
+        { name: "📋 O que vai aparecer", value: "• Seu nome e idade\n• Gênero\n• Bio com seus hobbies\n• Foto de perfil do Discord", inline: false }
+      )
+      .setFooter({ text: "🔞 Apenas maiores de 18 anos • Respeito acima de tudo" })
+      .setTimestamp();
 
     await message.reply({ embeds: [embed], components: [triggerRow] });
   },
