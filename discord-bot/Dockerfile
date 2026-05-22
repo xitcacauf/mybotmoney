@@ -15,11 +15,11 @@ RUN apk add --no-cache \
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY discord-bot/package*.json ./
 
 RUN npm install --omit=dev
 
-COPY . .
+COPY discord-bot/ ./
 
 RUN mkdir -p logs
 
