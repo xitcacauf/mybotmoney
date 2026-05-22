@@ -1,34 +1,35 @@
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+const { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder } = require("discord.js");
 const config = require("../../config/config");
-const GuildConfig = require("../../models/GuildConfig");
 
 module.exports = {
   name: "ticket",
-  aliases: ["suporte", "help-ticket"],
+  aliases: ["suporte", "help-ticket", "abrir"],
   description: "Abre um ticket de suporte",
   cooldown: 30,
   async execute(message, args, client) {
     const embed = new EmbedBuilder()
       .setColor(config.colors.primary)
-      .setTitle("🎫 Sistema de Tickets")
+      .setTitle("🎫 Abrir Ticket de Suporte")
       .setDescription(
-        "Clique no botão abaixo para abrir um ticket de suporte.\n\nUm membro da staff irá te atender em breve!"
+        "Selecione o **tipo de ticket** no menu abaixo.\n\nUm canal privado será criado automaticamente para você e nossa equipe de staff!"
       )
       .addFields(
-        { name: "📋 O que posso abrir?", value: "• Dúvidas gerais\n• Problemas no servidor\n• Denúncias\n• Parceria\n• Suporte técnico", inline: false }
+        { name: "📋 Tipos disponíveis", value: "🆘 Suporte Geral\n🚨 Denúncia\n❓ Dúvida\n🤝 Parceria\n💬 Outro assunto", inline: false }
       )
-      .setFooter({ text: "Tickets são registrados e monitorados pela staff." })
+      .setFooter({ text: "Tickets são monitorados pela staff. Use com responsabilidade." })
       .setTimestamp();
 
     const row = new ActionRowBuilder().addComponents(
-      new ButtonBuilder()
-        .setCustomId("ticket_create")
-        .setLabel("🎫 Abrir Ticket")
-        .setStyle(ButtonStyle.Primary),
-      new ButtonBuilder()
-        .setCustomId("ticket_list")
-        .setLabel("📋 Meus Tickets")
-        .setStyle(ButtonStyle.Secondary)
+      new StringSelectMenuBuilder()
+        .setCustomId("ticket_type_select")
+        .setPlaceholder("📋 Selecione o tipo de ticket...")
+        .addOptions([
+          { label: "Suporte Geral", value: "suporte", emoji: "🆘", description: "Problemas técnicos ou de servidor" },
+          { label: "Denúncia", value: "denuncia", emoji: "🚨", description: "Reportar um usuário ou situação" },
+          { label: "Dúvida", value: "duvida", emoji: "❓", description: "Tem uma dúvida? Tire aqui!" },
+          { label: "Parceria", value: "parceria", emoji: "🤝", description: "Proposta de parceria com o servidor" },
+          { label: "Outro", value: "outro", emoji: "💬", description: "Qualquer outro assunto" },
+        ])
     );
 
     await message.reply({ embeds: [embed], components: [row] });

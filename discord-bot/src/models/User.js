@@ -15,6 +15,7 @@ const defaultUser = (userId, guildId, username) => ({
   darkLove: { role: "none", coleira: null, coleiradoAt: null },
   dating: { active: false, profileData: {}, matches: [] },
   duo: { active: false, profileData: {} },
+  pet: { adopted: false, name: "", type: "", emoji: "", hunger: 100, happiness: 100, lastCare: null, adoptedAt: null },
   punishments: [],
   warnings: [],
 });
@@ -29,6 +30,9 @@ const User = {
   async findOrCreate(userId, guildId, username) {
     let user = await db.findOne({ userId, guildId });
     if (!user) user = await db.create(defaultUser(userId, guildId, username));
+    if (!user.pet) {
+      user.pet = { adopted: false, name: "", type: "", emoji: "", hunger: 100, happiness: 100, lastCare: null, adoptedAt: null };
+    }
     return user;
   },
 };

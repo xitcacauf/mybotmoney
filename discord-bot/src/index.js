@@ -1,58 +1,43 @@
 require("dotenv").config();
 const { Client, GatewayIntentBits, Partials, Collection } = require("discord.js");
-const logger = require("./utils/logger");
 const config = require("./config/config");
+const logger = require("./utils/logger");
+
+const loadCommands = require("./handlers/commandHandler");
+const loadEvents = require("./handlers/eventHandler");
+const loadButtons = require("./handlers/buttonHandler");
+const loadModals = require("./handlers/modalHandler");
+const loadSelectMenus = require("./handlers/selectHandler");
 
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMembers,
     GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.GuildMessageReactions,
     GatewayIntentBits.GuildVoiceStates,
-    GatewayIntentBits.GuildPresences,
     GatewayIntentBits.MessageContent,
-    GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.GuildMessageReactions,
   ],
-  partials: [
-    Partials.Channel,
-    Partials.Message,
-    Partials.GuildMember,
-    Partials.User,
-  ],
+  partials: [Partials.Message, Partials.Channel, Partials.Reaction],
 });
 
 client.commands = new Collection();
-client.cooldowns = new Collection();
-client.antiSpam = new Collection();
 client.buttons = new Collection();
 client.modals = new Collection();
 client.selectMenus = new Collection();
-client.privateCallTimers = new Collection();
+client.cooldowns = new Collection();
+client.pendingMarriages = new Map();
+client.privateCallTimers = new Map();
 
-const commandHandler = require("./handlers/commandHandler");
-const eventHandler = require("./handlers/eventHandler");
-const buttonHandler = require("./handlers/buttonHandler");
-const modalHandler = require("./handlers/modalHandler");
-const selectHandler = require("./handlers/selectHandler");
-
-commandHandler(client);
-eventHandler(client);
-buttonHandler(client);
-modalHandler(client);
-selectHandler(client);
-
-process.on("uncaughtException", (err) => {
-  logger.error("UncaughtException:", err);
-});
-process.on("unhandledRejection", (reason) => {
-  logger.error("UnhandledRejection:", reason);
-});
+loadCommands(client);
+loadEvents(client);
+loadButtons(client);
+loadModals(client);
+loadSelectMenus(client);
 
 logger.info("🗄️  Usando banco de dados local (JSON files)");
 
 const token = (config.token || "").trim();
-
 if (!token) {
   logger.error("❌ DISCORD_TOKEN não definido! Configure a variável de ambiente.");
   process.exit(1);

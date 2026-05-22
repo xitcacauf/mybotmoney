@@ -11,7 +11,12 @@ module.exports = {
           const match = client._buttonPatterns.find((p) => p.pattern.test(interaction.customId));
           if (match) handler = match.handler;
         }
-        if (!handler) return;
+        if (!handler) {
+          if (!interaction.replied && !interaction.deferred) {
+            await interaction.reply({ content: "❌ Este botão não está mais disponível.", ephemeral: true }).catch(() => {});
+          }
+          return;
+        }
         await handler.execute(interaction, client);
         return;
       }
@@ -35,12 +40,16 @@ module.exports = {
       }
     } catch (err) {
       logger.error(`Erro no interactionCreate [${interaction.customId || "?"}]: ${err.message}`);
-      const embed = errorEmbed("Erro", "Ocorreu um erro ao processar esta interação.");
-      if (interaction.replied || interaction.deferred) {
-        await interaction.followUp({ embeds: [embed], ephemeral: true }).catch(() => {});
-      } else {
-        await interaction.reply({ embeds: [embed], ephemeral: true }).catch(() => {});
-      }
+      const embed = errorEmbed("Erro", "Ocorreu um erro ao processar esta interação. Tente novamente.");
+      try {
+        if (interaction.deferred) {
+          await interaction.editReply({ embeds: [embed] }).catch(() => {});
+        } else if (!interaction.replied) {
+          await interaction.reply({ embeds: [embed], ephemeral: true }).catch(() => {});
+        } else {
+          await interaction.followUp({ embeds: [embed], ephemeral: true }).catch(() => {});
+        }
+      } catch {}
     }
   },
 };

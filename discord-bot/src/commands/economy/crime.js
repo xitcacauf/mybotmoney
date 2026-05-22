@@ -17,13 +17,17 @@ module.exports = {
   async execute(message, args, client) {
     const dbUser = await User.findOrCreate(message.author.id, message.guild.id, message.author.username);
     const now = new Date();
-    const lastCrime = dbUser.economy.lastCrime;
+    const lastCrime = dbUser.economy.lastCrime ? new Date(dbUser.economy.lastCrime) : null;
     const cooldownMs = config.cooldowns.crime * 1000;
 
     if (lastCrime && now - lastCrime < cooldownMs) {
       const remaining = cooldownMs - (now - lastCrime);
       const mins = Math.floor(remaining / 60000);
-      return message.reply(`⏳ Aguarde **${mins} minutos** antes do próximo crime.`);
+      return message.reply({ embeds: [new EmbedBuilder()
+        .setColor(config.colors.warning)
+        .setTitle("⏳ Aguarde!")
+        .setDescription(`Aguarde **${mins} minutos** antes do próximo crime.`)
+        .setTimestamp()] });
     }
 
     const crime = crimes[Math.floor(Math.random() * crimes.length)];
@@ -36,15 +40,16 @@ module.exports = {
       color = config.colors.success;
       await User.findOneAndUpdate(
         { userId: message.author.id, guildId: message.guild.id },
-        { $inc: { "economy.wallet": amount, "economy.totalEarned": amount }, $set: { "economy.lastCrime": now } }
+        { $inc: { "economy.wallet": amount, "economy.totalEarned": amount }, $set: { "economy.lastCrime": now.toISOString() } }
       );
     } else {
       amount = Math.floor(Math.random() * 200) + 50;
       description = `❌ ${crime.fail}\n\nVocê pagou **${amount.toLocaleString("pt-BR")} 💰** de multa!`;
       color = config.colors.error;
+      const fine = Math.min(amount, dbUser.economy.wallet);
       await User.findOneAndUpdate(
         { userId: message.author.id, guildId: message.guild.id },
-        { $inc: { "economy.wallet": -Math.min(amount, dbUser.economy.wallet) }, $set: { "economy.lastCrime": now } }
+        { $inc: { "economy.wallet": -fine }, $set: { "economy.lastCrime": now.toISOString() } }
       );
     }
 

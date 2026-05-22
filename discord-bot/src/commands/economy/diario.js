@@ -10,7 +10,7 @@ module.exports = {
   async execute(message, args, client) {
     const dbUser = await User.findOrCreate(message.author.id, message.guild.id, message.author.username);
     const now = new Date();
-    const lastDaily = dbUser.economy.lastDaily;
+    const lastDaily = dbUser.economy.lastDaily ? new Date(dbUser.economy.lastDaily) : null;
 
     if (lastDaily) {
       const diff = now - lastDaily;
@@ -32,7 +32,7 @@ module.exports = {
       { userId: message.author.id, guildId: message.guild.id },
       {
         $inc: { "economy.wallet": reward, "economy.totalEarned": reward },
-        $set: { "economy.lastDaily": now },
+        $set: { "economy.lastDaily": now.toISOString() },
       }
     );
 
