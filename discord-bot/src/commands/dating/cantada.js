@@ -18,7 +18,7 @@ const cantadas = [
 
 module.exports = {
   name: "cantada",
-  aliases: ["flirtar", "crush"],
+  aliases: ["flirtar"],
   description: "Envie uma cantada para alguém. Ex: !cantada @user",
   cooldown: 10,
   async execute(message, args, client) {

@@ -3,7 +3,7 @@ const config = require("../../config/config");
 
 module.exports = {
   name: "apoie",
-  aliases: ["donate", "doar", "apoiar", "suporte", "pix"],
+  aliases: ["donate", "doar", "apoiar", "suporte"],
   description: "Apoie o servidor com uma doação e mantenha tudo no ar!",
   cooldown: 10,
   async execute(message) {

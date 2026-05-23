@@ -3,7 +3,7 @@ const config = require("../../config/config");
 
 module.exports = {
   name: "ticket",
-  aliases: ["suporte", "help-ticket", "abrir"],
+  aliases: ["help-ticket", "abrir"],
   description: "Abre um ticket de suporte",
   cooldown: 30,
   async execute(message, args, client) {
