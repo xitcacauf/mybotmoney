@@ -8,6 +8,7 @@ const loadEvents = require("./handlers/eventHandler");
 const loadButtons = require("./handlers/buttonHandler");
 const loadModals = require("./handlers/modalHandler");
 const loadSelectMenus = require("./handlers/selectHandler");
+const { startWebServer } = require("./web/server");
 
 const client = new Client({
   intents: [
@@ -36,6 +37,7 @@ loadButtons(client);
 loadModals(client);
 loadSelectMenus(client);
 
+startWebServer(client);
 logger.info("🗄️  Usando banco de dados local (JSON files)");
 
 const token = (config.token || "").trim();

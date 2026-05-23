@@ -10,6 +10,7 @@ const { addBondXP } = require("../systems/ObsessionSystem");
 const { addHeat } = require("../systems/SocialHeat");
 const { isEventActive } = require("../systems/EventSystem");
 
+// ── Anti-duplicata: check SÍNCRONO antes de qualquer await ──────────────────
 const processedMessages = new Set();
 const recentChannelUsers = new Map();
 
@@ -18,9 +19,15 @@ module.exports = {
   async execute(message, client) {
     if (message.author.bot || !message.guild) return;
 
+    // ✅ Dedup check SÍNCRONO — antes de qualquer await para evitar race condition
+    if (processedMessages.has(message.id)) return;
+    processedMessages.add(message.id);
+    setTimeout(() => processedMessages.delete(message.id), 15000);
+
     const prefix = config.prefix;
     const isCommand = message.content.startsWith(prefix);
 
+    // ── Sistemas passivos (XP, calor, vínculos) ───────────────────────────────
     try {
       await User.findOrCreate(message.author.id, message.guild.id, message.author.username);
 
@@ -39,13 +46,10 @@ module.exports = {
           }
         );
 
-        // Verificar level up
         await checkLevelUp(message.author.id, message.guild.id, message.channel).catch(() => {});
-
-        // Calor social
         await addHeat(message.guild.id, 1).catch(() => {});
 
-        // Rastrear vínculo com outros usuários ativos no canal
+        // Rastrear vínculos entre usuários ativos no canal
         const chId = message.channel.id;
         if (!recentChannelUsers.has(chId)) recentChannelUsers.set(chId, new Map());
         const chUsers = recentChannelUsers.get(chId);
@@ -70,10 +74,7 @@ module.exports = {
       if (!isCommand) return;
     }
 
-    if (processedMessages.has(message.id)) return;
-    processedMessages.add(message.id);
-    setTimeout(() => processedMessages.delete(message.id), 10000);
-
+    // ── Executar comando ─────────────────────────────────────────────────────
     const args = message.content.slice(prefix.length).trim().split(/\s+/);
     const commandName = args.shift().toLowerCase();
 

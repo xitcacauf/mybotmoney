@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Love Link Bank</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #12121a;
+      --surface2: #1a1a26;
+      --border: #2a2a3a;
+      --text: #e8e8f0;
+      --muted: #888899;
+      --green: #00d4aa;
+      --red: #e74c3c;
+      --purple: #9b59b6;
+      --gold: #f1c40f;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui,sans-serif; min-height:100vh; }
+
+    /* ── Header ── */
+    .header { background:var(--surface); border-bottom:1px solid var(--border); padding:16px 24px; display:flex; align-items:center; gap:12px; }
+    .header-logo { font-size:24px; }
+    .header-title { font-size:20px; font-weight:700; background:linear-gradient(135deg,#e91e8c,#9b59b6); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .header-sub { font-size:12px; color:var(--muted); margin-top:2px; }
+
+    /* ── Layout ── */
+    .container { max-width:900px; margin:0 auto; padding:24px 16px; }
+    .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .grid3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; }
+    @media(max-width:600px) { .grid2,.grid3 { grid-template-columns:1fr; } }
+
+    /* ── Card ── */
+    .card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:20px; }
+    .card-title { font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+    .card-value { font-size:28px; font-weight:700; }
+    .card-sub { font-size:13px; color:var(--muted); margin-top:4px; }
+
+    /* ── Virtual Card ── */
+    .virtual-card {
+      border-radius:20px; padding:24px; position:relative; overflow:hidden;
+      min-height:180px; display:flex; flex-direction:column; justify-content:space-between;
+      transition:transform .2s;
+    }
+    .virtual-card:hover { transform:translateY(-4px); }
+    .virtual-card::before {
+      content:''; position:absolute; top:-40px; right:-40px;
+      width:200px; height:200px; border-radius:50%;
+      background:rgba(255,255,255,.05); pointer-events:none;
+    }
+    .vc-tier { font-size:13px; font-weight:600; opacity:.8; }
+    .vc-number { font-size:18px; letter-spacing:4px; font-family:monospace; margin:16px 0 8px; opacity:.9; }
+    .vc-name { font-size:15px; font-weight:600; }
+    .vc-perks { font-size:11px; opacity:.7; margin-top:4px; }
+    .vc-glow { position:absolute; bottom:-30px; left:-30px; width:160px; height:160px; border-radius:50%; filter:blur(60px); opacity:.4; }
+
+    /* ── Stat boxes ── */
+    .stat { background:var(--surface2); border-radius:12px; padding:16px; }
+    .stat-label { font-size:12px; color:var(--muted); margin-bottom:4px; }
+    .stat-val { font-size:22px; font-weight:700; }
+    .stat-val.green { color:var(--green); }
+    .stat-val.red { color:var(--red); }
+    .stat-val.gold { color:var(--gold); }
+
+    /* ── Progress bar ── */
+    .progress-wrap { margin-top:8px; }
+    .progress-label { display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-bottom:6px; }
+    .progress-bar { height:6px; background:var(--border); border-radius:99px; overflow:hidden; }
+    .progress-fill { height:100%; border-radius:99px; background:linear-gradient(90deg,#e91e8c,#9b59b6); transition:width .6s; }
+
+    /* ── Ledger ── */
+    .ledger-item { display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--border); }
+    .ledger-item:last-child { border-bottom:none; }
+    .ledger-icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+    .ledger-icon.earn { background:rgba(0,212,170,.15); }
+    .ledger-icon.spend { background:rgba(231,76,60,.15); }
+    .ledger-icon.daily { background:rgba(241,196,15,.15); }
+    .ledger-icon.work { background:rgba(52,152,219,.15); }
+    .ledger-icon.crime { background:rgba(231,76,60,.2); }
+    .ledger-icon.interest { background:rgba(0,212,170,.1); }
+    .ledger-desc { flex:1; }
+    .ledger-name { font-size:14px; font-weight:500; }
+    .ledger-time { font-size:12px; color:var(--muted); margin-top:2px; }
+    .ledger-amount { font-size:15px; font-weight:700; }
+    .ledger-amount.pos { color:var(--green); }
+    .ledger-amount.neg { color:var(--red); }
+
+    /* ── Investment ── */
+    .inv-card { background:linear-gradient(135deg,#1a0a2e,#0a1a2e); border:1px solid #3a2a5e; border-radius:16px; padding:20px; }
+    .inv-timer { font-size:13px; color:var(--purple); margin-top:8px; }
+
+    /* ── Ranking ── */
+    .rank-item { display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--border); }
+    .rank-item:last-child { border-bottom:none; }
+    .rank-num { width:28px; text-align:center; font-weight:700; font-size:14px; color:var(--muted); }
+    .rank-num.gold { color:var(--gold); }
+    .rank-num.silver { color:#bdc3c7; }
+    .rank-num.bronze { color:#cd7f32; }
+    .rank-name { flex:1; font-weight:500; }
+    .rank-card-badge { font-size:11px; background:var(--surface2); border-radius:6px; padding:2px 8px; color:var(--muted); }
+    .rank-total { font-size:15px; font-weight:700; color:var(--green); }
+
+    /* ── Section title ── */
+    .section-title { font-size:16px; font-weight:700; margin:24px 0 12px; display:flex; align-items:center; gap:8px; }
+
+    /* ── Search ── */
+    .search-wrap { margin-bottom:24px; }
+    .search-input { width:100%; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:14px 16px; color:var(--text); font-size:15px; outline:none; transition:border-color .2s; }
+    .search-input:focus { border-color:var(--purple); }
+    .search-btn { margin-top:10px; width:100%; background:linear-gradient(135deg,#e91e8c,#9b59b6); border:none; border-radius:12px; padding:14px; color:#fff; font-size:15px; font-weight:600; cursor:pointer; transition:opacity .2s; }
+    .search-btn:hover { opacity:.85; }
+
+    /* ── Tabs ── */
+    .tabs { display:flex; gap:8px; margin-bottom:20px; background:var(--surface2); border-radius:12px; padding:4px; }
+    .tab { flex:1; padding:10px; border:none; background:none; color:var(--muted); font-size:14px; cursor:pointer; border-radius:8px; transition:all .2s; }
+    .tab.active { background:var(--surface); color:var(--text); font-weight:600; }
+
+    /* ── Loading / Error ── */
+    .loading { text-align:center; padding:60px 0; color:var(--muted); }
+    .error-msg { background:rgba(231,76,60,.1); border:1px solid rgba(231,76,60,.3); border-radius:12px; padding:16px; color:var(--red); text-align:center; }
+
+    /* ── Relationship badge ── */
+    .rel-badge { display:inline-flex; align-items:center; gap:6px; background:rgba(233,30,140,.1); border:1px solid rgba(233,30,140,.2); border-radius:8px; padding:4px 10px; font-size:13px; color:#e91e8c; }
+
+    /* ── Chip ── */
+    .chip { display:inline-block; background:var(--surface2); border-radius:6px; padding:3px 10px; font-size:12px; color:var(--muted); margin:2px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-logo">🌸</div>
+    <div>
+      <div class="header-title">Love Link Bank</div>
+      <div class="header-sub">Painel bancário virtual</div>
+    </div>
+  </div>
+
+  <div class="container" id="app">
+    <div class="search-wrap">
+      <input class="search-input" id="searchId" placeholder="Cole seu User ID do Discord aqui..." />
+      <input class="search-input" id="searchGuild" placeholder="Guild ID (opcional)" style="margin-top:8px"/>
+      <button class="search-btn" onclick="loadUser()">🔍 Buscar Conta</button>
+      <div id="searchError" style="margin-top:8px"></div>
+    </div>
+    <div id="mainContent" style="display:none">
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('bank')">💳 Banco</button>
+        <button class="tab" onclick="switchTab('extrato')">📋 Extrato</button>
+        <button class="tab" onclick="switchTab('invest')">📊 Investir</button>
+        <button class="tab" onclick="switchTab('perfil')">👤 Perfil</button>
+      </div>
+      <div id="tabBank"></div>
+      <div id="tabExtrato" style="display:none"></div>
+      <div id="tabInvest" style="display:none"></div>
+      <div id="tabPerfil" style="display:none"></div>
+    </div>
+    <div id="rankSection">
+      <div class="section-title">🏆 Ranking de Ricos</div>
+      <div class="card" id="rankList"><div class="loading">Carregando ranking...</div></div>
+    </div>
+  </div>
+
+  <script>
+    const CARD_TIERS = [
+      { name:"Black Elite", min:100000, color:"#1a1a2e", glow:"#c9a000", icon:"⚫", perks:"Juros 3%/dia • Crime +15% • Loja -10%" },
+      { name:"Dominador",   min:50000,  color:"#16004a", glow:"#9b59b6", icon:"💜", perks:"Juros 2.5%/dia • Crime +10% • Transfer VIP" },
+      { name:"Luxúria",    min:25000,  color:"#2d0000", glow:"#e74c3c", icon:"🔴", perks:"Juros 2%/dia • Presente bônus duplo" },
+      { name:"Neon",        min:10000,  color:"#0d001a", glow:"#a855f7", icon:"🟣", perks:"Juros 2%/dia • XP +10%" },
+      { name:"Standard",    min:0,      color:"#001a0a", glow:"#27ae60", icon:"🟢", perks:"Juros 2%/dia • Acesso básico" },
+    ];
+
+    const TYPE_ICONS = { earn:"💚", spend:"🔴", transfer_in:"💙", transfer_out:"🟠", interest:"📈", crime:"🔫", daily:"🎁", work:"💼", gift:"🎀", steal:"🦹" };
+    const TYPE_CLASS = { earn:"earn", spend:"spend", interest:"earn", crime:"crime", daily:"daily", work:"work", gift:"earn", steal:"crime", transfer_in:"earn", transfer_out:"spend" };
+
+    let currentUser = null;
+    let currentTab  = "bank";
+
+    function fmtMoney(n) { return (n||0).toLocaleString("pt-BR") + " 💰"; }
+    function fmtDate(iso) {
+      if (!iso) return "—";
+      const d = new Date(iso);
+      const now = new Date();
+      const diff = Math.floor((now - d) / 1000);
+      if (diff < 60)  return "agora mesmo";
+      if (diff < 3600) return Math.floor(diff/60) + "m atrás";
+      if (diff < 86400) return Math.floor(diff/3600) + "h atrás";
+      return d.toLocaleDateString("pt-BR");
+    }
+    function getCard(total) { return CARD_TIERS.find(c => total >= c.min) || CARD_TIERS[CARD_TIERS.length-1]; }
+
+    async function loadUser() {
+      const userId = document.getElementById("searchId").value.trim();
+      const guildId = document.getElementById("searchGuild").value.trim();
+      if (!userId) { showError("Informe o User ID"); return; }
+      showError("");
+
+      try {
+        const url = `/api/user/${userId}${guildId ? "?guildId="+guildId : ""}`;
+        const res  = await fetch(url);
+        if (!res.ok) { showError("Usuário não encontrado. Verifique o User ID."); return; }
+        currentUser = await res.json();
+        document.getElementById("rankSection").style.display = "none";
+        document.getElementById("mainContent").style.display = "block";
+        renderTab(currentTab);
+        loadRanking(guildId);
+      } catch(e) { showError("Erro ao buscar dados: " + e.message); }
+    }
+
+    function showError(msg) {
+      const el = document.getElementById("searchError");
+      el.innerHTML = msg ? `<div class="error-msg">${msg}</div>` : "";
+    }
+
+    function switchTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll(".tab").forEach((t,i) => {
+        t.classList.toggle("active", ["bank","extrato","invest","perfil"][i] === tab);
+      });
+      ["bank","extrato","invest","perfil"].forEach(t => {
+        document.getElementById("tab"+t.charAt(0).toUpperCase()+t.slice(1)).style.display = t === tab ? "block" : "none";
+      });
+      renderTab(tab);
+    }
+
+    function renderTab(tab) {
+      if (!currentUser) return;
+      if (tab === "bank")    renderBank();
+      if (tab === "extrato") renderExtrato();
+      if (tab === "invest")  renderInvest();
+      if (tab === "perfil")  renderPerfil();
+    }
+
+    function renderBank() {
+      const u = currentUser;
+      const card = getCard(u.total);
+      const cardIdx = CARD_TIERS.indexOf(card);
+      const nextCard = cardIdx > 0 ? CARD_TIERS[cardIdx-1] : null;
+      const pct = nextCard ? Math.min(100, Math.floor(u.total/nextCard.min*100)) : 100;
+      const projInterest = Math.floor(u.bank * 0.02);
+
+      // Relationship line
+      const relStatus = u.relationship?.status;
+      const relLine = relStatus === "married" ? `<div class="rel-badge">💍 Casado(a)</div>` :
+                      relStatus === "dating"  ? `<div class="rel-badge">❤️ Namorando</div>` : "";
+
+      document.getElementById("tabBank").innerHTML = `
+        <!-- Virtual Card -->
+        <div class="virtual-card" style="background:${card.color};border:1px solid ${card.glow}30;box-shadow:0 0 30px ${card.glow}20">
+          <div class="vc-glow" style="background:${card.glow}"></div>
+          <div>
+            <div class="vc-tier">${card.icon} ${card.name}</div>
+          </div>
+          <div>
+            <div class="vc-number">**** **** **** ${u.userId.slice(-4)}</div>
+            <div class="vc-name">${u.username}</div>
+            <div class="vc-perks">${card.perks}</div>
+          </div>
+        </div>
+
+        <!-- Stats grid -->
+        <div class="grid3" style="margin-top:16px">
+          <div class="stat">
+            <div class="stat-label">👜 Carteira</div>
+            <div class="stat-val green">${fmtMoney(u.wallet)}</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">🏦 Banco</div>
+            <div class="stat-val">${fmtMoney(u.bank)}</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">💎 Patrimônio</div>
+            <div class="stat-val gold">${fmtMoney(u.total)}</div>
+          </div>
+        </div>
+
+        <div class="grid3" style="margin-top:16px">
+          <div class="stat">
+            <div class="stat-label">📈 Rendimento/dia</div>
+            <div class="stat-val green">+${fmtMoney(projInterest)}</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">🔥 Streak Diária</div>
+            <div class="stat-val">${u.streak} dia(s)</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">💹 Total Acumulado</div>
+            <div class="stat-val">${fmtMoney(u.totalEarned)}</div>
+          </div>
+        </div>
+
+        <!-- Progress to next card -->
+        ${nextCard ? `
+        <div class="card" style="margin-top:16px">
+          <div class="card-title">⬆️ Progresso para ${nextCard.icon} ${nextCard.name}</div>
+          <div class="progress-wrap">
+            <div class="progress-label">
+              <span>${fmtMoney(u.total)}</span>
+              <span>${fmtMoney(nextCard.min)}</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+          </div>
+          <div class="card-sub" style="margin-top:8px">Faltam <strong>${fmtMoney(nextCard.min - u.total)}</strong> para o próximo tier</div>
+        </div>` : `
+        <div class="card" style="margin-top:16px;text-align:center">
+          <div style="font-size:24px">⚫👑</div>
+          <div style="font-weight:700;margin-top:8px">Tier Máximo!</div>
+          <div class="card-sub">Você está no topo do sistema bancário.</div>
+        </div>`}
+
+        <!-- Relationship status -->
+        ${relLine ? `<div style="margin-top:16px">${relLine}</div>` : ""}
+      `;
+    }
+
+    function renderExtrato() {
+      const u = currentUser;
+      const ledger = u.ledger || [];
+
+      const items = ledger.length ? ledger.map(e => {
+        const cls = TYPE_CLASS[e.type] || "earn";
+        const icon = TYPE_ICONS[e.type] || "⚪";
+        const pos = (e.amount||0) >= 0;
+        return `
+          <div class="ledger-item">
+            <div class="ledger-icon ${cls}">${icon}</div>
+            <div class="ledger-desc">
+              <div class="ledger-name">${e.description || e.type}</div>
+              <div class="ledger-time">${fmtDate(e.timestamp)}</div>
+            </div>
+            <div class="ledger-amount ${pos?"pos":"neg"}">${pos?"+":""}${fmtMoney(e.amount)}</div>
+          </div>`;
+      }).join("") : `<div class="loading">Nenhuma transação ainda.<br>Use !diario, !trabalhar ou !crime!</div>`;
+
+      document.getElementById("tabExtrato").innerHTML = `
+        <div class="card">
+          <div class="section-title" style="margin-top:0">📋 Histórico de Transações</div>
+          ${items}
+        </div>`;
+    }
+
+    function renderInvest() {
+      const u = currentUser;
+      const inv = u.activeInvestment;
+
+      const invTypes = {
+        acoes:   { icon:"📊", name:"Ações Fictícias",  risk:"Médio" },
+        crypto:  { icon:"🪙", name:"Criptomoedas",    risk:"Alto" },
+        imovel:  { icon:"🏗️", name:"Imóveis",          risk:"Baixo" },
+        negocio: { icon:"🏪", name:"Negócio",          risk:"Médio-Alto" },
+        cassino: { icon:"🎰", name:"Cassino Virtual",  risk:"Extremo" },
+      };
+
+      let invHtml = "";
+      if (inv) {
+        const t = invTypes[inv.type] || { icon:"📈", name:inv.typeName, risk:"?" };
+        const ready = new Date(inv.readyAt);
+        const now   = new Date();
+        const readyTs = Math.floor(ready.getTime()/1000);
+        const isReady = ready <= now;
+        const pct = inv.returnRate >= 0 ? ((inv.returnRate)*100).toFixed(1) : ((inv.returnRate)*100).toFixed(1);
+
+        invHtml = `
+          <div class="inv-card">
+            <div style="font-size:28px">${t.icon}</div>
+            <div style="font-size:18px;font-weight:700;margin:8px 0">${t.name}</div>
+            <div class="grid2" style="margin-top:12px">
+              <div class="stat"><div class="stat-label">💰 Investido</div><div class="stat-val">${fmtMoney(inv.amount)}</div></div>
+              <div class="stat"><div class="stat-label">📊 Projeção</div><div class="stat-val ${inv.projectedProfit>=0?"green":"red"}">${inv.projectedProfit>=0?"+":""}${fmtMoney(inv.projectedProfit)}</div></div>
+            </div>
+            <div class="inv-timer" style="margin-top:12px">
+              ${isReady
+                ? `<span style="color:var(--green)">✅ Pronto para resgatar! Use <code>!investir resgatar</code></span>`
+                : `⏳ Retorno em: ${fmtDate(inv.readyAt)}`}
+            </div>
+          </div>`;
+      } else {
+        invHtml = `<div class="card" style="text-align:center;padding:40px">
+          <div style="font-size:32px">📈</div>
+          <div style="font-weight:700;margin:12px 0">Nenhum Investimento Ativo</div>
+          <div class="card-sub">Use <code>!investir &lt;valor&gt; &lt;tipo&gt;</code> no Discord para começar</div>
+        </div>`;
+      }
+
+      document.getElementById("tabInvest").innerHTML = `
+        <div class="section-title" style="margin-top:0">📊 Investimentos</div>
+        ${invHtml}
+        <div class="section-title">📋 Tipos Disponíveis</div>
+        <div class="card">
+          ${Object.entries(invTypes).map(([k,v]) => `
+            <div style="padding:12px 0;border-bottom:1px solid var(--border)">
+              <div style="font-size:16px;font-weight:600">${v.icon} ${v.name} <span class="chip">${k}</span></div>
+              <div class="card-sub" style="margin-top:4px">Risco: ${v.risk} • Use <code>!investir 5000 ${k}</code></div>
+            </div>`).join("")}
+        </div>`;
+    }
+
+    function renderPerfil() {
+      const u = currentUser;
+      const archetypes = { misterioso:"🌑", dominador:"👑", carente:"💔", sedutor:"💋", protetor:"🛡️", manipulador:"🕷️", poetico:"✍️" };
+      const auraColors = { divino:"#f1c40f", venenoso:"#a855f7", magnetico:"#e91e8c", sombrio:"#1a1a2e", fogoETrevas:"#e74c3c", comum:"#444" };
+
+      const archIcon = archetypes[u.profile?.archetype] || "🌑";
+      const auraColor = auraColors[u.profile?.aura] || "#444";
+
+      const rel = u.relationship;
+      const relStatus = { married:"💍 Casado(a)", dating:"❤️ Namorando", single:"Solo", none:"Solo" };
+
+      document.getElementById("tabPerfil").innerHTML = `
+        <div class="card" style="text-align:center">
+          <div style="font-size:40px;margin-bottom:8px">${archIcon}</div>
+          <div style="font-size:22px;font-weight:700">${u.username}</div>
+          <div class="chip">${u.profile?.archetype || "misterioso"}</div>
+          ${u.profile?.aura && u.profile?.aura !== "comum"
+            ? `<div style="margin-top:8px"><span class="chip" style="color:${auraColor};border:1px solid ${auraColor}40">✨ ${u.profile.aura}</span></div>` : ""}
+        </div>
+
+        <div class="grid2" style="margin-top:16px">
+          <div class="stat">
+            <div class="stat-label">📊 Nível Social</div>
+            <div class="stat-val">${u.social?.level || 1}</div>
+            <div class="card-sub">XP: ${u.social?.xp || 0}</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">💬 Mensagens</div>
+            <div class="stat-val">${(u.social?.messages || 0).toLocaleString("pt-BR")}</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <div class="card-title">💕 Relacionamento</div>
+          <div style="font-size:18px;font-weight:600;margin-top:4px">${relStatus[rel?.status] || "Solo"}</div>
+          ${rel?.stage && rel?.stage !== "none" ? `<div class="chip" style="margin-top:6px">Etapa: ${rel.stage}</div>` : ""}
+          ${(rel?.memories||[]).length ? `<div class="card-sub" style="margin-top:8px">📸 ${rel.memories.length} memória(s)</div>` : ""}
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <div class="card-title">🏠 Casa</div>
+          <div style="font-size:16px;font-weight:600;margin-top:4px">Nível ${u.house?.level || 0}</div>
+          ${u.house?.description ? `<div class="card-sub" style="margin-top:4px">${u.house.description}</div>` : ""}
+          ${u.house?.theme ? `<div class="chip" style="margin-top:6px">Tema: ${u.house.theme}</div>` : ""}
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <div class="card-title">🎒 Inventário</div>
+          <div style="margin-top:8px">
+            ${(u.inventory||[]).length
+              ? (u.inventory||[]).map(i => `<span class="chip">${i.emoji||"📦"} ${i.name}</span>`).join("")
+              : `<span style="color:var(--muted)">Inventário vazio</span>`}
+          </div>
+        </div>`;
+    }
+
+    async function loadRanking(guildId) {
+      const rankEl = document.getElementById("rankList");
+      try {
+        const res = await fetch(`/api/ranking/${guildId || "all"}`);
+        if (!res.ok) { rankEl.innerHTML = `<div class="loading">Nenhum dado de ranking.</div>`; return; }
+        const data = await res.json();
+        if (!data.length) { rankEl.innerHTML = `<div class="loading">Nenhum usuário encontrado.</div>`; return; }
+
+        const medals = ["gold","silver","bronze"];
+        rankEl.innerHTML = data.map((u,i) => `
+          <div class="rank-item">
+            <div class="rank-num ${medals[i]||""}">${i===0?"🥇":i===1?"🥈":i===2?"🥉":i+1}</div>
+            <div class="rank-name">
+              ${u.username}
+              <div style="margin-top:2px"><span class="rank-card-badge">${u.card.icon} ${u.card.name}</span></div>
+            </div>
+            <div class="rank-total">${fmtMoney(u.total)}</div>
+          </div>`).join("");
+      } catch(e) { rankEl.innerHTML = `<div class="loading">Erro ao carregar ranking.</div>`; }
+    }
+
+    // ── Init: check URL for userId ──────────────────────────────────────────
+    const pathParts = window.location.pathname.split("/");
+    if (pathParts[1] === "bank" && pathParts[2]) {
+      document.getElementById("searchId").value = pathParts[2];
+      loadUser();
+    }
+
+    loadRanking("");
+  </script>
+</body>
+</html>
