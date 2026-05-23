@@ -4,6 +4,7 @@ const User = require("../../models/User");
 const { isEventActive } = require("../../systems/EventSystem");
 const { addHeat } = require("../../systems/SocialHeat");
 const { addLedgerEntry } = require("./extrato");
+const { withLock } = require("../../utils/userLock");
 
 const crimes = [
   { name: "Hackear banco", success: "💻 Você hackeou um banco e escapou sem deixar rastros!", fail: "💻 A polícia rastreou o IP e te prendeu!" },
@@ -21,66 +22,68 @@ module.exports = {
   description: "Tente cometer um crime (arrisque!). Ex: !crime",
   cooldown: 3,
   async execute(message, args, client) {
-    const dbUser = await User.findOrCreate(message.author.id, message.guild.id, message.author.username);
-    const now = new Date();
-    const lastCrime = dbUser.economy.lastCrime ? new Date(dbUser.economy.lastCrime) : null;
-    const cooldownMs = config.cooldowns.crime * 1000;
+    const key = `crime:${message.author.id}:${message.guild.id}`;
+    await withLock(key, async () => {
+      const dbUser = await User.findOrCreate(message.author.id, message.guild.id, message.author.username);
+      const now = new Date();
+      const lastCrime = dbUser.economy.lastCrime ? new Date(dbUser.economy.lastCrime) : null;
+      const cooldownMs = config.cooldowns.crime * 1000;
 
-    if (lastCrime && now - lastCrime < cooldownMs) {
-      const remaining = cooldownMs - (now - lastCrime);
-      const mins = Math.floor(remaining / 60000);
-      return message.reply({
-        embeds: [
-          new EmbedBuilder()
-            .setColor(config.colors.warning)
-            .setTitle("⏳ Aguarde!")
-            .setDescription(`Aguarde **${mins} minuto(s)** antes do próximo crime.`)
-            .setTimestamp(),
-        ],
-      });
-    }
+      if (lastCrime && now - lastCrime < cooldownMs) {
+        const remaining = cooldownMs - (now - lastCrime);
+        const mins = Math.floor(remaining / 60000);
+        return message.reply({
+          embeds: [
+            new EmbedBuilder()
+              .setColor(config.colors.warning)
+              .setTitle("⏳ Aguarde!")
+              .setDescription(`Aguarde **${mins} minuto(s)** antes do próximo crime.`)
+              .setTimestamp(),
+          ],
+        });
+      }
 
-    const crime = crimes[Math.floor(Math.random() * crimes.length)];
+      const crime = crimes[Math.floor(Math.random() * crimes.length)];
 
-    // Tempestade econômica aumenta chance de falha
-    let failChance = config.economy.crimeFail;
-    if (isEventActive("tempestade_economica")) failChance = Math.min(0.85, failChance + 0.5);
+      let failChance = config.economy.crimeFail;
+      if (isEventActive("tempestade_economica")) failChance = Math.min(0.85, failChance + 0.5);
 
-    const success = Math.random() > failChance;
+      const success = Math.random() > failChance;
 
-    let amount, description, color;
-    if (success) {
-      amount = Math.floor(Math.random() * (config.economy.crimeMax - config.economy.crimeMin)) + config.economy.crimeMin;
-      description = `✅ ${crime.success}\n\nVocê ganhou **${amount.toLocaleString("pt-BR")} 💰 moedas**!`;
-      color = config.colors.success;
-      await User.findOneAndUpdate(
-        { userId: message.author.id, guildId: message.guild.id },
-        { $inc: { "economy.wallet": amount, "economy.totalEarned": amount }, $set: { "economy.lastCrime": now.toISOString() } }
-      );
-      await addHeat(message.guild.id, 2).catch(() => {});
-      await addLedgerEntry(message.author.id, message.guild.id, "crime", amount, crime.name).catch(() => {});
-    } else {
-      amount = Math.floor(Math.random() * 300) + 50;
-      description = `❌ ${crime.fail}\n\nVocê pagou **${amount.toLocaleString("pt-BR")} 💰** de multa!`;
-      color = config.colors.error;
-      const fine = Math.min(amount, dbUser.economy.wallet || 0);
-      await User.findOneAndUpdate(
-        { userId: message.author.id, guildId: message.guild.id },
-        { $inc: { "economy.wallet": -fine }, $set: { "economy.lastCrime": now.toISOString() } }
-      );
-      await addLedgerEntry(message.author.id, message.guild.id, "spend", -fine, `Multa: ${crime.name}`).catch(() => {});
-    }
+      let amount, description, color;
+      if (success) {
+        amount = Math.floor(Math.random() * (config.economy.crimeMax - config.economy.crimeMin)) + config.economy.crimeMin;
+        description = `✅ ${crime.success}\n\nVocê ganhou **${amount.toLocaleString("pt-BR")} 💰 moedas**!`;
+        color = config.colors.success;
+        await User.findOneAndUpdate(
+          { userId: message.author.id, guildId: message.guild.id },
+          { $inc: { "economy.wallet": amount, "economy.totalEarned": amount }, $set: { "economy.lastCrime": now.toISOString() } }
+        );
+        await addHeat(message.guild.id, 2).catch(() => {});
+        await addLedgerEntry(message.author.id, message.guild.id, "crime", amount, crime.name).catch(() => {});
+      } else {
+        amount = Math.floor(Math.random() * 300) + 50;
+        description = `❌ ${crime.fail}\n\nVocê pagou **${amount.toLocaleString("pt-BR")} 💰** de multa!`;
+        color = config.colors.error;
+        const fine = Math.min(amount, dbUser.economy.wallet || 0);
+        await User.findOneAndUpdate(
+          { userId: message.author.id, guildId: message.guild.id },
+          { $inc: { "economy.wallet": -fine }, $set: { "economy.lastCrime": now.toISOString() } }
+        );
+        await addLedgerEntry(message.author.id, message.guild.id, "spend", -fine, `Multa: ${crime.name}`).catch(() => {});
+      }
 
-    if (isEventActive("tempestade_economica")) {
-      description += "\n\n⚡ *Tempestade Econômica ativa: riscos aumentados!*";
-    }
+      if (isEventActive("tempestade_economica")) {
+        description += "\n\n⚡ *Tempestade Econômica ativa: riscos aumentados!*";
+      }
 
-    const embed = new EmbedBuilder()
-      .setColor(color)
-      .setTitle(`🔫 ${crime.name}`)
-      .setDescription(description)
-      .setTimestamp();
+      const embed = new EmbedBuilder()
+        .setColor(color)
+        .setTitle(`🔫 ${crime.name}`)
+        .setDescription(description)
+        .setTimestamp();
 
-    await message.reply({ embeds: [embed] });
+      await message.reply({ embeds: [embed] });
+    });
   },
 };

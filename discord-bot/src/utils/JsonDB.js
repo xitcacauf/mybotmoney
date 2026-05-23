@@ -31,6 +31,7 @@ class JsonDB {
   constructor(name) {
     this.filePath = path.join(DATA_DIR, `${name}.json`);
     this._data = [];
+    this._mutex = Promise.resolve();
     this._load();
   }
 
@@ -44,6 +45,12 @@ class JsonDB {
 
   _save() {
     fs.writeFileSync(this.filePath, JSON.stringify(this._data, null, 2));
+  }
+
+  _enqueue(fn) {
+    const result = this._mutex.then(fn);
+    this._mutex = result.catch(() => {});
+    return result;
   }
 
   _getNested(obj, dotPath) {
@@ -102,10 +109,12 @@ class JsonDB {
   }
 
   async findOne(query) {
+    this._load();
     return this._data.find((d) => this._matches(d, query)) || null;
   }
 
   find(query = {}) {
+    this._load();
     const results = Object.keys(query).length === 0
       ? [...this._data]
       : this._data.filter((d) => this._matches(d, query));
@@ -113,37 +122,47 @@ class JsonDB {
   }
 
   async create(data) {
-    const doc = { ...data, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
-    this._data.push(doc);
-    this._save();
-    return doc;
+    return this._enqueue(() => {
+      this._load();
+      const doc = { ...data, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+      this._data.push(doc);
+      this._save();
+      return doc;
+    });
   }
 
   async insertMany(items) {
-    const docs = items.map((i) => ({ ...i, createdAt: new Date().toISOString() }));
-    this._data.push(...docs);
-    this._save();
-    return docs;
+    return this._enqueue(() => {
+      this._load();
+      const docs = items.map((i) => ({ ...i, createdAt: new Date().toISOString() }));
+      this._data.push(...docs);
+      this._save();
+      return docs;
+    });
   }
 
   async findOneAndUpdate(query, update, options = {}) {
-    let idx = this._data.findIndex((d) => this._matches(d, query));
-    let doc;
-    if (idx === -1) {
-      if (!options.upsert) return null;
-      doc = { ...query, createdAt: new Date().toISOString() };
-      this._data.push(doc);
-      idx = this._data.length - 1;
-    } else {
-      doc = this._data[idx];
-    }
-    this._applyUpdate(doc, update);
-    this._data[idx] = doc;
-    this._save();
-    return options.new !== false ? doc : doc;
+    return this._enqueue(() => {
+      this._load();
+      let idx = this._data.findIndex((d) => this._matches(d, query));
+      let doc;
+      if (idx === -1) {
+        if (!options.upsert) return null;
+        doc = { ...query, createdAt: new Date().toISOString() };
+        this._data.push(doc);
+        idx = this._data.length - 1;
+      } else {
+        doc = this._data[idx];
+      }
+      this._applyUpdate(doc, update);
+      this._data[idx] = doc;
+      this._save();
+      return options.new !== false ? doc : doc;
+    });
   }
 
   async countDocuments(query = {}) {
+    this._load();
     return this.find(query)._results.length;
   }
 }
