@@ -5,7 +5,7 @@ const config = require("../../config/config");
 
 module.exports = {
   name: "pagar",
-  aliases: ["pay", "enviar"],
+  aliases: ["pay"],
   description: "Transfira moedas para outro usuário. Ex: !pagar @user 500",
   cooldown: 10,
   async execute(message, args, client) {
