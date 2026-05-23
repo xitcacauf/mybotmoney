@@ -1,4 +1,13 @@
 require("dotenv").config();
+
+// 🚫 Impede o bot de logar quando estiver rodando dentro do Replit.
+// O Replit é só para editar código — o deploy real fica no Railway.
+if (process.env.REPL_ID || process.env.REPLIT_DB_URL || process.env.REPL_SLUG) {
+  console.log("⚠️  Detectado ambiente Replit — bot NÃO será iniciado aqui.");
+  console.log("👉 O bot roda apenas no Railway. Edite o código e dê commit/push.");
+  process.exit(0);
+}
+
 const { Client, GatewayIntentBits, Partials, Collection } = require("discord.js");
 const config = require("./config/config");
 const logger = require("./utils/logger");
