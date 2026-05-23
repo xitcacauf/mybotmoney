@@ -1,45 +1,54 @@
-# [Project name]
+# LoveLink Discord Bot
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A full-featured Discord bot for gaming communities with dating (Web Namoro), economy (The Sims-style), matchmaking (Duo Gamer), dark love, moderation, and ticket systems. Includes a built-in web dashboard (Bank UI) served on port 3000.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
-- `pnpm run typecheck` — full typecheck across all packages
-- `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- The bot starts automatically via the "Discord Bot" workflow: `cd discord-bot && node src/index.js`
+- Web dashboard runs on port 3000 (Bank UI, rankings)
+- Data is stored locally in `discord-bot/data/*.json` files
 
 ## Stack
 
-- pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
-- DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
-- API codegen: Orval (from OpenAPI spec)
-- Build: esbuild (CJS bundle)
+- pnpm workspaces, Node.js 24
+- Discord.js 14
+- Express 5 (web dashboard)
+- Local JSON file storage (`discord-bot/data/`)
+- Winston logging
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `discord-bot/src/index.js` — bot entry point
+- `discord-bot/src/config/config.js` — all config/env vars
+- `discord-bot/src/commands/` — slash commands
+- `discord-bot/src/events/` — Discord event handlers
+- `discord-bot/src/systems/` — core logic (economy, dating, leveling, etc.)
+- `discord-bot/src/web/` — Express web server + Bank UI
+- `discord-bot/data/` — local JSON database files
 
-## Architecture decisions
+## Required Secrets
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- `DISCORD_TOKEN` — Bot token from Discord Developer Portal (required)
 
-## Product
+## Optional Environment Variables
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- `OWNER_ID` — Discord user ID of the bot owner
+- `GUILD_ID` — Main Discord server ID
+- `STAFF_ROLES` — Comma-separated role IDs for staff
+- `ADMIN_ROLES` — Comma-separated role IDs for admins
+- `LOG_CHANNEL` — Channel ID for logs
+- `MOD_LOG_CHANNEL` — Channel ID for mod logs
+- `WELCOME_CHANNEL` — Channel ID for welcome messages
+- `DATING_CHANNEL`, `DUO_CHANNEL`, `DARK_LOVE_CHANNEL`, `CONFESSIONS_CHANNEL`, `RANKINGS_CHANNEL`
+- `TICKET_CATEGORY`, `PRIVATE_CALL_CATEGORY` — Category IDs
 
-## User preferences
+## User Preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- Uses local JSON files for storage (no external database needed)
+- Portuguese-language bot (Brazilian Discord community)
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
-
-## Pointers
-
-- See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details
+- Bot requires `DISCORD_TOKEN` secret to start — set it in the Secrets tab
+- Lock file at `/tmp/.bot.pid` prevents duplicate instances on restart
+- The web server (port 3000) serves the Bank UI dashboard
