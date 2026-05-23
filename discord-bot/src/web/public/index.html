@@ -132,8 +132,14 @@
     /* Loading */
     .loading{text-align:center;padding:50px 0;color:var(--muted);}
 
-    /* Hide Replit badge */
-    [class*="replit-ui"],[id*="replit-badge"],iframe[src*="replit"]{display:none!important;}
+    /* Hide Replit badge – belt+suspenders CSS */
+    #replit-badge-container,
+    [id*="replit-badge"],
+    [class*="replit-badge"],
+    [class*="replit-ui"],
+    iframe[src*="replit.com/badge"],
+    div[style*="replit"],
+    a[href*="replit.com/badge"] { display:none!important; visibility:hidden!important; opacity:0!important; pointer-events:none!important; }
   </style>
 </head>
 <body>
@@ -728,6 +734,20 @@ async function loadRankingInto(elId, guildId){
 async function loadRanking(guildId){
   await loadRankingInto("rankList", guildId);
 }
+
+// ── Remover badge do Replit via MutationObserver ──────────────────────────────
+(function removeReplitBadge(){
+  function nuke(el){ if(el){ el.style.cssText="display:none!important;visibility:hidden!important;opacity:0!important;"; el.remove && el.remove(); } }
+  function sweep(){
+    document.querySelectorAll(
+      '#replit-badge-container,[id*="replit-badge"],[class*="replit-badge"],[class*="replit-ui"],iframe[src*="replit.com/badge"]'
+    ).forEach(nuke);
+    // Também verificar por iframes de badge pelo src
+    document.querySelectorAll("iframe").forEach(f=>{ if(f.src&&f.src.includes("replit"))nuke(f); });
+  }
+  sweep();
+  new MutationObserver(()=>sweep()).observe(document.documentElement,{ childList:true, subtree:true });
+})();
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 const _params = new URLSearchParams(window.location.search);

@@ -1,7 +1,12 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 const config = require("../../config/config");
 const User = require("../../models/User");
-const { BASE_URL } = require("../../web/server");
+
+const WEB_PORT = process.env.WEB_PORT || 3000;
+function getBankURL() {
+  const domain = process.env.REPLIT_DEV_DOMAIN;
+  return domain ? `https://${domain}:${WEB_PORT}` : `http://localhost:${WEB_PORT}`;
+}
 
 const INTEREST_RATE = 0.02; // 2% ao dia
 const INTEREST_INTERVAL_HOURS = 24;
@@ -60,7 +65,7 @@ module.exports = {
         new ButtonBuilder()
           .setLabel("🌐 Abrir Bank UI")
           .setStyle(ButtonStyle.Link)
-          .setURL(`${BASE_URL}/bank/${message.author.id}?g=${message.guild.id}`)
+          .setURL(`${getBankURL()}/bank/${message.author.id}?g=${message.guild.id}`)
       );
       return message.reply({ embeds: [embed], components: [row] });
     }
