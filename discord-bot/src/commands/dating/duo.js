@@ -16,29 +16,43 @@ module.exports = {
   async execute(message, args, client) {
     const dbUser = await User.findOrCreate(message.author.id, message.guild.id, message.author.username);
 
+    if (!dbUser.duo) dbUser.duo = { active: false, profileData: {} };
+
     if (dbUser.duo.active) {
-      const p = dbUser.duo.profileData;
+      const p = dbUser.duo.profileData || {};
       const embed = new EmbedBuilder()
         .setColor(config.colors.primary)
         .setTitle(`🎮 ${message.author.username} — Procurando Duo`)
+        .setDescription("Seu perfil está ativo! Outros jogadores podem te encontrar.")
         .addFields(
           { name: "🎮 Jogo", value: p.game || "?", inline: true },
           { name: "🏆 Rank", value: p.rank || "?", inline: true },
           { name: "📱 Plataforma", value: p.platform || "?", inline: true },
-          { name: "🎯 Modo", value: p.mode || "?", inline: true },
-          { name: "🎮 Playstyle", value: p.playstyle || "?", inline: true },
-          { name: "🎤 Microfone", value: p.microphone ? "✅ Sim" : "❌ Não", inline: true },
-          { name: "⏰ Horário", value: p.schedule || "?", inline: true },
-          { name: "🎯 Objetivo", value: p.objective || "?", inline: true }
+          { name: "🎯 Objetivo", value: p.objective || "?", inline: true },
+          { name: "🕹️ Estilo", value: p.playstyle || "?", inline: true },
+          { name: "⏰ Horário", value: p.schedule || "?", inline: true }
         )
-        .setThumbnail(message.author.displayAvatarURL({ dynamic: true }));
+        .setThumbnail(message.author.displayAvatarURL({ dynamic: true }))
+        .setFooter({ text: "Use o botão ❌ para desativar seu perfil de duo" })
+        .setTimestamp();
 
       const row = new ActionRowBuilder().addComponents(
         new ButtonBuilder().setCustomId("duo_accept").setLabel("✅ Aceitar Duo").setStyle(ButtonStyle.Success),
-        new ButtonBuilder().setCustomId("duo_deactivate").setLabel("❌ Desativar").setStyle(ButtonStyle.Danger)
+        new ButtonBuilder().setCustomId("duo_deactivate").setLabel("❌ Desativar Perfil").setStyle(ButtonStyle.Danger)
       );
       return message.reply({ embeds: [embed], components: [row] });
     }
+
+    const embed = new EmbedBuilder()
+      .setColor(config.colors.primary)
+      .setTitle("🎮 Procurando Duo")
+      .setDescription(
+        "Crie seu perfil de duo para encontrar parceiros de jogo!\n\n" +
+        "**1.** Selecione seu jogo no menu abaixo\n" +
+        "**2.** Preencha as informações do formulário\n" +
+        "**3.** Seu perfil será publicado para o servidor ver"
+      )
+      .setFooter({ text: "Selecione seu jogo para começar 🎮" });
 
     const gameRow = new ActionRowBuilder().addComponents(
       new StringSelectMenuBuilder()
@@ -55,11 +69,6 @@ module.exports = {
           { label: "Outro", value: "Outro", emoji: "🎮" },
         ])
     );
-
-    const embed = new EmbedBuilder()
-      .setColor(config.colors.primary)
-      .setTitle("🎮 Procurando Duo")
-      .setDescription("Selecione seu jogo abaixo para criar seu perfil de duo!");
 
     await message.reply({ embeds: [embed], components: [gameRow] });
   },

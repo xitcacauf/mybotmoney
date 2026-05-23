@@ -12,11 +12,11 @@ const Ticket = require("../models/Ticket");
 const logger = require("../utils/logger");
 
 const typeLabels = {
-  suporte: { label: "Suporte Geral", emoji: "🆘" },
-  denuncia: { label: "Denúncia", emoji: "🚨" },
-  duvida: { label: "Dúvida", emoji: "❓" },
-  parceria: { label: "Parceria", emoji: "🤝" },
-  outro: { label: "Outro", emoji: "💬" },
+  suporte: { label: "Suporte Geral", emoji: "🆘", short: "suporte" },
+  denuncia: { label: "Denúncia", emoji: "🚨", short: "denuncia" },
+  duvida: { label: "Dúvida", emoji: "❓", short: "duvida" },
+  parceria: { label: "Parceria", emoji: "🤝", short: "parceria" },
+  outro: { label: "Outro", emoji: "💬", short: "outro" },
 };
 
 module.exports = {
@@ -25,7 +25,7 @@ module.exports = {
     await interaction.deferReply({ ephemeral: true });
 
     const ticketType = interaction.values[0];
-    const typeInfo = typeLabels[ticketType] || { label: "Ticket", emoji: "🎫" };
+    const typeInfo = typeLabels[ticketType] || { label: "Ticket", emoji: "🎫", short: "ticket" };
 
     const existing = await Ticket.findOne({
       userId: interaction.user.id,
@@ -45,6 +45,7 @@ module.exports = {
     );
 
     const ticketId = `ticket-${ticketNumber.toString().padStart(4, "0")}`;
+    const channelName = `${typeInfo.short}-${ticketNumber.toString().padStart(4, "0")}`;
 
     const overwrites = [
       { id: interaction.guild.id, deny: [PermissionFlagsBits.ViewChannel] },
@@ -85,7 +86,7 @@ module.exports = {
     let channel;
     try {
       channel = await interaction.guild.channels.create({
-        name: `${typeInfo.emoji}・${ticketId}`,
+        name: channelName,
         type: ChannelType.GuildText,
         parent: gConfig.tickets?.categoryId || null,
         topic: `Ticket de ${interaction.user.tag} | Tipo: ${typeInfo.label}`,
@@ -110,10 +111,10 @@ module.exports = {
       .setColor(config.colors.primary)
       .setTitle(`${typeInfo.emoji} ${ticketId} — ${typeInfo.label}`)
       .setDescription(
-        `Olá <@${interaction.user.id}>! Seu ticket foi criado com sucesso.\n\nDescreva seu problema com detalhes e aguarde nossa equipe!`
+        `Olá <@${interaction.user.id}>! Seu ticket foi criado.\n\nDescreva seu problema com detalhes e aguarde nossa equipe!`
       )
       .addFields(
-        { name: "👤 Aberto por", value: `<@${interaction.user.id}> (${interaction.user.tag})`, inline: true },
+        { name: "👤 Aberto por", value: `<@${interaction.user.id}>`, inline: true },
         { name: "📋 Tipo", value: `${typeInfo.emoji} ${typeInfo.label}`, inline: true },
         { name: "📌 Status", value: "🟢 Aberto", inline: true }
       )
@@ -130,7 +131,7 @@ module.exports = {
 
     const onlineStaff = await findOnlineStaff(interaction.guild, staffRoleId);
     if (onlineStaff) {
-      await channel.send({ content: `📣 <@${onlineStaff.id}> — novo ticket aberto aguardando atendimento!` });
+      await channel.send({ content: `📣 <@${onlineStaff.id}> — novo ticket aguardando atendimento!` });
     } else if (!staffRoleId) {
       const adminMembers = interaction.guild.members.cache.filter(
         (m) => !m.user.bot && m.permissions.has(PermissionFlagsBits.ManageMessages)
@@ -141,7 +142,7 @@ module.exports = {
       }
     }
 
-    await interaction.editReply({ content: `✅ Ticket criado! Vá para <#${channel.id}>` });
+    await interaction.editReply({ content: `✅ Ticket criado com sucesso! Vá para <#${channel.id}>` });
   },
 };
 

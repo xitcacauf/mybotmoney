@@ -38,6 +38,7 @@ const defaultUser = (userId, guildId, username) => ({
     invested: 0,
     investedAt: null,
     investmentType: null,
+    ledger: [],
   },
   inventory: [],
   house: {
@@ -78,6 +79,29 @@ const defaultUser = (userId, guildId, username) => ({
   },
   dating: { active: false, profileData: {}, matches: [] },
   duo: { active: false, profileData: {} },
+  career: {
+    job: null,
+    jobTier: 0,
+    experience: 0,
+    faculty: null,
+    facultyProgress: 0,
+    facultyCompleted: false,
+    lastStudy: null,
+    jobChangedAt: null,
+  },
+  vip: {
+    active: false,
+    expiresAt: null,
+    grantedBy: null,
+    grantedAt: null,
+  },
+  emotions: {
+    happiness: 70,
+    anxiety: 20,
+    ego: 50,
+    sanity: 80,
+    lastUpdate: null,
+  },
   pet: {
     adopted: false,
     name: "",
@@ -112,18 +136,28 @@ const ensureFields = (user) => {
   if (!user.profile.psychProfile) user.profile.psychProfile = { loneliness: 50, popularity: 50, activityLevel: 0, lastAnalyzed: null };
   if (user.secretAdmiring === undefined) user.secretAdmiring = null;
   if (!user.secretAdmirers) user.secretAdmirers = [];
+  if (!user.relationship) user.relationship = { status: "single", partnerId: null, partnerName: "", marriedAt: null, children: [], stage: "none", stageStartedAt: null, obsessionLevel: 0, bondXP: 0, memories: [], anniversary: null };
   if (!user.relationship.memories) user.relationship.memories = [];
   if (user.relationship.stage === undefined) user.relationship.stage = user.relationship.status === "married" ? "casado" : user.relationship.status === "dating" ? "namorando" : "none";
   if (user.relationship.children === undefined) user.relationship.children = [];
+  if (!user.economy) user.economy = { wallet: 1000, bank: 0, totalEarned: 0, lastDaily: null, lastWork: null, lastCrime: null, lastInterest: null, streak: 0, invested: 0, ledger: [] };
   if (!user.economy.lastInterest) user.economy.lastInterest = null;
   if (user.economy.streak === undefined) user.economy.streak = 0;
   if (user.economy.invested === undefined) user.economy.invested = 0;
   if (user.economy.totalEarned === undefined) user.economy.totalEarned = 0;
   if (!user.economy.ledger) user.economy.ledger = [];
   if (user.economy.activeInvestment === undefined) user.economy.activeInvestment = null;
+  if (!user.house) user.house = { level: 0, name: "", furniture: [], value: 0, description: "", theme: "default", visitors: 0, decorations: [], musicPlaylist: "" };
   if (!user.house.description) user.house.description = "";
+  if (!user.social) user.social = { xp: 0, level: 1, messages: 0, voiceMinutes: 0, lastSeen: null, socialHeat: 0 };
   if (!user.social.lastSeen) user.social.lastSeen = null;
   if (!user.inventory) user.inventory = [];
+  if (!user.duo) user.duo = { active: false, profileData: {} };
+  if (!user.dating) user.dating = { active: false, profileData: {}, matches: [] };
+  if (!user.career) user.career = { job: null, jobTier: 0, experience: 0, faculty: null, facultyProgress: 0, facultyCompleted: false, lastStudy: null, jobChangedAt: null };
+  if (!user.vip) user.vip = { active: false, expiresAt: null, grantedBy: null, grantedAt: null };
+  if (!user.emotions) user.emotions = { happiness: 70, anxiety: 20, ego: 50, sanity: 80, lastUpdate: null };
+  if (!user.pet) user.pet = { adopted: false, name: "", type: "", emoji: "", hunger: 100, happiness: 100, lastCare: null, adoptedAt: null };
   return user;
 };
 

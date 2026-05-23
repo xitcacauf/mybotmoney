@@ -39,9 +39,11 @@ module.exports = {
       let streak = dbUser.economy?.streak || 0;
       streak = hadYesterday ? Math.min(streak + 1, 30) : 1;
 
+      const isVip = dbUser.vip?.active && dbUser.vip?.expiresAt && new Date(dbUser.vip.expiresAt) > now;
+
       const baseReward = config.economy.dailyReward || 500;
       const streakBonus = Math.floor(baseReward * 0.1 * Math.min(streak - 1, 10));
-      const reward = baseReward + streakBonus;
+      let reward = baseReward + streakBonus;
       const xpBonus = 20 + streak * 5;
 
       let marriageBonus = 0;
@@ -49,7 +51,12 @@ module.exports = {
         marriageBonus = Math.floor(reward * 0.2);
       }
 
-      const total = reward + marriageBonus;
+      let vipBonus = 0;
+      if (isVip) {
+        vipBonus = reward + marriageBonus;
+      }
+
+      const total = reward + marriageBonus + vipBonus;
 
       await User.findOneAndUpdate(
         { userId: message.author.id, guildId: message.guild.id },
@@ -69,6 +76,7 @@ module.exports = {
           { name: "💰 Recompensa Base", value: `${baseReward.toLocaleString("pt-BR")} 💰`, inline: true },
           { name: "🔥 Bônus Streak", value: `+${streakBonus.toLocaleString("pt-BR")} 💰`, inline: true },
           { name: "💍 Bônus Casal", value: marriageBonus > 0 ? `+${marriageBonus.toLocaleString("pt-BR")} 💰` : "—", inline: true },
+          { name: "💎 Bônus VIP", value: isVip ? `+${vipBonus.toLocaleString("pt-BR")} 💰 (2x)` : "—", inline: true },
           { name: "💎 Total", value: `**${total.toLocaleString("pt-BR")} 💰**`, inline: true },
           { name: "⭐ XP", value: `+${xpBonus}`, inline: true },
           { name: "🔥 Streak", value: `${streak} dia(s)!`, inline: true },

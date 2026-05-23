@@ -1,6 +1,9 @@
 const { EmbedBuilder } = require("discord.js");
 const config = require("../config/config");
 const User = require("../models/User");
+const { postCollarNews, postNews } = require("../utils/newsChannel");
+
+const COLLAR_CHANNEL_ID = "1507081479509905478";
 
 module.exports = {
   customId: /^collar_(accept|reject)_/,
@@ -50,5 +53,26 @@ module.exports = {
 
     await interaction.editReply({ content: "⛓️ Você aceitou a coleira." });
     await interaction.channel.send({ embeds: [successEmbed] }).catch(() => {});
+
+    const announcementEmbed = new EmbedBuilder()
+      .setColor(0x1a0a2e)
+      .setTitle("⛓️ Nova Coleira no Servidor!")
+      .setDescription(
+        `**<@${ownerId}>** colocou uma coleira em **<@${pending.targetId}>**!\n\n` +
+        `🖤 *Um novo vínculo de submissão foi formado no Dark Love System.*`
+      )
+      .setTimestamp();
+
+    const collarChannel = interaction.guild.channels.cache.get(COLLAR_CHANNEL_ID);
+    if (collarChannel) {
+      await collarChannel.send({ embeds: [announcementEmbed] }).catch(() => {});
+    }
+
+    const newsEmbed = new EmbedBuilder()
+      .setColor(0x1a0a2e)
+      .setDescription(`⛓️ **<@${ownerId}>** colocou coleira em **<@${pending.targetId}>**`)
+      .setTimestamp();
+
+    await postNews(client, interaction.guild.id, newsEmbed).catch(() => {});
   },
 };
