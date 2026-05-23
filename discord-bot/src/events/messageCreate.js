@@ -12,6 +12,7 @@ const { isEventActive } = require("../systems/EventSystem");
 
 // ── Anti-duplicata: check SÍNCRONO antes de qualquer await ──────────────────
 const processedMessages = new Set();
+const activeCommands   = new Set();  // impede execução concorrente do mesmo cmd pelo mesmo usuário
 const recentChannelUsers = new Map();
 const BOT_START_TIME = Date.now();
 
@@ -117,6 +118,9 @@ module.exports = {
         .then((m) => setTimeout(() => m.delete().catch(() => {}), 4000));
     }
 
+    const execKey = `${message.author.id}_${command.name}`;
+    if (activeCommands.has(execKey)) return;
+    activeCommands.add(execKey);
     try {
       await command.execute(message, args, client);
     } catch (err) {
@@ -124,6 +128,8 @@ module.exports = {
       message
         .reply({ embeds: [errorEmbed("Erro Interno", "Ocorreu um erro ao executar o comando.")] })
         .catch(() => {});
+    } finally {
+      activeCommands.delete(execKey);
     }
   },
 };

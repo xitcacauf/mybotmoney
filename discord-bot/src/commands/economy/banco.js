@@ -3,6 +3,7 @@ const config = require("../../config/config");
 const User = require("../../models/User");
 
 function getBankURL() {
+  if (process.env.REPLIT_DEV_DOMAIN) return `https://${process.env.REPLIT_DEV_DOMAIN}`;
   if (process.env.BANK_URL) return process.env.BANK_URL.replace(/\/$/, "");
   return `http://localhost:${process.env.WEB_PORT || 3000}`;
 }
