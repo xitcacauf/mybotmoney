@@ -126,6 +126,9 @@
 
     /* ── Chip ── */
     .chip { display:inline-block; background:var(--surface2); border-radius:6px; padding:3px 10px; font-size:12px; color:var(--muted); margin:2px; }
+
+    /* ── Hide Replit badge ── */
+    [class*="replit-ui"], [id*="replit-badge"], iframe[src*="replit"] { display:none !important; }
   </style>
 </head>
 <body>
@@ -473,14 +476,20 @@
       } catch(e) { rankEl.innerHTML = `<div class="loading">Erro ao carregar ranking.</div>`; }
     }
 
-    // ── Init: check URL for userId ──────────────────────────────────────────
-    const pathParts = window.location.pathname.split("/");
-    if (pathParts[1] === "bank" && pathParts[2]) {
-      document.getElementById("searchId").value = pathParts[2];
+    // ── Init: auto-load from URL (/bank/USERID?g=GUILDID) ───────────────────
+    const _params  = new URLSearchParams(window.location.search);
+    const _guild   = _params.get("g") || _params.get("guildId") || "";
+    const _parts   = window.location.pathname.split("/");
+    const _autoId  = _parts[1] === "bank" && _parts[2] ? _parts[2] : "";
+
+    if (_autoId) {
+      document.getElementById("searchId").value    = _autoId;
+      document.getElementById("searchGuild").value = _guild;
+      document.querySelector(".search-wrap").style.display = "none";
       loadUser();
     }
 
-    loadRanking("");
+    loadRanking(_guild || "");
   </script>
 </body>
 </html>

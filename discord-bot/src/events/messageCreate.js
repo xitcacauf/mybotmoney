@@ -13,16 +13,21 @@ const { isEventActive } = require("../systems/EventSystem");
 // ── Anti-duplicata: check SÍNCRONO antes de qualquer await ──────────────────
 const processedMessages = new Set();
 const recentChannelUsers = new Map();
+const BOT_START_TIME = Date.now();
 
 module.exports = {
   name: "messageCreate",
   async execute(message, client) {
     if (message.author.bot || !message.guild) return;
 
+    // ✅ Ignorar mensagens antigas (enviadas antes do bot iniciar = replay do Discord)
+    const messageAge = Date.now() - message.createdTimestamp;
+    if (messageAge > 5000) return;
+
     // ✅ Dedup check SÍNCRONO — antes de qualquer await para evitar race condition
     if (processedMessages.has(message.id)) return;
     processedMessages.add(message.id);
-    setTimeout(() => processedMessages.delete(message.id), 15000);
+    setTimeout(() => processedMessages.delete(message.id), 30000);
 
     const prefix = config.prefix;
     const isCommand = message.content.startsWith(prefix);

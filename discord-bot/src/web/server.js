@@ -49,7 +49,7 @@ function startWebServer(client) {
   // ── API: dados de um usuário ────────────────────────────────────────────────
   app.get("/api/user/:userId", (req, res) => {
     const { userId } = req.params;
-    const { guildId } = req.query;
+    const guildId = req.query.guildId || req.query.g;
     const user = getUser(userId, guildId);
     if (!user) return res.status(404).json({ error: "Usuário não encontrado" });
 

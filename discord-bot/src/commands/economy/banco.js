@@ -60,7 +60,7 @@ module.exports = {
         new ButtonBuilder()
           .setLabel("🌐 Abrir Bank UI")
           .setStyle(ButtonStyle.Link)
-          .setURL(`${BASE_URL}/bank/${message.author.id}`)
+          .setURL(`${BASE_URL}/bank/${message.author.id}?g=${message.guild.id}`)
       );
       return message.reply({ embeds: [embed], components: [row] });
     }
