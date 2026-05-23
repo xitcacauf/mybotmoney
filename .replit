@@ -57,3 +57,4 @@ externalPort = 80
 [userenv.shared]
 PREFIX = "!"
 NODE_ENV = "development"
+BANK_URL = "https://lovelinkbank.replit.app"
