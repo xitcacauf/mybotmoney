@@ -4,7 +4,6 @@ const User = require("../../models/User");
 
 function getBankURL() {
   if (process.env.BANK_URL) return process.env.BANK_URL.replace(/\/$/, "");
-  if (process.env.REPLIT_DEV_DOMAIN) return `https://${process.env.REPLIT_DEV_DOMAIN}`;
   return `http://localhost:${process.env.WEB_PORT || 3000}`;
 }
 
@@ -35,6 +34,8 @@ module.exports = {
             $set: { "economy.lastInterest": new Date().toISOString() },
           }
         );
+        const { addLedgerEntry } = require("./extrato");
+        await addLedgerEntry(message.author.id, message.guild.id, "interest", interestEarned, "Rendimento bancário diário").catch(() => {});
         const refreshed = await User.findOne({ userId: message.author.id, guildId: message.guild.id });
         if (refreshed) { dbUser.economy.bank = refreshed.economy.bank; dbUser.economy.wallet = refreshed.economy.wallet; }
       }

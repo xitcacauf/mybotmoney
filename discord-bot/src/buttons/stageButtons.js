@@ -4,6 +4,7 @@ const User = require("../models/User");
 const { addBondXP } = require("../systems/ObsessionSystem");
 const { addMemory } = require("../systems/MemorySystem");
 const { addHeat } = require("../systems/SocialHeat");
+const { pendingStage } = require("../utils/pendingState");
 
 const stageLabels = {
   conhecendo: "👀 Conhecendo",
@@ -28,7 +29,7 @@ module.exports = {
     const targetId = parts[3];
 
     const pendingKey = `stage_${proposerId}_${targetId}`;
-    const pending = global._pendingStage?.get(pendingKey);
+    const pending = pendingStage?.get(pendingKey);
     if (!pending) {
       return interaction.editReply({ content: "❌ Este pedido expirou ou já foi respondido." });
     }
@@ -37,7 +38,7 @@ module.exports = {
       return interaction.editReply({ content: "❌ Este pedido não é para você!" });
     }
 
-    global._pendingStage.delete(pendingKey);
+    pendingStage.delete(pendingKey);
     try { await interaction.message.edit({ components: [] }); } catch {}
 
     if (action === "reject") {

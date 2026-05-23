@@ -1,6 +1,7 @@
 const { EmbedBuilder } = require("discord.js");
 const User = require("../models/User");
 const { addBondXP } = require("../systems/ObsessionSystem");
+const { pendingContracts } = require("../utils/pendingState");
 
 const contractTypes = {
   submissao: { label: "Submissão Total", emoji: "⛓️" },
@@ -21,7 +22,7 @@ module.exports = {
     const targetId = parts[3];
 
     const pendingKey = `${proposerId}_${targetId}`;
-    const pending = global._pendingContracts?.get(pendingKey);
+    const pending = pendingContracts?.get(pendingKey);
     if (!pending) {
       return interaction.editReply({ content: "❌ Este contrato expirou ou já foi respondido." });
     }
@@ -30,7 +31,7 @@ module.exports = {
       return interaction.editReply({ content: "❌ Este contrato não é para você!" });
     }
 
-    global._pendingContracts.delete(pendingKey);
+    pendingContracts.delete(pendingKey);
     try { await interaction.message.edit({ components: [] }); } catch {}
 
     if (action === "reject") {

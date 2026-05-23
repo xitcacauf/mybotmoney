@@ -15,11 +15,12 @@ async function checkLevelUp(userId, guildId, channel) {
 
   if (user.social.xp >= xpNeeded) {
     const newLevel = currentLevel + 1;
+    const carryover = Math.max(0, user.social.xp - xpNeeded);
     await User.findOneAndUpdate(
       { userId, guildId },
       {
         $inc: { "social.level": 1 },
-        $set: { "social.xp": 0 },
+        $set: { "social.xp": carryover },
       }
     );
 

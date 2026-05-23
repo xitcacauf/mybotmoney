@@ -33,8 +33,10 @@ module.exports = {
       timestamp: Date.now(),
     });
 
+    const proposalTs = Date.now();
     setTimeout(() => {
-      if (client.pendingMarriages?.get(message.author.id)?.timestamp === client.pendingMarriages?.get(message.author.id)?.timestamp) {
+      const pending = client.pendingMarriages?.get(message.author.id);
+      if (pending && pending.timestamp === proposalTs) {
         client.pendingMarriages.delete(message.author.id);
       }
     }, 120000);

@@ -31,7 +31,7 @@ const stageCosts = {
   alianca: 3000,
 };
 
-if (!global._pendingStage) global._pendingStage = new Map();
+const { pendingStage } = require("../../utils/pendingState");
 
 module.exports = {
   name: "namoro",
@@ -102,11 +102,11 @@ module.exports = {
 
     // Verificar se já têm um pedido pendente
     const pendingKey = `stage_${message.author.id}_${target.id}`;
-    if (global._pendingStage.has(pendingKey)) {
+    if (pendingStage.has(pendingKey)) {
       return message.reply("❌ Você já tem um pedido pendente com essa pessoa!");
     }
 
-    global._pendingStage.set(pendingKey, {
+    pendingStage.set(pendingKey, {
       proposerId: message.author.id,
       targetId: target.id,
       proposerName: message.author.username,
@@ -115,7 +115,7 @@ module.exports = {
       timestamp: Date.now(),
     });
 
-    setTimeout(() => global._pendingStage.delete(pendingKey), 90000);
+    setTimeout(() => pendingStage.delete(pendingKey), 90000);
 
     const embed = new EmbedBuilder()
       .setColor(config.colors.secondary)

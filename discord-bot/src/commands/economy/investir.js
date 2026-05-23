@@ -2,6 +2,7 @@ const { EmbedBuilder } = require("discord.js");
 const config = require("../../config/config");
 const User = require("../../models/User");
 const { addHeat } = require("../../systems/SocialHeat");
+const { addLedgerEntry } = require("./extrato");
 
 const investTypes = {
   acoes: {
@@ -93,6 +94,7 @@ module.exports = {
           $set: { "economy.activeInvestment": null },
         }
       );
+      await addLedgerEntry(message.author.id, message.guild.id, won ? "earn" : "spend", profit, `Investimento: ${inv.typeName}`).catch(() => {});
 
       const embed = new EmbedBuilder()
         .setColor(won ? config.colors.success : config.colors.error)

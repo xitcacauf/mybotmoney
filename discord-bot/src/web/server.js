@@ -7,9 +7,6 @@ const DATA_DIR = path.join(__dirname, "../../data");
 const PUBLIC_DIR = path.join(__dirname, "public");
 
 const WEB_PORT = process.env.WEB_PORT || 3000;
-const BASE_URL = process.env.REPLIT_DEV_DOMAIN
-  ? `https://${process.env.REPLIT_DEV_DOMAIN}`
-  : `http://localhost:${WEB_PORT}`;
 
 function readDB(name) {
   try {
@@ -134,7 +131,7 @@ function startWebServer(client) {
     logger.info("🌐 Bank UI online!");
   });
 
-  return { BASE_URL };
+  return app;
 }
 
-module.exports = { startWebServer, BASE_URL };
+module.exports = { startWebServer };

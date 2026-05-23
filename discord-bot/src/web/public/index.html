@@ -3,313 +3,347 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Love Link</title>
+  <title>Love Link — Dashboard</title>
   <style>
     :root {
-      --bg:#0a0a0f; --surface:#12121a; --surface2:#1a1a26; --border:#2a2a3a;
-      --text:#e8e8f0; --muted:#888899; --green:#00d4aa; --red:#e74c3c;
-      --purple:#9b59b6; --pink:#e91e8c; --gold:#f1c40f; --blue:#3498db;
+      --bg:#06060f; --surface:#0e0e1c; --surface2:#161628; --surface3:#1d1d35;
+      --border:#252542; --border2:#30305a;
+      --text:#eeeeff; --muted:#8888aa; --muted2:#6666888;
+      --pink:#e91e8c; --pink2:#ff4db8; --purple:#8b2aff; --purple2:#a855f7;
+      --green:#00d4aa; --gold:#ffd000; --red:#ff4757; --blue:#2ed9ff;
+      --gradient:linear-gradient(135deg,var(--pink),var(--purple));
+      --glow-pink:rgba(233,30,140,.18); --glow-purple:rgba(139,42,255,.18);
     }
     *{margin:0;padding:0;box-sizing:border-box;}
-    body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;}
+    html{scroll-behavior:smooth;}
+    body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;overflow-x:hidden;}
 
-    /* Header */
-    .header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;gap:12px;}
-    .header-logo{font-size:22px;}
-    .header-title{font-size:18px;font-weight:700;background:linear-gradient(135deg,var(--pink),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-    .header-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar{width:5px;height:5px;}
+    ::-webkit-scrollbar-track{background:var(--surface);}
+    ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px;}
 
-    /* Container */
-    .container{max-width:860px;margin:0 auto;padding:16px;}
+    /* ── Header ── */
+    .header{background:rgba(14,14,28,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:100;}
+    .header-logo{font-size:26px;filter:drop-shadow(0 0 8px var(--pink));}
+    .header-title{font-size:20px;font-weight:800;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-.3px;}
+    .header-sub{font-size:12px;color:var(--muted);margin-top:1px;}
+    .header-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);margin-left:auto;flex-shrink:0;animation:pulse 2s infinite;}
+    @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
 
-    /* Search */
-    .search-wrap{margin-bottom:20px;}
-    .search-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:13px 16px;color:var(--text);font-size:15px;outline:none;transition:border-color .2s;}
-    .search-input:focus{border-color:var(--purple);}
-    .search-btn{margin-top:10px;width:100%;background:linear-gradient(135deg,var(--pink),var(--purple));border:none;border-radius:12px;padding:13px;color:#fff;font-size:15px;font-weight:600;cursor:pointer;transition:opacity .2s;}
-    .search-btn:hover{opacity:.85;}
-    .error-msg{background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.3);border-radius:10px;padding:14px;color:var(--red);text-align:center;margin-top:8px;}
+    /* ── Container ── */
+    .container{max-width:880px;margin:0 auto;padding:20px 16px 40px;}
 
-    /* Scrollable tabs */
-    .tabs-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-bottom:18px;}
+    /* ── Search ── */
+    .search-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px;margin-bottom:22px;}
+    .search-card h2{font-size:15px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:14px;}
+    .input-row{display:flex;gap:10px;flex-wrap:wrap;}
+    .search-input{flex:1;min-width:180px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-size:14px;outline:none;transition:border-color .2s,box-shadow .2s;}
+    .search-input:focus{border-color:var(--purple);box-shadow:0 0 0 3px var(--glow-purple);}
+    .search-input::placeholder{color:var(--muted);}
+    .search-btn{background:var(--gradient);border:none;border-radius:10px;padding:12px 22px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .2s,transform .1s;white-space:nowrap;}
+    .search-btn:hover{opacity:.88;}
+    .search-btn:active{transform:scale(.97);}
+    .error-msg{background:rgba(255,71,87,.08);border:1px solid rgba(255,71,87,.25);border-radius:10px;padding:12px;color:var(--red);margin-top:10px;font-size:14px;}
+
+    /* ── Tabs ── */
+    .tabs-wrap{overflow-x:auto;scrollbar-width:none;margin-bottom:18px;}
     .tabs-wrap::-webkit-scrollbar{display:none;}
-    .tabs{display:flex;gap:6px;background:var(--surface2);border-radius:12px;padding:4px;width:max-content;min-width:100%;}
-    .tab{flex:0 0 auto;padding:9px 14px;border:none;background:none;color:var(--muted);font-size:13px;cursor:pointer;border-radius:8px;transition:all .2s;white-space:nowrap;}
-    .tab.active{background:var(--surface);color:var(--text);font-weight:600;}
+    .tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:5px;width:max-content;min-width:100%;}
+    .tab{flex:0 0 auto;padding:9px 15px;border:none;background:none;color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;border-radius:9px;transition:all .2s;white-space:nowrap;}
+    .tab.active{background:var(--gradient);color:#fff;font-weight:700;box-shadow:0 2px 12px var(--glow-pink);}
 
-    /* Cards & grid */
-    .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;}
-    .card+.card,.card+.grid2,.card+.grid3,.grid2+.card,.grid3+.card{margin-top:14px;}
-    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-    .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
-    @media(max-width:580px){.grid2,.grid3{grid-template-columns:1fr 1fr;}}
+    /* ── Cards ── */
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:14px;}
+    .card-glow{box-shadow:0 0 30px var(--glow-pink);}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+    .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px;}
+    @media(max-width:580px){.grid3{grid-template-columns:1fr 1fr;}}
     @media(max-width:360px){.grid2,.grid3{grid-template-columns:1fr;}}
 
-    /* Stat boxes */
-    .stat{background:var(--surface2);border-radius:10px;padding:14px;}
+    /* ── Stat boxes ── */
+    .stat{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px;}
     .stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;}
-    .stat-val{font-size:22px;font-weight:700;}
-    .stat-sub{font-size:12px;color:var(--muted);margin-top:3px;}
-    .green{color:var(--green);} .red{color:var(--red);} .gold{color:var(--gold);} .purple{color:var(--purple);} .pink{color:var(--pink);}
+    .stat-val{font-size:21px;font-weight:800;line-height:1;}
+    .stat-sub{font-size:12px;color:var(--muted);margin-top:4px;}
 
-    /* Virtual Card */
-    .virtual-card{border-radius:18px;padding:22px;position:relative;overflow:hidden;min-height:160px;display:flex;flex-direction:column;justify-content:space-between;transition:transform .2s;}
-    .virtual-card:hover{transform:translateY(-3px);}
-    .virtual-card::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.04);pointer-events:none;}
-    .vc-glow{position:absolute;bottom:-30px;left:-30px;width:150px;height:150px;border-radius:50%;filter:blur(55px);opacity:.35;}
-    .vc-tier{font-size:12px;font-weight:600;opacity:.8;}
-    .vc-number{font-size:16px;letter-spacing:3px;font-family:monospace;margin:14px 0 6px;opacity:.9;}
-    .vc-name{font-size:14px;font-weight:600;}
-    .vc-perks{font-size:11px;opacity:.65;margin-top:3px;}
+    /* ── Colours ── */
+    .c-pink{color:var(--pink)!important;} .c-purple{color:var(--purple2)!important;}
+    .c-green{color:var(--green)!important;} .c-gold{color:var(--gold)!important;}
+    .c-red{color:var(--red)!important;} .c-blue{color:var(--blue)!important;}
+    .c-muted{color:var(--muted)!important;}
 
-    /* Progress bar */
-    .prog-wrap{margin-top:8px;}
-    .prog-labels{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:4px;}
-    .prog-bar{background:var(--surface2);border-radius:99px;height:8px;overflow:hidden;}
-    .prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--pink),var(--purple));transition:width .4s;}
+    /* ── Virtual card ── */
+    .vcard{border-radius:20px;padding:24px;position:relative;overflow:hidden;min-height:160px;display:flex;flex-direction:column;justify-content:space-between;margin-bottom:14px;transition:transform .2s;}
+    .vcard:hover{transform:translateY(-3px);}
+    .vcard::before{content:'';position:absolute;top:-50px;right:-50px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.04);pointer-events:none;}
+    .vcard-glow{position:absolute;bottom:-30px;left:-30px;width:180px;height:180px;border-radius:50%;filter:blur(60px);opacity:.3;pointer-events:none;}
+    .vc-tier{font-size:12px;font-weight:700;opacity:.85;letter-spacing:.5px;}
+    .vc-number{font-size:17px;letter-spacing:4px;font-family:'Courier New',monospace;margin:16px 0 6px;opacity:.9;}
+    .vc-name{font-size:15px;font-weight:700;}
+    .vc-perks{font-size:11px;opacity:.6;margin-top:3px;}
 
-    /* Ledger */
-    .ledger-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
-    .ledger-item:last-child{border-bottom:none;}
-    .ledger-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
-    .ledger-icon.earn{background:rgba(0,212,170,.12);}
-    .ledger-icon.spend{background:rgba(231,76,60,.12);}
-    .ledger-icon.crime{background:rgba(155,89,182,.12);}
-    .ledger-icon.daily{background:rgba(241,196,15,.12);}
-    .ledger-icon.work{background:rgba(52,152,219,.12);}
-    .ledger-desc{flex:1;min-width:0;}
-    .ledger-name{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    .ledger-time{font-size:12px;color:var(--muted);margin-top:2px;}
-    .ledger-amount{font-size:15px;font-weight:700;white-space:nowrap;}
-    .ledger-amount.pos{color:var(--green);}
-    .ledger-amount.neg{color:var(--red);}
-
-    /* Section title */
-    .sec{font-size:14px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin:18px 0 10px;display:flex;align-items:center;gap:7px;}
+    /* ── Section title ── */
+    .sec{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.9px;margin:18px 0 10px;display:flex;align-items:center;gap:7px;}
     .sec:first-child{margin-top:0;}
 
-    /* Chip */
-    .chip{display:inline-block;background:var(--surface2);border-radius:6px;padding:3px 9px;font-size:12px;color:var(--muted);margin:2px;}
+    /* ── Progress bar ── */
+    .prog-wrap{margin-top:8px;}
+    .prog-labels{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:5px;}
+    .prog-bar{background:var(--surface3);border-radius:99px;height:8px;overflow:hidden;}
+    .prog-fill{height:100%;border-radius:99px;background:var(--gradient);transition:width .5s ease;}
 
-    /* Rank */
-    .rank-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+    /* ── Ledger ── */
+    .ledger-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);}
+    .ledger-item:last-child{border-bottom:none;}
+    .ledger-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+    .li-earn{background:rgba(0,212,170,.1);} .li-spend{background:rgba(255,71,87,.1);}
+    .li-crime{background:rgba(139,42,255,.1);} .li-daily{background:rgba(255,208,0,.1);}
+    .li-work{background:rgba(46,217,255,.1);} .li-steal{background:rgba(255,71,87,.12);}
+    .li-interest{background:rgba(0,212,170,.1);}
+    .ledger-desc{flex:1;min-width:0;}
+    .ledger-name{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .ledger-time{font-size:11px;color:var(--muted);margin-top:2px;}
+    .ledger-amount{font-size:15px;font-weight:800;white-space:nowrap;}
+
+    /* ── Chip ── */
+    .chip{display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:3px 9px;font-size:12px;color:var(--muted);margin:2px;}
+
+    /* ── Ranking ── */
+    .rank-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);}
     .rank-item:last-child{border-bottom:none;}
-    .rank-num{font-size:18px;font-weight:700;width:28px;text-align:center;flex-shrink:0;}
-    .rank-num.gold{color:var(--gold);} .rank-num.silver{color:#aaa;} .rank-num.bronze{color:#cd7f32;}
-    .rank-name{flex:1;}
-    .rank-badge{font-size:11px;color:var(--muted);}
-    .rank-total{font-size:14px;font-weight:700;color:var(--green);}
+    .rank-num{font-size:17px;font-weight:800;width:30px;text-align:center;flex-shrink:0;}
+    .rank-info{flex:1;}
+    .rank-name{font-size:14px;font-weight:600;}
+    .rank-badge{font-size:11px;color:var(--muted);margin-top:1px;}
+    .rank-total{font-size:14px;font-weight:800;}
 
-    /* Gauge / RPG bar */
+    /* ── RPG bar ── */
     .rpg-row{display:flex;align-items:center;gap:10px;margin:6px 0;}
-    .rpg-label{font-size:12px;color:var(--muted);width:110px;flex-shrink:0;}
-    .rpg-bar{flex:1;background:var(--surface2);border-radius:99px;height:6px;overflow:hidden;}
-    .rpg-fill{height:100%;border-radius:99px;}
-    .rpg-val{font-size:13px;font-weight:600;width:28px;text-align:right;flex-shrink:0;}
+    .rpg-label{font-size:12px;color:var(--muted);width:115px;flex-shrink:0;}
+    .rpg-bar{flex:1;background:var(--surface3);border-radius:99px;height:6px;overflow:hidden;}
+    .rpg-fill{height:100%;border-radius:99px;transition:width .5s ease;}
+    .rpg-val{font-size:13px;font-weight:700;width:28px;text-align:right;flex-shrink:0;}
 
-    /* Psych gauge */
+    /* ── Psych ── */
     .psych-row{margin:10px 0;}
     .psych-top{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;}
 
-    /* Dark love */
-    .dl-role-badge{display:inline-flex;align-items:center;gap:6px;border-radius:8px;padding:5px 12px;font-size:13px;font-weight:600;}
+    /* ── Dark love ── */
+    .dl-badge{display:inline-flex;align-items:center;gap:6px;border-radius:8px;padding:5px 13px;font-size:13px;font-weight:600;}
     .dl-none{background:rgba(136,136,153,.1);color:var(--muted);}
-    .dl-dom{background:rgba(231,76,60,.1);color:#e74c3c;border:1px solid rgba(231,76,60,.3);}
-    .dl-sub{background:rgba(155,89,182,.1);color:var(--purple);border:1px solid rgba(155,89,182,.3);}
+    .dl-dom{background:rgba(255,71,87,.08);color:var(--red);border:1px solid rgba(255,71,87,.25);}
+    .dl-sub{background:rgba(139,42,255,.08);color:var(--purple2);border:1px solid rgba(139,42,255,.25);}
 
-    /* Pet */
-    .pet-card{text-align:center;padding:24px;}
-    .pet-emoji{font-size:48px;display:block;margin-bottom:12px;}
-    .pet-bar-wrap{margin:8px 0;}
-    .pet-bar-label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:4px;}
+    /* ── Pet ── */
+    .pet-card{text-align:center;padding:26px 18px;}
+    .pet-emoji{font-size:52px;display:block;margin-bottom:14px;filter:drop-shadow(0 0 12px var(--pink));}
 
-    /* Rel stage badge */
-    .rel-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(233,30,140,.1);border:1px solid rgba(233,30,140,.2);border-radius:8px;padding:4px 10px;font-size:12px;color:var(--pink);}
+    /* ── Rel badge ── */
+    .rel-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(233,30,140,.08);border:1px solid rgba(233,30,140,.2);border-radius:8px;padding:4px 11px;font-size:12px;color:var(--pink);}
 
-    /* Inv card */
-    .inv-card{background:linear-gradient(135deg,#0d001a,#16004a);border:1px solid rgba(155,89,182,.3);border-radius:14px;padding:20px;}
+    /* ── Invest card ── */
+    .inv-card{background:linear-gradient(135deg,#0a0020,#14003a);border:1px solid rgba(139,42,255,.3);border-radius:16px;padding:22px;margin-bottom:14px;}
 
-    /* Loading */
-    .loading{text-align:center;padding:50px 0;color:var(--muted);}
+    /* ── Loading ── */
+    .loading{text-align:center;padding:50px 0;color:var(--muted);font-size:14px;}
+    .loading::before{content:'';display:block;width:32px;height:32px;border:3px solid var(--border2);border-top-color:var(--pink);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 14px;}
+    @keyframes spin{to{transform:rotate(360deg);}}
 
-    [id*="badge-container"],[class*="badge-ui"],iframe[src*="/badge"] { display:none!important; }
+    /* ── Divider ── */
+    hr{border:none;border-top:1px solid var(--border);margin:14px 0;}
+
+    /* ── Badge hider ── */
+    [id*="badge-container"],[class*="badge-ui"],iframe[src*="/badge"]{display:none!important;}
   </style>
 </head>
 <body>
+
 <div class="header">
   <div class="header-logo">🌸</div>
   <div>
     <div class="header-title">Love Link</div>
-    <div class="header-sub" id="headerSub">Painel do servidor</div>
+    <div class="header-sub" id="headerSub">Dashboard do Servidor</div>
   </div>
+  <div class="header-dot" title="Online"></div>
 </div>
 
 <div class="container">
-  <div class="search-wrap" id="searchWrap">
-    <input class="search-input" id="searchId" placeholder="Cole seu User ID do Discord aqui..."/>
-    <input class="search-input" id="searchGuild" placeholder="Guild ID (opcional)" style="margin-top:8px"/>
-    <button class="search-btn" onclick="loadUser()">🔍 Buscar Conta</button>
+
+  <!-- Search -->
+  <div class="search-card" id="searchWrap">
+    <h2>🔍 Buscar Conta</h2>
+    <div class="input-row">
+      <input class="search-input" id="searchId" placeholder="Cole seu User ID do Discord..."/>
+      <input class="search-input" id="searchGuild" placeholder="Guild ID (opcional)" style="max-width:200px"/>
+      <button class="search-btn" onclick="loadUser()">Buscar</button>
+    </div>
     <div id="searchError"></div>
   </div>
 
+  <!-- Main content -->
   <div id="mainContent" style="display:none">
     <div class="tabs-wrap">
       <div class="tabs" id="tabsBar">
-        <button class="tab active" onclick="switchTab('banco')">💳 Banco</button>
-        <button class="tab" onclick="switchTab('extrato')">📋 Extrato</button>
-        <button class="tab" onclick="switchTab('investir')">📊 Investir</button>
-        <button class="tab" onclick="switchTab('perfil')">👤 Perfil</button>
-        <button class="tab" onclick="switchTab('social')">❤️ Social</button>
-        <button class="tab" onclick="switchTab('psicologia')">🧠 Psicologia</button>
-        <button class="tab" onclick="switchTab('darklove')">🖤 Dark Love</button>
-        <button class="tab" onclick="switchTab('vida')">🏡 Vida Virtual</button>
+        <button class="tab active"  onclick="switchTab('banco')">💳 Banco</button>
+        <button class="tab"         onclick="switchTab('extrato')">📋 Extrato</button>
+        <button class="tab"         onclick="switchTab('investir')">📊 Investir</button>
+        <button class="tab"         onclick="switchTab('perfil')">👤 Perfil</button>
+        <button class="tab"         onclick="switchTab('social')">❤️ Social</button>
+        <button class="tab"         onclick="switchTab('psicologia')">🧠 Psicologia</button>
+        <button class="tab"         onclick="switchTab('darklove')">🖤 Dark Love</button>
+        <button class="tab"         onclick="switchTab('vida')">🏡 Vida</button>
       </div>
     </div>
     <div id="tabBanco"></div>
-    <div id="tabExtrato" style="display:none"></div>
-    <div id="tabInvestir" style="display:none"></div>
-    <div id="tabPerfil" style="display:none"></div>
-    <div id="tabSocial" style="display:none"></div>
+    <div id="tabExtrato"    style="display:none"></div>
+    <div id="tabInvestir"   style="display:none"></div>
+    <div id="tabPerfil"     style="display:none"></div>
+    <div id="tabSocial"     style="display:none"></div>
     <div id="tabPsicologia" style="display:none"></div>
-    <div id="tabDarklove" style="display:none"></div>
-    <div id="tabVida" style="display:none"></div>
+    <div id="tabDarklove"   style="display:none"></div>
+    <div id="tabVida"       style="display:none"></div>
   </div>
 
+  <!-- Ranking global -->
   <div id="rankSection">
-    <div class="sec">🏆 Ranking de Ricos</div>
-    <div class="card" id="rankList"><div class="loading">Carregando ranking...</div></div>
+    <div class="sec">🏆 Ranking Global</div>
+    <div class="card" id="rankList"><div class="loading"></div></div>
   </div>
+
 </div>
 
 <script>
+// ── Constants ────────────────────────────────────────────────────────────────
 const CARD_TIERS = [
-  { name:"Black Elite", min:100000, color:"#1a1a2e", glow:"#c9a000", icon:"⚫", perks:"Juros 3%/dia • Crime +15% • Loja -10%" },
-  { name:"Dominador",   min:50000,  color:"#16004a", glow:"#9b59b6", icon:"💜", perks:"Juros 2.5%/dia • Crime +10% • Transfer VIP" },
-  { name:"Luxúria",    min:25000,  color:"#2d0000", glow:"#e74c3c", icon:"🔴", perks:"Juros 2%/dia • Presente bônus duplo" },
-  { name:"Neon",        min:10000,  color:"#0d001a", glow:"#a855f7", icon:"🟣", perks:"Juros 2%/dia • XP +10%" },
-  { name:"Standard",    min:0,      color:"#001a0a", glow:"#27ae60", icon:"🟢", perks:"Juros 2%/dia • Acesso básico" },
+  { name:"Black Elite", min:100000, color:"#10101e", glow:"#c9a000", icon:"⚫", perks:"Juros 3%/dia • Crime +15% • Loja -10%" },
+  { name:"Dominador",   min:50000,  color:"#0d0030", glow:"#9b59b6", icon:"💜", perks:"Juros 2.5%/dia • Crime +10% • Transfer VIP" },
+  { name:"Luxúria",     min:25000,  color:"#1a0000", glow:"#e74c3c", icon:"🔴", perks:"Juros 2%/dia • Presente bônus duplo" },
+  { name:"Neon",        min:10000,  color:"#080020", glow:"#a855f7", icon:"🟣", perks:"Juros 2%/dia • XP +10%" },
+  { name:"Standard",    min:0,      color:"#00100a", glow:"#27ae60", icon:"🟢", perks:"Juros 2%/dia • Acesso básico" },
 ];
-const TYPE_ICONS = { earn:"💚", spend:"🔴", transfer_in:"💙", transfer_out:"🟠", interest:"📈", crime:"🔫", daily:"🎁", work:"💼", gift:"🎀", steal:"🦹", pix:"💸" };
-const TYPE_CLASS = { earn:"earn", spend:"spend", interest:"earn", crime:"crime", daily:"daily", work:"work", gift:"earn", steal:"crime", transfer_in:"earn", transfer_out:"spend", pix:"spend" };
+const TYPE_ICONS = {
+  earn:"💚", spend:"🔴", transfer_in:"💙", transfer_out:"🟠", interest:"📈",
+  crime:"🔫", daily:"🎁", work:"💼", gift:"🎀", steal:"🦹", pix:"💸",
+};
+const TYPE_CLS = {
+  earn:"li-earn", spend:"li-spend", interest:"li-interest", crime:"li-crime",
+  daily:"li-daily", work:"li-work", gift:"li-earn", steal:"li-steal",
+  transfer_in:"li-earn", transfer_out:"li-spend", pix:"li-spend",
+};
+const TABS = ["banco","extrato","investir","perfil","social","psicologia","darklove","vida"];
 
 let currentUser = null;
 let currentTab  = "banco";
 
-function fmt(n){ return (n||0).toLocaleString("pt-BR"); }
-function fmtMoney(n){ return fmt(n) + " 💰"; }
-function fmtDate(iso){
+// ── Helpers ──────────────────────────────────────────────────────────────────
+const fmt = n => (n||0).toLocaleString("pt-BR");
+const fmtM = n => fmt(n) + " 💰";
+function fmtDate(iso) {
   if (!iso) return "—";
-  const d = new Date(iso), now = new Date(), diff = Math.floor((now-d)/1000);
-  if (diff < 60)   return "agora mesmo";
-  if (diff < 3600) return Math.floor(diff/60) + "m atrás";
-  if (diff < 86400) return Math.floor(diff/3600) + "h atrás";
-  if (diff < 86400*7) return Math.floor(diff/86400) + "d atrás";
+  const d=new Date(iso), now=new Date(), diff=Math.floor((now-d)/1000);
+  if (diff<60)    return "agora mesmo";
+  if (diff<3600)  return Math.floor(diff/60)+"m atrás";
+  if (diff<86400) return Math.floor(diff/3600)+"h atrás";
+  if (diff<604800)return Math.floor(diff/86400)+"d atrás";
   return d.toLocaleDateString("pt-BR");
 }
 function getCard(total){ return CARD_TIERS.find(c=>total>=c.min)||CARD_TIERS[CARD_TIERS.length-1]; }
-function progBar(pct, color){ return `<div class="prog-bar"><div class="prog-fill" style="width:${Math.min(100,pct)}%;background:${color||'linear-gradient(90deg,var(--pink),var(--purple))'}"></div></div>`; }
-function rpgBar(val, max, color){ return `<div class="rpg-bar"><div class="rpg-fill" style="width:${Math.min(100,val/max*100)}%;background:${color}"></div></div>`; }
+function progBar(pct,color){
+  return `<div class="prog-bar"><div class="prog-fill" style="width:${Math.min(100,pct)}%;${color?`background:${color}`:''}"></div></div>`;
+}
+function rpgBar(val,max,color){
+  return `<div class="rpg-bar"><div class="rpg-fill" style="width:${Math.min(100,val/max*100)}%;background:${color}"></div></div>`;
+}
+function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
 
+// ── Load user ────────────────────────────────────────────────────────────────
 async function loadUser(){
   const userId  = document.getElementById("searchId").value.trim();
   const guildId = document.getElementById("searchGuild").value.trim();
   const errEl   = document.getElementById("searchError");
   errEl.innerHTML = "";
-  if (!userId){ errEl.innerHTML = `<div class="error-msg">Informe o User ID</div>`; return; }
+  if (!userId){ errEl.innerHTML = `<div class="error-msg">⚠️ Informe o User ID do Discord</div>`; return; }
   try {
-    const url = `/api/user/${userId}${guildId ? "?g="+guildId : ""}`;
-    const res = await fetch(url);
-    if (!res.ok){ errEl.innerHTML = `<div class="error-msg">Usuário não encontrado.</div>`; return; }
+    const res = await fetch(`/api/user/${userId}${guildId?"?g="+guildId:""}`);
+    if (!res.ok){ errEl.innerHTML=`<div class="error-msg">❌ Usuário não encontrado. Verifique o ID.</div>`; return; }
     currentUser = await res.json();
     document.getElementById("rankSection").style.display = "none";
     document.getElementById("mainContent").style.display = "block";
     document.getElementById("headerSub").textContent = currentUser.username;
     switchTab(currentTab);
     loadRanking(guildId);
-  } catch(e){ errEl.innerHTML = `<div class="error-msg">Erro: ${e.message}</div>`; }
+  } catch(e){ errEl.innerHTML=`<div class="error-msg">❌ Erro ao conectar: ${e.message}</div>`; }
 }
 
-const TAB_NAMES = ["banco","extrato","investir","perfil","social","psicologia","darklove","vida"];
+// ── Tabs ─────────────────────────────────────────────────────────────────────
 function switchTab(tab){
   currentTab = tab;
-  document.querySelectorAll(".tab").forEach((t,i)=>t.classList.toggle("active", TAB_NAMES[i]===tab));
-  TAB_NAMES.forEach(t=>{ document.getElementById("tab"+cap(t)).style.display = t===tab?"block":"none"; });
-  const renders = { banco:renderBanco, extrato:renderExtrato, investir:renderInvestir, perfil:renderPerfil, social:renderSocial, psicologia:renderPsicologia, darklove:renderDarkLove, vida:renderVida };
+  document.querySelectorAll(".tab").forEach((t,i)=>t.classList.toggle("active",TABS[i]===tab));
+  TABS.forEach(t=>{ document.getElementById("tab"+cap(t)).style.display = t===tab?"block":"none"; });
+  const renders={banco:renderBanco,extrato:renderExtrato,investir:renderInvestir,perfil:renderPerfil,social:renderSocial,psicologia:renderPsicologia,darklove:renderDarkLove,vida:renderVida};
   if (currentUser && renders[tab]) renders[tab]();
 }
-function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
 
 // ── BANCO ────────────────────────────────────────────────────────────────────
 function renderBanco(){
-  const u = currentUser;
-  const card = getCard(u.total);
-  const cardIdx = CARD_TIERS.indexOf(card);
-  const next = cardIdx > 0 ? CARD_TIERS[cardIdx-1] : null;
-  const pct = next ? Math.min(100, Math.floor(u.total/next.min*100)) : 100;
-  const projInterest = Math.floor(u.bank * 0.02);
-
-  document.getElementById("tabBanco").innerHTML = `
-    <div class="virtual-card" style="background:${card.color};border:1px solid ${card.glow}35;box-shadow:0 0 28px ${card.glow}18">
-      <div class="vc-glow" style="background:${card.glow}"></div>
-      <div><div class="vc-tier">${card.icon} ${card.name}</div></div>
+  const u=currentUser, card=getCard(u.total), cardIdx=CARD_TIERS.indexOf(card);
+  const next=cardIdx>0?CARD_TIERS[cardIdx-1]:null;
+  const pct=next?Math.min(100,Math.floor(u.total/next.min*100)):100;
+  document.getElementById("tabBanco").innerHTML=`
+    <div class="vcard card-glow" style="background:${card.color};border:1px solid ${card.glow}30;box-shadow:0 0 40px ${card.glow}18">
+      <div class="vcard-glow" style="background:${card.glow}"></div>
+      <div class="vc-tier">${card.icon} ${card.name}</div>
       <div>
-        <div class="vc-number">**** **** **** ${u.userId.slice(-4)}</div>
+        <div class="vc-number">•••• •••• •••• ${u.userId.slice(-4)}</div>
         <div class="vc-name">${u.username}</div>
         <div class="vc-perks">${card.perks}</div>
       </div>
     </div>
 
-    <div class="grid3" style="margin-top:14px">
-      <div class="stat"><div class="stat-label">👜 Carteira</div><div class="stat-val green">${fmtMoney(u.wallet)}</div></div>
-      <div class="stat"><div class="stat-label">🏦 Banco</div><div class="stat-val">${fmtMoney(u.bank)}</div></div>
-      <div class="stat"><div class="stat-label">💎 Patrimônio</div><div class="stat-val gold">${fmtMoney(u.total)}</div></div>
+    <div class="grid3">
+      <div class="stat"><div class="stat-label">👜 Carteira</div><div class="stat-val c-green">${fmtM(u.wallet)}</div></div>
+      <div class="stat"><div class="stat-label">🏦 Banco</div><div class="stat-val">${fmtM(u.bank)}</div></div>
+      <div class="stat"><div class="stat-label">💎 Patrimônio</div><div class="stat-val c-gold">${fmtM(u.total)}</div></div>
     </div>
-    <div class="grid3" style="margin-top:12px">
-      <div class="stat"><div class="stat-label">📈 Rend./dia</div><div class="stat-val green">+${fmtMoney(projInterest)}</div></div>
-      <div class="stat"><div class="stat-label">🔥 Streak</div><div class="stat-val">${u.streak} dia(s)</div></div>
-      <div class="stat"><div class="stat-label">💹 Total Acumulado</div><div class="stat-val">${fmtMoney(u.totalEarned)}</div></div>
+    <div class="grid3">
+      <div class="stat"><div class="stat-label">📈 Rend./dia</div><div class="stat-val c-green">+${fmtM(Math.floor(u.bank*.02))}</div></div>
+      <div class="stat"><div class="stat-label">🔥 Streak</div><div class="stat-val c-pink">${u.streak} dia(s)</div></div>
+      <div class="stat"><div class="stat-label">💹 Acumulado</div><div class="stat-val">${fmtM(u.totalEarned)}</div></div>
     </div>
 
-    ${next ? `
-    <div class="card" style="margin-top:14px">
-      <div class="sec" style="margin-top:0">⬆️ Progresso — ${next.icon} ${next.name}</div>
+    ${next?`
+    <div class="card">
+      <div class="sec" style="margin-top:0">⬆️ Progresso para ${next.icon} ${next.name}</div>
       <div class="prog-wrap">
-        <div class="prog-labels"><span>${fmtMoney(u.total)}</span><span>${fmtMoney(next.min)}</span></div>
+        <div class="prog-labels"><span>${fmtM(u.total)}</span><span>${fmtM(next.min)}</span></div>
         ${progBar(pct)}
+        <div style="font-size:12px;color:var(--muted);margin-top:6px">Faltam <strong>${fmtM(next.min-u.total)}</strong> para o próximo tier</div>
       </div>
-      <div style="font-size:12px;color:var(--muted);margin-top:6px">Faltam <strong>${fmtMoney(next.min-u.total)}</strong> para o próximo tier</div>
-    </div>` : `
-    <div class="card" style="margin-top:14px;text-align:center">
-      <div style="font-size:28px">⚫👑</div>
-      <div style="font-weight:700;margin-top:8px">Tier Máximo!</div>
-    </div>`}
+    </div>`:
+    `<div class="card" style="text-align:center;padding:22px"><div style="font-size:32px">⚫👑</div><div style="font-weight:700;margin-top:8px">Tier Máximo!</div><div style="color:var(--muted);font-size:13px;margin-top:4px">Você chegou ao topo</div></div>`}
 
-    <div class="sec">🏆 Ranking</div>
-    <div class="card" id="rankListInline"><div class="loading">Carregando...</div></div>
+    <div class="sec">🏆 Ranking do Servidor</div>
+    <div class="card" id="rankListInline"><div class="loading"></div></div>
   `;
-  const g = document.getElementById("searchGuild").value.trim();
-  loadRankingInto("rankListInline", g);
+  loadRankingInto("rankListInline", document.getElementById("searchGuild").value.trim());
 }
 
 // ── EXTRATO ──────────────────────────────────────────────────────────────────
 function renderExtrato(){
-  const u = currentUser;
-  const ledger = u.ledger || [];
-  const items = ledger.length ? ledger.map(e=>{
-    const cls = TYPE_CLASS[e.type]||"earn";
-    const icon = TYPE_ICONS[e.type]||"⚪";
-    const pos = (e.amount||0) >= 0;
+  const ledger=(currentUser.ledger||[]);
+  const items=ledger.length?ledger.map(e=>{
+    const cls=TYPE_CLS[e.type]||"li-earn", icon=TYPE_ICONS[e.type]||"⚪", pos=(e.amount||0)>=0;
     return `<div class="ledger-item">
       <div class="ledger-icon ${cls}">${icon}</div>
       <div class="ledger-desc">
         <div class="ledger-name">${e.description||e.type||"Transação"}</div>
         <div class="ledger-time">${fmtDate(e.timestamp)}</div>
       </div>
-      <div class="ledger-amount ${pos?"pos":"neg"}">${pos?"+":""}${fmtMoney(e.amount)}</div>
+      <div class="ledger-amount" style="color:${pos?"var(--green)":"var(--red)"}">${pos?"+":""}${fmtM(e.amount)}</div>
     </div>`;
-  }).join("") : `<div class="loading">Nenhuma transação ainda.<br>Use !diario, !trabalhar ou !crime!</div>`;
-
-  document.getElementById("tabExtrato").innerHTML = `
+  }).join(""):`<div class="loading" style="padding:30px 0">Nenhuma transação ainda</div>`;
+  document.getElementById("tabExtrato").innerHTML=`
     <div class="sec">📋 Histórico de Transações</div>
     <div class="card">${items}</div>
   `;
@@ -317,44 +351,44 @@ function renderExtrato(){
 
 // ── INVESTIR ─────────────────────────────────────────────────────────────────
 function renderInvestir(){
-  const u = currentUser;
-  const inv = u.activeInvestment;
-  const invTypes = {
-    acoes:   { icon:"📊", name:"Ações Fictícias",  risk:"Médio" },
-    crypto:  { icon:"🪙", name:"Criptomoedas",    risk:"Alto" },
-    imovel:  { icon:"🏗️", name:"Imóveis",          risk:"Baixo" },
-    negocio: { icon:"🏪", name:"Negócio",          risk:"Médio-Alto" },
-    cassino: { icon:"🎰", name:"Cassino Virtual",  risk:"Extremo" },
+  const inv=currentUser.activeInvestment;
+  const invTypes={
+    acoes:{icon:"📊",name:"Ações Fictícias",risk:"Médio"},
+    crypto:{icon:"🪙",name:"Criptomoedas",risk:"Alto"},
+    imovel:{icon:"🏗️",name:"Imóveis",risk:"Baixo"},
+    negocio:{icon:"🏪",name:"Negócio",risk:"Médio-Alto"},
+    cassino:{icon:"🎰",name:"Cassino Virtual",risk:"Extremo"},
   };
-  let invHtml = "";
-  if (inv){
-    const t = invTypes[inv.type]||{ icon:"📈", name:inv.typeName||inv.type, risk:"?" };
-    const isReady = new Date(inv.readyAt) <= new Date();
-    invHtml = `<div class="inv-card">
-      <div style="font-size:28px">${t.icon}</div>
-      <div style="font-size:18px;font-weight:700;margin:8px 0">${t.name}</div>
-      <div class="grid2" style="margin-top:12px">
-        <div class="stat"><div class="stat-label">💰 Investido</div><div class="stat-val">${fmtMoney(inv.amount)}</div></div>
-        <div class="stat"><div class="stat-label">📊 Projeção</div><div class="stat-val ${(inv.projectedProfit||0)>=0?"green":"red"}">${(inv.projectedProfit||0)>=0?"+":""}${fmtMoney(inv.projectedProfit)}</div></div>
+  let invHtml="";
+  if(inv){
+    const t=invTypes[inv.type]||{icon:"📈",name:inv.typeName||inv.type,risk:"?"};
+    const ready=new Date(inv.readyAt)<=new Date();
+    const profit=inv.projectedProfit||0;
+    invHtml=`<div class="inv-card">
+      <div style="font-size:32px;margin-bottom:10px">${t.icon}</div>
+      <div style="font-size:18px;font-weight:700">${t.name}</div>
+      <div class="grid2" style="margin-top:14px">
+        <div class="stat"><div class="stat-label">💰 Investido</div><div class="stat-val">${fmtM(inv.amount)}</div></div>
+        <div class="stat"><div class="stat-label">📊 Projeção</div><div class="stat-val" style="color:${profit>=0?"var(--green)":"var(--red)"}">${profit>=0?"+":""}${fmtM(profit)}</div></div>
       </div>
       <div style="margin-top:12px;font-size:14px">
-        ${isReady ? `<span style="color:var(--green)">✅ Pronto! Use <code>!investir resgatar</code></span>` : `⏳ Retorno em: ${fmtDate(inv.readyAt)}`}
+        ${ready?`<span style="color:var(--green)">✅ Pronto! Use <code>!investir resgatar</code></span>`:`⏳ Retorno: <strong>${fmtDate(inv.readyAt)}</strong>`}
       </div>
     </div>`;
   } else {
-    invHtml = `<div class="card" style="text-align:center;padding:40px">
-      <div style="font-size:32px">📈</div>
+    invHtml=`<div class="card" style="text-align:center;padding:40px 20px">
+      <div style="font-size:36px">📈</div>
       <div style="font-weight:700;margin:12px 0">Nenhum Investimento Ativo</div>
       <div style="color:var(--muted);font-size:14px">Use <code>!investir &lt;valor&gt; &lt;tipo&gt;</code> no Discord</div>
     </div>`;
   }
-  document.getElementById("tabInvestir").innerHTML = `
+  document.getElementById("tabInvestir").innerHTML=`
     <div class="sec">📊 Investimento Ativo</div>
     ${invHtml}
     <div class="sec">📋 Tipos Disponíveis</div>
     <div class="card">
       ${Object.entries(invTypes).map(([k,v])=>`
-        <div style="padding:10px 0;border-bottom:1px solid var(--border)">
+        <div style="padding:11px 0;border-bottom:1px solid var(--border)">
           <div style="font-weight:600">${v.icon} ${v.name} <span class="chip">${k}</span></div>
           <div style="font-size:12px;color:var(--muted);margin-top:3px">Risco: ${v.risk} • <code>!investir 5000 ${k}</code></div>
         </div>`).join("")}
@@ -362,60 +396,50 @@ function renderInvestir(){
   `;
 }
 
-// ── PERFIL ────────────────────────────────────────────────────────────────────
+// ── PERFIL ───────────────────────────────────────────────────────────────────
 function renderPerfil(){
-  const u = currentUser;
-  const p = u.profile||{};
-  const archetypes = { misterioso:"🌑",dominador:"👑",carente:"💔",sedutor:"💋",protetor:"🛡️",manipulador:"🕷️",poetico:"✍️" };
-  const auraColors  = { divino:"#f1c40f",venenoso:"#a855f7",magnetico:"#e91e8c",sombrio:"#1a1a2e",fogoETrevas:"#e74c3c",comum:"#666" };
-  const archIcon = archetypes[p.archetype]||"🌑";
-  const auraColor = auraColors[p.aura]||"#666";
-
-  const rpg = u.rpg||{};
-  const rpgStats = [
-    { name:"✨ Charme",        key:"charm",        color:"#e91e8c" },
-    { name:"🕷️ Manipulação",   key:"manipulation", color:"#9b59b6" },
-    { name:"💋 Sedução",       key:"seduction",    color:"#e74c3c" },
-    { name:"🧠 Inteligência",  key:"intelligence", color:"#3498db" },
-    { name:"👑 Dominância",    key:"dominance",    color:"#f1c40f" },
-    { name:"💔 Carência",      key:"carencia",     color:"#888" },
+  const u=currentUser, p=u.profile||{};
+  const archetypes={misterioso:"🌑",dominador:"👑",carente:"💔",sedutor:"💋",protetor:"🛡️",manipulador:"🕷️",poetico:"✍️"};
+  const auraColors={divino:"#f1c40f",venenoso:"#a855f7",magnetico:"#e91e8c",sombrio:"#555",fogoETrevas:"#e74c3c",comum:"#555"};
+  const archIcon=archetypes[p.archetype]||"🌑", auraColor=auraColors[p.aura]||"#555";
+  const rpg=u.rpg||{};
+  const rpgStats=[
+    {name:"✨ Charme",key:"charm",color:"#e91e8c"},
+    {name:"🕷️ Manipulação",key:"manipulation",color:"#9b59b6"},
+    {name:"💋 Sedução",key:"seduction",color:"#e74c3c"},
+    {name:"🧠 Inteligência",key:"intelligence",color:"#3498db"},
+    {name:"👑 Dominância",key:"dominance",color:"#f1c40f"},
+    {name:"💔 Carência",key:"carencia",color:"#888"},
   ];
-
-  document.getElementById("tabPerfil").innerHTML = `
-    <div class="card" style="text-align:center;padding:24px">
-      <div style="font-size:44px">${archIcon}</div>
-      <div style="font-size:20px;font-weight:700;margin:8px 0">${u.username}</div>
-      ${p.eliteTitle ? `<div class="chip" style="color:var(--gold);border:1px solid ${auraColor}40;margin-bottom:6px">👑 ${p.eliteTitle.replace("_"," ").toUpperCase()}</div>` : ""}
-      <div><span class="chip">🌑 ${p.archetype||"misterioso"}</span>${p.aura&&p.aura!=="comum"?`<span class="chip" style="color:${auraColor}">✨ ${p.aura}</span>`:""}</div>
-      ${p.bio ? `<div style="font-size:13px;color:var(--muted);margin-top:10px;font-style:italic">"${p.bio}"</div>` : ""}
+  document.getElementById("tabPerfil").innerHTML=`
+    <div class="card" style="text-align:center;padding:26px">
+      <div style="font-size:48px;filter:drop-shadow(0 0 10px ${auraColor})">${archIcon}</div>
+      <div style="font-size:20px;font-weight:800;margin:10px 0">${u.username}</div>
+      ${p.eliteTitle?`<div class="chip" style="color:var(--gold);border-color:${auraColor}50;margin-bottom:8px">👑 ${p.eliteTitle.replace(/_/g," ").toUpperCase()}</div>`:""}
+      <div>
+        <span class="chip">🌑 ${p.archetype||"misterioso"}</span>
+        ${p.aura&&p.aura!=="comum"?`<span class="chip" style="color:${auraColor}">✨ ${p.aura}</span>`:""}
+      </div>
+      ${p.bio?`<div style="font-size:13px;color:var(--muted);margin-top:12px;font-style:italic">"${p.bio}"</div>`:""}
     </div>
 
-    <div class="grid3" style="margin-top:14px">
-      ${p.age ? `<div class="stat"><div class="stat-label">🎂 Idade</div><div class="stat-val">${p.age}</div></div>` : ""}
-      ${p.gender ? `<div class="stat"><div class="stat-label">⚧ Gênero</div><div class="stat-val" style="font-size:16px">${p.gender}</div></div>` : ""}
-      ${p.location ? `<div class="stat"><div class="stat-label">📍 Local</div><div class="stat-val" style="font-size:16px">${p.location}</div></div>` : ""}
-      <div class="stat"><div class="stat-label">⭐ Reputação</div><div class="stat-val gold">${fmt(p.reputation)}</div></div>
-      ${p.favoriteGame ? `<div class="stat"><div class="stat-label">🎮 Jogo Fav.</div><div class="stat-val" style="font-size:15px">${p.favoriteGame}</div></div>` : ""}
+    <div class="grid3">
+      ${p.age?`<div class="stat"><div class="stat-label">🎂 Idade</div><div class="stat-val">${p.age}</div></div>`:""}
+      ${p.gender?`<div class="stat"><div class="stat-label">⚧ Gênero</div><div class="stat-val" style="font-size:16px">${p.gender}</div></div>`:""}
+      ${p.location?`<div class="stat"><div class="stat-label">📍 Local</div><div class="stat-val" style="font-size:16px">${p.location}</div></div>`:""}
+      <div class="stat"><div class="stat-label">⭐ Reputação</div><div class="stat-val c-gold">${fmt(p.reputation)}</div></div>
+      ${p.favoriteGame?`<div class="stat"><div class="stat-label">🎮 Jogo Fav.</div><div class="stat-val" style="font-size:14px">${p.favoriteGame}</div></div>`:""}
     </div>
 
-    ${(p.hobbies||[]).length ? `
-    <div class="card" style="margin-top:14px">
-      <div class="sec" style="margin-top:0">🎯 Hobbies</div>
-      <div>${p.hobbies.map(h=>`<span class="chip">${h}</span>`).join("")}</div>
-    </div>` : ""}
+    ${(p.hobbies||[]).length?`<div class="card"><div class="sec" style="margin-top:0">🎯 Hobbies</div><div>${p.hobbies.map(h=>`<span class="chip">${h}</span>`).join("")}</div></div>`:""}
+    ${(p.badges||[]).length?`<div class="card"><div class="sec" style="margin-top:0">🏅 Badges</div><div>${p.badges.map(b=>`<span class="chip">${b}</span>`).join("")}</div></div>`:""}
 
-    ${(p.badges||[]).length ? `
-    <div class="card" style="margin-top:14px">
-      <div class="sec" style="margin-top:0">🏅 Badges</div>
-      <div>${p.badges.map(b=>`<span class="chip">${b}</span>`).join("")}</div>
-    </div>` : ""}
-
-    <div class="card" style="margin-top:14px">
+    <div class="card">
       <div class="sec" style="margin-top:0">🎲 Atributos RPG</div>
       ${rpgStats.map(s=>`
         <div class="rpg-row">
           <div class="rpg-label">${s.name}</div>
-          ${rpgBar(rpg[s.key]||0, 30, s.color)}
+          ${rpgBar(rpg[s.key]||0,30,s.color)}
           <div class="rpg-val" style="color:${s.color}">${rpg[s.key]||0}</div>
         </div>`).join("")}
     </div>
@@ -424,330 +448,186 @@ function renderPerfil(){
 
 // ── SOCIAL ───────────────────────────────────────────────────────────────────
 function renderSocial(){
-  const u = currentUser;
-  const s = u.social||{};
-  const rel = u.relationship||{};
-  const xpNeeded = s.level ? s.level*100 : 100;
-  const xpPct = Math.min(100, Math.floor((s.xp%xpNeeded)/xpNeeded*100));
-
-  const relLabels = { single:"🌙 Solo",dating:"❤️ Namorando",married:"💍 Casado(a)",none:"Solo" };
-  const stageLabels = { namorando:"❤️ Namorando",casado:"💍 Casado(a)",none:"—",amigos:"👫 Amigos" };
-  const monthNames = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
-
-  let relHtml = "";
-  if (rel.status && rel.status !== "single" && rel.status !== "none") {
-    const annDate = rel.anniversary ? new Date(rel.anniversary) : null;
-    const annStr = annDate ? `${annDate.getDate()} de ${monthNames[annDate.getMonth()]}` : null;
-    const obsLevel = rel.obsessionLevel||0;
-    const bondXP   = rel.bondXP||0;
-    relHtml = `
-      <div class="card" style="margin-top:14px">
-        <div class="sec" style="margin-top:0">💕 Relacionamento</div>
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
-          <span class="rel-badge">${relLabels[rel.status]||rel.status}</span>
-          ${rel.stage&&rel.stage!=="none"?`<span class="chip">${rel.stage}</span>`:""}
-        </div>
-        ${rel.partnerName?`<div style="font-size:14px;color:var(--muted);margin-bottom:12px">Com: <strong style="color:var(--text)">${rel.partnerName}</strong></div>`:""}
-        ${annStr?`<div style="font-size:13px;color:var(--muted);margin-bottom:12px">💍 Aniversário: <strong>${annStr}</strong></div>`:""}
-        <div class="grid2">
-          <div class="stat"><div class="stat-label">💞 Obsessão</div><div class="stat-val pink">${obsLevel}</div></div>
-          <div class="stat"><div class="stat-label">🔗 Bond XP</div><div class="stat-val">${fmt(bondXP)}</div></div>
-        </div>
-        ${(rel.children||[]).length?`<div style="margin-top:12px;font-size:13px;color:var(--muted)">👶 Filhos: <strong>${rel.children.length}</strong></div>`:""}
-        ${(rel.memories||[]).length?`
-        <div style="margin-top:14px">
-          <div class="sec" style="margin-top:0">📸 Memórias (${rel.memories.length})</div>
-          ${rel.memories.slice(0,3).map(m=>`<div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--muted)">${fmtDate(m.date||m.timestamp)} — ${m.description||m.content||"Memória"}</div>`).join("")}
-          ${rel.memories.length>3?`<div style="font-size:12px;color:var(--muted);margin-top:6px">+${rel.memories.length-3} memória(s)</div>`:""}
-        </div>` : ""}
-      </div>`;
-  }
-
-  document.getElementById("tabSocial").innerHTML = `
+  const u=currentUser, s=u.social||{}, r=u.relationship||{};
+  const xpNeeded=Math.floor(100*Math.pow(1.5,(s.level||1)-1));
+  const pct=Math.min(100,Math.floor((s.xp||0)/xpNeeded*100));
+  const stageMap={none:"Solteiro",conhecendo:"👀 Conhecendo",flertando:"😏 Flertando",ficante:"💫 Ficante",namorando:"💕 Namorando",alianca:"💍 Aliança",casado:"💍 Casado"};
+  document.getElementById("tabSocial").innerHTML=`
     <div class="grid2">
-      <div class="stat"><div class="stat-label">⭐ Nível Social</div><div class="stat-val gold">${s.level||1}</div></div>
-      <div class="stat"><div class="stat-label">✉️ Mensagens</div><div class="stat-val">${fmt(s.messages)}</div></div>
+      <div class="stat"><div class="stat-label">⭐ Nível</div><div class="stat-val c-gold">${s.level||1}</div></div>
+      <div class="stat"><div class="stat-label">💬 Mensagens</div><div class="stat-val">${fmt(s.messages)}</div></div>
     </div>
-    <div class="card" style="margin-top:14px">
+    <div class="card">
       <div class="sec" style="margin-top:0">📊 XP — Nível ${s.level||1}</div>
       <div class="prog-wrap">
-        <div class="prog-labels"><span>${fmt(s.xp%xpNeeded)} XP</span><span>${fmt(xpNeeded)} XP</span></div>
-        ${progBar(xpPct)}
-      </div>
-    </div>
-    <div class="grid2" style="margin-top:14px">
-      <div class="stat"><div class="stat-label">🎙️ Min. em Voz</div><div class="stat-val">${fmt(s.voiceMinutes)}</div></div>
-      <div class="stat"><div class="stat-label">👁️ Visto Por</div><div class="stat-val" style="font-size:15px">${fmtDate(s.lastSeen)}</div></div>
-    </div>
-    <div class="card" style="margin-top:14px">
-      <div class="sec" style="margin-top:0">💑 Status</div>
-      <span class="rel-badge">${relLabels[rel.status||"single"]||"🌙 Solo"}</span>
-    </div>
-    ${relHtml}
-  `;
-}
-
-// ── PSICOLOGIA ────────────────────────────────────────────────────────────────
-function renderPsicologia(){
-  const u = currentUser;
-  const pp = u.profile?.psychProfile||{ loneliness:50, popularity:50, activityLevel:0 };
-
-  function gauge(label, val, max, colorLow, colorHigh, desc){
-    const pct = Math.min(100,Math.floor(val/max*100));
-    const color = pct > 60 ? colorHigh : pct > 30 ? "#f1c40f" : colorLow;
-    return `<div class="psych-row">
-      <div class="psych-top"><span style="font-weight:600">${label}</span><span style="color:var(--muted)">${val}/${max}</span></div>
-      <div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${color}"></div></div>
-      <div style="font-size:12px;color:var(--muted);margin-top:4px">${desc}</div>
-    </div>`;
-  }
-
-  const archProfile = {
-    misterioso:{ name:"🌑 Misterioso", desc:"Fechado, difícil de decifrar. Atrai pela curiosidade." },
-    dominador:{ name:"👑 Dominador", desc:"Exerce poder sobre os outros. Carismático e intimidante." },
-    carente:{ name:"💔 Carente", desc:"Busca atenção e afeto constantemente." },
-    sedutor:{ name:"💋 Sedutor", desc:"Especialista em atrair e encantar." },
-    protetor:{ name:"🛡️ Protetor", desc:"Coloca os outros em primeiro lugar." },
-    manipulador:{ name:"🕷️ Manipulador", desc:"Move as peças sem mostrar as cartas." },
-    poetico:{ name:"✍️ Poético", desc:"Emocional, criativo e profundo." },
-  };
-  const arch = archProfile[u.profile?.archetype]||{ name:"🌑 Misterioso", desc:"Arquétipo padrão." };
-
-  document.getElementById("tabPsicologia").innerHTML = `
-    <div class="card">
-      <div class="sec" style="margin-top:0">🧬 Arquétipo Psicológico</div>
-      <div style="font-size:18px;font-weight:700;margin-bottom:6px">${arch.name}</div>
-      <div style="font-size:13px;color:var(--muted)">${arch.desc}</div>
-    </div>
-
-    <div class="card" style="margin-top:14px">
-      <div class="sec" style="margin-top:0">📊 Métricas Psicológicas</div>
-      ${gauge("💔 Solidão", pp.loneliness||50, 100, "var(--green)", "var(--red)", pp.loneliness>70?"Alto nível — mais vulnerável a vínculos":pp.loneliness<30?"Autoconfiante e independente":"Nível equilibrado")}
-      ${gauge("🌟 Popularidade", pp.popularity||50, 100, "var(--red)", "var(--green)", pp.popularity>70?"Muito popular no servidor":pp.popularity<30?"Solitário, pouco interações":"Visibilidade moderada")}
-      ${gauge("⚡ Atividade", pp.activityLevel||0, 100, "var(--muted)", "var(--blue)", pp.activityLevel>70?"Muito ativo recentemente":pp.activityLevel<20?"Raramente visto":"Atividade regular")}
-    </div>
-
-    <div class="card" style="margin-top:14px">
-      <div class="sec" style="margin-top:0">🎲 Atributos de Influência</div>
-      ${[
-        { name:"✨ Charme",       val:u.rpg?.charm||10,        max:30, desc:"Capacidade de agradar e encantar", color:"#e91e8c" },
-        { name:"🕷️ Manipulação",  val:u.rpg?.manipulation||5,  max:30, desc:"Habilidade de influenciar sutilmente", color:"#9b59b6" },
-        { name:"💋 Sedução",      val:u.rpg?.seduction||5,     max:30, desc:"Poder de atração romântica", color:"#e74c3c" },
-        { name:"🧠 Inteligência", val:u.rpg?.intelligence||10, max:30, desc:"Capacidade analítica e social", color:"#3498db" },
-        { name:"👑 Dominância",   val:u.rpg?.dominance||5,     max:30, desc:"Liderança e imposição", color:"#f1c40f" },
-        { name:"💔 Carência",     val:u.rpg?.carencia||5,      max:30, desc:"Nível de dependência emocional", color:"#888" },
-      ].map(s=>`
-        <div class="psych-row">
-          <div class="psych-top"><span style="font-weight:600">${s.name}</span><span style="color:var(--muted)">${s.val}/${s.max}</span></div>
-          <div class="prog-bar"><div class="prog-fill" style="width:${Math.min(100,s.val/s.max*100)}%;background:${s.color}"></div></div>
-          <div style="font-size:12px;color:var(--muted);margin-top:3px">${s.desc}</div>
-        </div>`).join("")}
-    </div>
-
-    ${u.profile?.lastPost ? `<div class="card" style="margin-top:14px">
-      <div class="sec" style="margin-top:0">📅 Última Análise</div>
-      <div style="color:var(--muted);font-size:14px">${fmtDate(u.profile.lastPost)}</div>
-    </div>` : ""}
-  `;
-}
-
-// ── DARK LOVE ─────────────────────────────────────────────────────────────────
-function renderDarkLove(){
-  const u = currentUser;
-  const dl = u.darkLove||{ role:"none" };
-  const roleInfo = {
-    none:    { label:"Sem papel",    cls:"dl-none",  icon:"⚪" },
-    dom:     { label:"Dominador",    cls:"dl-dom",   icon:"🔴" },
-    sub:     { label:"Submisso",     cls:"dl-sub",   icon:"💜" },
-    dominant:{ label:"Dominador",   cls:"dl-dom",   icon:"🔴" },
-    submissive:{label:"Submisso",   cls:"dl-sub",   icon:"💜" },
-  };
-  const ri = roleInfo[dl.role]||roleInfo.none;
-
-  const trustPct = Math.min(100, (dl.trustLevel||0)*10);
-
-  document.getElementById("tabDarklove").innerHTML = `
-    <div class="card" style="background:linear-gradient(135deg,#0d0010,#1a0010);border-color:rgba(233,30,140,.2)">
-      <div class="sec" style="margin-top:0;color:var(--pink)">🖤 Dark Love</div>
-      <div><span class="dl-role-badge ${ri.cls}">${ri.icon} ${ri.label}</span></div>
-
-      ${dl.coleira ? `
-      <div style="margin-top:16px;padding:14px;background:rgba(231,76,60,.08);border-radius:10px;border:1px solid rgba(231,76,60,.2)">
-        <div style="font-size:13px;color:var(--muted);margin-bottom:4px">⛓️ Coleira</div>
-        <div style="font-size:15px;font-weight:600;color:#e74c3c">${dl.coleira}</div>
-        ${dl.coleiradoAt ? `<div style="font-size:12px;color:var(--muted);margin-top:4px">Desde: ${fmtDate(dl.coleiradoAt)}</div>` : ""}
-      </div>` : ""}
-
-      ${dl.contractWith ? `
-      <div style="margin-top:14px;padding:14px;background:rgba(155,89,182,.08);border-radius:10px;border:1px solid rgba(155,89,182,.2)">
-        <div style="font-size:13px;color:var(--muted);margin-bottom:4px">📜 Contrato</div>
-        <div style="font-size:14px;font-weight:600;color:var(--purple)">Tipo: ${dl.contractType||"—"}</div>
-        ${dl.contractTerms ? `<div style="font-size:13px;color:var(--muted);margin-top:6px;font-style:italic">"${dl.contractTerms}"</div>` : ""}
-      </div>` : ""}
-    </div>
-
-    <div class="grid3" style="margin-top:14px">
-      <div class="stat"><div class="stat-label">🤝 Confiança</div><div class="stat-val pink">${dl.trustLevel||0}/10</div></div>
-      <div class="stat"><div class="stat-label">✅ Tarefas</div><div class="stat-val">${dl.tasksCompleted||0}</div></div>
-      <div class="stat"><div class="stat-label">⚠️ Punições</div><div class="stat-val red">${dl.punishments||0}</div></div>
-    </div>
-
-    <div class="card" style="margin-top:14px">
-      <div class="sec" style="margin-top:0">🤝 Nível de Confiança</div>
-      <div class="prog-wrap">
-        <div class="prog-labels"><span>${dl.trustLevel||0}/10</span><span>Máximo</span></div>
-        <div class="prog-bar"><div class="prog-fill" style="width:${trustPct}%;background:linear-gradient(90deg,#e74c3c,#9b59b6)"></div></div>
+        <div class="prog-labels"><span>${fmt(s.xp||0)} XP</span><span>${fmt(xpNeeded)} XP</span></div>
+        ${progBar(pct)}
       </div>
     </div>
 
-    ${dl.role==="none" ? `
-    <div class="card" style="margin-top:14px;text-align:center;padding:30px">
-      <div style="font-size:28px">🖤</div>
-      <div style="font-weight:700;margin:10px 0">Dark Love Inativo</div>
-      <div style="color:var(--muted);font-size:13px">Use <code>!darklove</code> no Discord para explorar este sistema</div>
-    </div>` : ""}
-  `;
-}
-
-// ── VIDA VIRTUAL ──────────────────────────────────────────────────────────────
-function renderVida(){
-  const u = currentUser;
-  const house = u.house||{};
-  const pet   = u.pet||{ adopted:false };
-  const inv   = u.inventory||[];
-
-  const themeLabels = { default:"Padrão",medieval:"Medieval",futurista:"Futurista",romantico:"Romântico",dark:"Dark",natureza:"Natureza" };
-  const houseLevel = house.level||0;
-  const housePct = Math.min(100, houseLevel*20);
-
-  let petHtml = "";
-  if (pet.adopted){
-    const hungerPct  = pet.hunger||100;
-    const happyPct   = pet.happiness||100;
-    petHtml = `
-      <div class="card pet-card" style="margin-top:14px">
-        <span class="pet-emoji">${pet.emoji||"🐾"}</span>
-        <div style="font-size:18px;font-weight:700">${pet.name||"Sem nome"}</div>
-        <div class="chip">${pet.type||"pet"}</div>
-        <div style="margin-top:16px">
-          <div class="pet-bar-wrap">
-            <div class="pet-bar-label"><span>🍖 Fome</span><span>${hungerPct}%</span></div>
-            <div class="prog-bar"><div class="prog-fill" style="width:${hungerPct}%;background:${hungerPct<30?"var(--red)":"var(--green)"}"></div></div>
-          </div>
-          <div class="pet-bar-wrap" style="margin-top:10px">
-            <div class="pet-bar-label"><span>😊 Felicidade</span><span>${happyPct}%</span></div>
-            <div class="prog-bar"><div class="prog-fill" style="width:${happyPct}%;background:${happyPct<30?"var(--red)":"var(--pink)"}"></div></div>
-          </div>
-        </div>
-        ${pet.lastCare ? `<div style="font-size:12px;color:var(--muted);margin-top:10px">Último cuidado: ${fmtDate(pet.lastCare)}</div>` : ""}
-      </div>`;
-  } else {
-    petHtml = `<div class="card" style="margin-top:14px;text-align:center;padding:28px">
-      <div style="font-size:28px">🐾</div>
-      <div style="font-weight:700;margin:10px 0">Sem Pet</div>
-      <div style="color:var(--muted);font-size:13px">Use <code>!pet adotar</code> para adotar um companheiro</div>
-    </div>`;
-  }
-
-  document.getElementById("tabVida").innerHTML = `
-    <div class="sec">🏠 Casa</div>
+    <div class="sec">❤️ Relacionamento</div>
     <div class="card">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
         <div>
-          <div style="font-size:18px;font-weight:700">${house.name||"Minha Casa"}</div>
-          <div class="chip">${themeLabels[house.theme]||house.theme||"Padrão"}</div>
+          <div class="rel-badge">${stageMap[r.stage||"none"]||"Solteiro"}</div>
+          ${r.partnerId?`<div style="font-size:13px;color:var(--muted);margin-top:8px">Com <strong style="color:var(--text)">${r.partnerName||"—"}</strong></div>`:""}
         </div>
-        <div style="text-align:right">
-          <div style="font-size:24px;font-weight:700">Nível ${houseLevel}</div>
-          <div style="font-size:12px;color:var(--muted)">Valor: ${fmtMoney(house.value||0)}</div>
-        </div>
+        ${r.stage&&r.stage!=="none"&&r.stageStartedAt?`<div class="stat" style="min-width:100px"><div class="stat-label">📅 Juntos há</div><div class="stat-val">${Math.floor((Date.now()-new Date(r.stageStartedAt))/86400000)} dias</div></div>`:""}
       </div>
-      ${house.description ? `<div style="font-size:13px;color:var(--muted);font-style:italic;margin-bottom:12px">"${house.description}"</div>` : ""}
-      <div class="prog-wrap">
-        <div class="prog-labels"><span>Nível ${houseLevel}</span><span>Nível 5</span></div>
-        ${progBar(housePct, "linear-gradient(90deg,#27ae60,#2ecc71)")}
-      </div>
-      ${(house.decorations||[]).length ? `
-        <div style="margin-top:12px">
-          <div class="sec" style="margin-top:0">🎨 Decorações</div>
-          ${house.decorations.map(d=>`<span class="chip">${d}</span>`).join("")}
-        </div>` : ""}
-      ${(house.furniture||[]).length ? `
-        <div style="margin-top:12px">
-          <div class="sec" style="margin-top:0">🪑 Móveis</div>
-          ${house.furniture.map(f=>`<span class="chip">${f}</span>`).join("")}
-        </div>` : ""}
+      ${(r.children||[]).length?`<hr/><div class="stat-label" style="margin-bottom:6px">👶 Filhos</div><div>${r.children.map(c=>`<span class="chip">${c.name||"Filho"}</span>`).join("")}</div>`:""}
     </div>
+
+    <div class="sec">💘 Perfil de Namoro</div>
+    <div class="card">
+      <div style="display:flex;gap:14px;flex-wrap:wrap">
+        <div class="stat" style="flex:1"><div class="stat-label">Status</div><div class="stat-val" style="font-size:15px">${u.dating?.active?"✅ Ativo":"❌ Inativo"}</div></div>
+        <div class="stat" style="flex:1"><div class="stat-label">Matches</div><div class="stat-val c-pink">${u.dating?.matchCount||0}</div></div>
+        <div class="stat" style="flex:1"><div class="stat-label">Duo</div><div class="stat-val" style="font-size:15px">${u.duo?.active?"✅ Ativo":"❌ Inativo"}</div></div>
+      </div>
+    </div>
+  `;
+}
+
+// ── PSICOLOGIA ───────────────────────────────────────────────────────────────
+function renderPsicologia(){
+  const p=currentUser.profile?.psychProfile||{loneliness:50,popularity:50,activityLevel:0};
+  function gauge(label,val,colorA,colorB){
+    return `<div class="psych-row">
+      <div class="psych-top"><span>${label}</span><span style="font-weight:700">${val}/100</span></div>
+      ${progBar(val,`linear-gradient(90deg,${colorA},${colorB})`)}
+    </div>`;
+  }
+  document.getElementById("tabPsicologia").innerHTML=`
+    <div class="card">
+      <div class="sec" style="margin-top:0">🧠 Perfil Psicológico</div>
+      ${gauge("😢 Solidão",p.loneliness||50,"#667eea","#764ba2")}
+      ${gauge("🌟 Popularidade",p.popularity||50,"#f093fb","#f5576c")}
+      ${gauge("⚡ Nível de Atividade",Math.min(100,p.activityLevel||0),"#4facfe","#00f2fe")}
+    </div>
+    <div class="card">
+      <div class="sec" style="margin-top:0">📊 Interpretação</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.8">
+        ${(p.loneliness||50)>70?"💔 Altamente solitário — precisando de atenção":""}
+        ${(p.loneliness||50)>70?"<br>":""} 
+        ${(p.popularity||50)>70?"🌟 Muito popular no servidor! As pessoas te adoram!":""}
+        ${(p.activityLevel||0)>50?"<br>⚡ Usuário extremamente ativo":""}
+        ${(p.loneliness||50)<=70&&(p.popularity||50)<=70&&(p.activityLevel||0)<=50?"Perfil equilibrado. Continue interagindo!":""}
+      </div>
+    </div>
+  `;
+}
+
+// ── DARK LOVE ────────────────────────────────────────────────────────────────
+function renderDarkLove(){
+  const dl=currentUser.darkLove||{role:"none"};
+  const roleMap={none:{label:"Sem papel",cls:"dl-none",icon:"💤"},dom:{label:"Dominante",cls:"dl-dom",icon:"🔴"},sub:{label:"Submisso",cls:"dl-sub",icon:"⛓️"}};
+  const role=roleMap[dl.role]||roleMap.none;
+  document.getElementById("tabDarklove").innerHTML=`
+    <div class="card">
+      <div class="sec" style="margin-top:0">🖤 Status Dark Love</div>
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+        <span class="dl-badge ${role.cls}">${role.icon} ${role.label}</span>
+        ${dl.coleira?`<span class="chip" style="color:var(--pink)">⛓️ Coleira ativa</span>`:""}
+      </div>
+      ${dl.contractWith?`<div style="margin-top:12px;font-size:13px;color:var(--muted)">Contrato com <strong style="color:var(--text)"><@${dl.contractWith}></strong> — tipo: <strong>${dl.contractType||"?"}</strong></div>`:""}
+    </div>
+    <div class="grid2">
+      <div class="stat"><div class="stat-label">🤝 Confiança</div><div class="stat-val c-purple">${dl.trustLevel||0}/100</div></div>
+      <div class="stat"><div class="stat-label">✅ Tarefas</div><div class="stat-val">${dl.tasksCompleted||0}</div></div>
+    </div>
+    ${dl.trustLevel>=0?`<div class="card">
+      <div class="sec" style="margin-top:0">📊 Confiança</div>
+      ${progBar(dl.trustLevel||0,"linear-gradient(90deg,#9b27ff,#e91e8c)")}
+    </div>`:""}
+  `;
+}
+
+// ── VIDA ─────────────────────────────────────────────────────────────────────
+function renderVida(){
+  const h=currentUser.house||{}, pet=currentUser.pet||{adopted:false}, inv=currentUser.inventory||[];
+  document.getElementById("tabVida").innerHTML=`
+    <div class="sec">🏡 Casa Virtual</div>
+    ${h.level>0?`
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+        <span style="font-size:28px">🏠</span>
+        <div><div style="font-weight:700;font-size:16px">${h.name||"Sua Casa"}</div><div style="color:var(--muted);font-size:12px">Nível ${h.level} • ${h.theme||"Default"}</div></div>
+      </div>
+      ${h.description?`<div style="font-size:13px;color:var(--muted);font-style:italic">"${h.description}"</div>`:""}
+      <hr/>
+      <div class="grid2">
+        <div class="stat"><div class="stat-label">💎 Valor</div><div class="stat-val c-gold">${fmtM(h.value)}</div></div>
+        <div class="stat"><div class="stat-label">👥 Visitas</div><div class="stat-val">${h.visitors||0}</div></div>
+      </div>
+    </div>`:
+    `<div class="card" style="text-align:center;padding:30px"><div style="font-size:36px">🏚️</div><div style="color:var(--muted);margin-top:10px">Sem casa ainda. Use <code>!casa comprar</code></div></div>`}
 
     <div class="sec">🐾 Pet</div>
-    ${petHtml}
+    ${pet.adopted?`
+    <div class="card pet-card">
+      <span class="pet-emoji">${pet.emoji||"🐾"}</span>
+      <div style="font-size:18px;font-weight:700">${pet.name||"Sem nome"} <span style="color:var(--muted);font-size:14px">(${pet.type||"?"})</span></div>
+      <div class="grid2" style="margin-top:14px">
+        <div class="stat"><div class="stat-label">🍖 Fome</div>${progBar(pet.hunger||0,"linear-gradient(90deg,#f093fb,#f5576c)")}</div>
+        <div class="stat"><div class="stat-label">😊 Felicidade</div>${progBar(pet.happiness||0,"linear-gradient(90deg,#4facfe,#00f2fe)")}</div>
+      </div>
+    </div>`:
+    `<div class="card" style="text-align:center;padding:30px"><div style="font-size:36px">🐾</div><div style="color:var(--muted);margin-top:10px">Sem pet. Use <code>!pet adotar</code></div></div>`}
 
+    ${inv.length?`
     <div class="sec">🎒 Inventário</div>
     <div class="card">
-      ${inv.length ? inv.map(i=>`
-        <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
-          <span style="font-size:20px">${i.emoji||"📦"}</span>
-          <div>
-            <div style="font-size:14px;font-weight:500">${i.name||"Item"}</div>
-            ${i.description ? `<div style="font-size:12px;color:var(--muted)">${i.description}</div>` : ""}
-          </div>
-          ${i.quantity>1 ? `<span class="chip" style="margin-left:auto">x${i.quantity}</span>` : ""}
-        </div>`).join("") : `<div style="color:var(--muted);font-size:14px;text-align:center;padding:20px">Inventário vazio</div>`}
-    </div>
-
-    <div class="grid2" style="margin-top:14px">
-      <div class="stat"><div class="stat-label">🎯 Duo</div><div class="stat-val" style="font-size:16px">${u.duo?.active?"Ativo ✅":"Inativo"}</div></div>
-      <div class="stat"><div class="stat-label">💘 Dating</div><div class="stat-val" style="font-size:16px">${u.dating?.active?"Ativo ✅":"Inativo"}</div><div class="stat-sub">${u.dating?.matchCount||0} match(es)</div></div>
-    </div>
+      ${inv.map(i=>`<span class="chip">${i.name||i.itemId||"Item"}</span>`).join("")}
+    </div>`:""}
   `;
 }
 
-// ── Ranking ───────────────────────────────────────────────────────────────────
+// ── Ranking ──────────────────────────────────────────────────────────────────
 async function loadRankingInto(elId, guildId){
-  const el = document.getElementById(elId);
+  const el=document.getElementById(elId);
   if (!el) return;
   try {
-    const res = await fetch(`/api/ranking/${guildId||"all"}`);
-    if (!res.ok){ el.innerHTML=`<div class="loading">Sem dados de ranking.</div>`; return; }
-    const data = await res.json();
-    if (!data.length){ el.innerHTML=`<div class="loading">Nenhum usuário encontrado.</div>`; return; }
-    const medals = ["gold","silver","bronze"];
-    el.innerHTML = data.map((u,i)=>`
+    const res=await fetch(`/api/ranking/${guildId||"global"}`);
+    if (!res.ok){ el.innerHTML=`<div class="loading" style="padding:20px 0">Ranking indisponível</div>`; return; }
+    const list=await res.json();
+    if (!list.length){ el.innerHTML=`<div class="loading" style="padding:20px 0">Nenhum usuário ainda</div>`; return; }
+    const medalColors=["var(--gold)","#aab","#cd7f32"];
+    const medalIcons=["🥇","🥈","🥉"];
+    el.innerHTML=list.map((u,i)=>`
       <div class="rank-item">
-        <div class="rank-num ${medals[i]||""}">${i===0?"🥇":i===1?"🥈":i===2?"🥉":i+1}</div>
-        <div class="rank-name">
-          <div>${u.username}</div>
-          <div class="rank-badge">${u.card.icon} ${u.card.name} • Nível ${u.level}</div>
+        <div class="rank-num" style="color:${medalColors[i]||"var(--muted)"}">${i<3?medalIcons[i]:i+1}</div>
+        <div class="rank-info">
+          <div class="rank-name">${u.username}</div>
+          <div class="rank-badge">${u.card?.icon||""} ${u.card?.name||""} • Lv.${u.level||1}</div>
         </div>
-        <div class="rank-total">${fmtMoney(u.total)}</div>
+        <div class="rank-total c-green">${fmtM(u.total)}</div>
       </div>`).join("");
-  } catch(e){ el.innerHTML=`<div class="loading">Erro ao carregar.</div>`; }
+  } catch(e){ el.innerHTML=`<div class="loading" style="padding:20px 0">Erro ao carregar ranking</div>`; }
 }
 
-async function loadRanking(guildId){
-  await loadRankingInto("rankList", guildId);
-}
+async function loadRanking(guildId){ await loadRankingInto("rankList",guildId); }
 
-(function removeBadge(){
-  function nuke(el){ if(el){ el.style.cssText="display:none!important;"; el.remove&&el.remove(); } }
-  function sweep(){ document.querySelectorAll('[id*="badge-container"],[class*="badge-ui"],iframe[src*="/badge"]').forEach(nuke); }
-  sweep();
-  new MutationObserver(sweep).observe(document.documentElement,{childList:true,subtree:true});
+// ── Auto-load from URL ────────────────────────────────────────────────────────
+(function init(){
+  const p=new URLSearchParams(window.location.search);
+  const g=p.get("g")||p.get("guildId")||"";
+  const parts=window.location.pathname.split("/");
+  const autoId=parts[1]==="bank"&&parts[2]?parts[2]:"";
+  if (autoId){
+    document.getElementById("searchId").value=autoId;
+    document.getElementById("searchGuild").value=g;
+    document.getElementById("searchWrap").style.display="none";
+    loadUser();
+  }
+  loadRanking(g||"");
+
+  (function removeBadge(){
+    function nuke(el){ if(el){ el.style.cssText="display:none!important;"; el.remove&&el.remove(); } }
+    function sweep(){ document.querySelectorAll('[id*="badge-container"],[class*="badge-ui"],iframe[src*="/badge"]').forEach(nuke); }
+    sweep();
+    new MutationObserver(sweep).observe(document.documentElement,{childList:true,subtree:true});
+  })();
 })();
-
-// ── Init ──────────────────────────────────────────────────────────────────────
-const _params = new URLSearchParams(window.location.search);
-const _guild  = _params.get("g") || _params.get("guildId") || "";
-const _parts  = window.location.pathname.split("/");
-const _autoId = _parts[1]==="bank" && _parts[2] ? _parts[2] : "";
-
-if (_autoId){
-  document.getElementById("searchId").value    = _autoId;
-  document.getElementById("searchGuild").value = _guild;
-  document.getElementById("searchWrap").style.display = "none";
-  loadUser();
-}
-loadRanking(_guild||"");
 </script>
 </body>
 </html>

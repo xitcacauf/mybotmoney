@@ -3,6 +3,7 @@ const config = require("../../config/config");
 const User = require("../../models/User");
 const { addBondXP } = require("../../systems/ObsessionSystem");
 const { addHeat } = require("../../systems/SocialHeat");
+const { addLedgerEntry } = require("./extrato");
 
 const COOLDOWN_MS = 30 * 60 * 1000; // 30 min
 const robberies = new Map();
@@ -52,6 +53,8 @@ module.exports = {
 
       await addBondXP(message.author.id, message.guild.id, target.id, 2);
       await addHeat(message.guild.id, 3);
+      await addLedgerEntry(message.author.id, message.guild.id, "steal", stolen, `Roubou de ${target.username}`).catch(() => {});
+      await addLedgerEntry(target.id, message.guild.id, "spend", -stolen, `Roubado por ${message.author.username}`).catch(() => {});
 
       const scenarios = [
         `entrou pela janela de <@${target.id}> enquanto dormia e pegou a carteira`,
@@ -80,6 +83,7 @@ module.exports = {
           { userId: message.author.id, guildId: message.guild.id },
           { $inc: { "economy.wallet": -actualFine } }
         );
+        await addLedgerEntry(message.author.id, message.guild.id, "spend", -actualFine, `Multa: tentativa de roubo`).catch(() => {});
       }
 
       const failScenarios = [

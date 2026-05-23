@@ -10,7 +10,7 @@ const contractTypes = {
   adoracao: { label: "Adoração", emoji: "🌹", desc: "O submisso presta tributos diários ao dominante." },
 };
 
-if (!global._pendingContracts) global._pendingContracts = new Map();
+const { pendingContracts } = require("../../utils/pendingState");
 
 module.exports = {
   name: "contrato",
@@ -41,7 +41,7 @@ module.exports = {
     }
 
     const pendingKey = `${message.author.id}_${target.id}`;
-    global._pendingContracts.set(pendingKey, {
+    pendingContracts.set(pendingKey, {
       proposerId: message.author.id,
       targetId: target.id,
       proposerName: message.author.username,
@@ -49,7 +49,7 @@ module.exports = {
       timestamp: Date.now(),
     });
 
-    setTimeout(() => global._pendingContracts.delete(pendingKey), 120000);
+    setTimeout(() => pendingContracts.delete(pendingKey), 120000);
 
     const embed = new EmbedBuilder()
       .setColor(0x1a0a2e)
