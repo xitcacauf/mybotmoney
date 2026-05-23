@@ -29,7 +29,8 @@ module.exports = {
         .setTitle("💔 Pedido Recusado")
         .setDescription(`<@${pending.targetId}> recusou o pedido de casamento de <@${proposerId}>.`);
       await interaction.editReply({ content: "Você recusou." });
-      return interaction.message.reply({ embeds: [rejectEmbed] }).catch(() => {});
+      await interaction.channel.send({ embeds: [rejectEmbed] }).catch(() => {});
+      return;
     }
 
     const key = `marry:${[proposerId, pending.targetId].sort().join(":")}:${interaction.guild.id}`;
@@ -93,7 +94,7 @@ module.exports = {
         .setTimestamp();
 
       await interaction.editReply({ content: "💍 Você aceitou!" });
-      return interaction.message.reply({ embeds: [successEmbed] }).catch(() => {});
+      await interaction.channel.send({ embeds: [successEmbed] }).catch(() => {});
     });
   },
 };

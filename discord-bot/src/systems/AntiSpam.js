@@ -4,6 +4,20 @@ const logger = require("../utils/logger");
 const messageCache = new Collection();
 const MAX_MESSAGES = 5;
 const TIME_WINDOW = 5000;
+// How long to keep a user entry after their last message before evicting it
+const ENTRY_TTL = 60_000;
+
+// Periodic GC: remove user entries that haven't had a message in ENTRY_TTL ms.
+// Prevents the Collection from growing indefinitely on busy servers.
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, timestamps] of messageCache.entries()) {
+    const latest = timestamps[timestamps.length - 1] ?? 0;
+    if (now - latest > ENTRY_TTL) {
+      messageCache.delete(key);
+    }
+  }
+}, ENTRY_TTL);
 
 module.exports = {
   async check(message, client) {

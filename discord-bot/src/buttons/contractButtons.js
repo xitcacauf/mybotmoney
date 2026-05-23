@@ -40,7 +40,8 @@ module.exports = {
         .setTitle("❌ Contrato Recusado")
         .setDescription(`<@${targetId}> recusou o contrato de <@${proposerId}>.`);
       await interaction.editReply({ content: "Você recusou o contrato." });
-      return interaction.message.reply({ embeds: [embed] }).catch(() => {});
+      await interaction.channel.send({ embeds: [embed] }).catch(() => {});
+      return;
     }
 
     const contract = contractTypes[pending.type] || { label: pending.type, emoji: "📜" };
@@ -68,6 +69,6 @@ module.exports = {
       .setTimestamp();
 
     await interaction.editReply({ content: "✍️ Você assinou o contrato." });
-    return interaction.message.reply({ embeds: [embed] }).catch(() => {});
+    await interaction.channel.send({ embeds: [embed] }).catch(() => {});
   },
 };

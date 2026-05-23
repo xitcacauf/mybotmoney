@@ -43,14 +43,14 @@ module.exports = {
 
     if (action === "reject") {
       await interaction.editReply({ content: "❌ Você recusou o convite." });
-      return interaction.message.reply({ content: `💔 <@${targetId}> recusou o convite de <@${proposerId}>.` }).catch(() => {});
+      await interaction.channel.send({ content: `💔 <@${targetId}> recusou o convite de <@${proposerId}>.` }).catch(() => {});
+      return;
     }
 
     const now = new Date().toISOString();
     const nextStage = pending.nextStage;
     const cost = pending.cost || 0;
 
-    // Cobrar custo
     if (cost > 0) {
       const sender = await User.findOne({ userId: proposerId, guildId: interaction.guild.id });
       if (!sender || (sender.economy?.wallet || 0) < cost) {
@@ -62,7 +62,6 @@ module.exports = {
       );
     }
 
-    // Atualizar ambos
     await User.findOneAndUpdate(
       { userId: proposerId, guildId: interaction.guild.id },
       {
@@ -107,6 +106,6 @@ module.exports = {
       .setTimestamp();
 
     await interaction.editReply({ content: "💕 Você aceitou!" });
-    return interaction.message.reply({ embeds: [embed] }).catch(() => {});
+    await interaction.channel.send({ embeds: [embed] }).catch(() => {});
   },
 };

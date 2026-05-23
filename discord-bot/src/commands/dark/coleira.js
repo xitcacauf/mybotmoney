@@ -25,14 +25,17 @@ module.exports = {
       return message.reply("❌ Você já tem um pedido de coleira pendente! Aguarde a resposta.");
     }
 
+    const proposalTs = Date.now();
     client.pendingCollars.set(message.author.id, {
       targetId: target.id,
       ownerName: message.author.username,
-      timestamp: Date.now(),
+      timestamp: proposalTs,
     });
 
+    // Timestamp guard prevents deleting a newer proposal if somehow a second is set
     setTimeout(() => {
-      if (client.pendingCollars?.has(message.author.id)) {
+      const pending = client.pendingCollars?.get(message.author.id);
+      if (pending && pending.timestamp === proposalTs) {
         client.pendingCollars.delete(message.author.id);
       }
     }, 90000);

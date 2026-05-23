@@ -20,7 +20,6 @@ module.exports = {
     }
 
     client.pendingCollars.delete(ownerId);
-
     try { await interaction.message.edit({ components: [] }); } catch {}
 
     if (!isAccept) {
@@ -29,7 +28,8 @@ module.exports = {
         .setTitle("❌ Coleira Recusada")
         .setDescription(`<@${pending.targetId}> recusou a coleira de <@${ownerId}>.`);
       await interaction.editReply({ content: "Você recusou a coleira." });
-      return interaction.message.reply({ embeds: [rejectEmbed] }).catch(() => {});
+      await interaction.channel.send({ embeds: [rejectEmbed] }).catch(() => {});
+      return;
     }
 
     const targetDb = await User.findOne({ userId: pending.targetId, guildId: interaction.guild.id });
@@ -49,6 +49,6 @@ module.exports = {
       .setTimestamp();
 
     await interaction.editReply({ content: "⛓️ Você aceitou a coleira." });
-    return interaction.message.reply({ embeds: [successEmbed] }).catch(() => {});
+    await interaction.channel.send({ embeds: [successEmbed] }).catch(() => {});
   },
 };

@@ -30,9 +30,11 @@ async function checkLevelUp(userId, guildId, channel) {
         .setTitle("⭐ Level Up!")
         .setDescription(`<@${userId}> subiu para o nível **${newLevel}**! 🎉`)
         .setTimestamp();
-      channel.send({ embeds: [embed] }).then((m) =>
-        setTimeout(() => m.delete().catch(() => {}), 10000)
-      );
+
+      // .catch() added — prevents unhandled rejection if channel is deleted or bot lacks perms
+      channel.send({ embeds: [embed] })
+        .then((m) => setTimeout(() => m.delete().catch(() => {}), 10000))
+        .catch(() => {});
     }
   }
 }
