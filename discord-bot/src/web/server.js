@@ -8,7 +8,7 @@ const PUBLIC_DIR = path.join(__dirname, "public");
 
 const WEB_PORT = process.env.WEB_PORT || 3000;
 const BASE_URL = process.env.REPLIT_DEV_DOMAIN
-  ? `https://${process.env.REPLIT_DEV_DOMAIN}:${WEB_PORT}`
+  ? `https://${process.env.REPLIT_DEV_DOMAIN}`
   : `http://localhost:${WEB_PORT}`;
 
 function readDB(name) {
