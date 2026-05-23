@@ -8,27 +8,33 @@ const processedInteractions = new Set();
 module.exports = {
   name: "interactionCreate",
   async execute(interaction, client) {
+    // Layer 1: interaction ID dedup (synchronous, before any await)
+    if (processedInteractions.has(interaction.id)) {
+      logger.warn(`[DEDUP] interaction ${interaction.id} already processed — dropped`);
+      return;
+    }
+    processedInteractions.add(interaction.id);
+    setTimeout(() => processedInteractions.delete(interaction.id), 15_000);
+
+    // Layer 2: guard against already-acknowledged interactions
+    if (interaction.replied || interaction.deferred) return;
+
+    logger.info(`[INTERACTION] id=${interaction.id} type=${interaction.type} customId=${interaction.customId || "?"} user=${interaction.user?.id}`);
+
     try {
-      // Layer 1: interaction ID dedup (synchronous, same-process)
-      if (processedInteractions.has(interaction.id)) return;
-      processedInteractions.add(interaction.id);
-      setTimeout(() => processedInteractions.delete(interaction.id), 15_000);
-
-      // Layer 2: guard against already-acknowledged interactions
-      if (interaction.replied || interaction.deferred) return;
-
       if (interaction.isButton()) {
+        // Check registered handlers first (exact match)
         let handler = client.buttons.get(interaction.customId);
+
+        // Check regex-pattern handlers
         if (!handler && client._buttonPatterns) {
           const match = client._buttonPatterns.find((p) => p.pattern.test(interaction.customId));
           if (match) handler = match.handler;
         }
-        if (!handler) {
-          if (!interaction.replied && !interaction.deferred) {
-            await interaction.reply({ content: "❌ Este botão não está mais disponível.", ephemeral: true }).catch(() => {});
-          }
-          return;
-        }
+
+        // No registered handler — silently return so any active collector can handle it
+        if (!handler) return;
+
         await handler.execute(interaction, client);
         return;
       }
@@ -51,15 +57,13 @@ module.exports = {
         return;
       }
     } catch (err) {
-      logger.error(`Erro no interactionCreate [${interaction.customId || "?"}]: ${err.message}`);
-      const embed = errorEmbed("Erro", "Ocorreu um erro ao processar esta interação. Tente novamente.");
+      logger.error(`[INTERACTION ERROR] id=${interaction.id} customId=${interaction.customId || "?"}: ${err.message}`);
       try {
+        const embed = errorEmbed("Erro", "Ocorreu um erro ao processar esta interação.");
         if (interaction.deferred) {
           await interaction.editReply({ embeds: [embed] }).catch(() => {});
         } else if (!interaction.replied) {
           await interaction.reply({ embeds: [embed], ephemeral: true }).catch(() => {});
-        } else {
-          await interaction.followUp({ embeds: [embed], ephemeral: true }).catch(() => {});
         }
       } catch {}
     }

@@ -32,6 +32,9 @@ function claimMessage(msgId) {
   }
 }
 
+// Monotonic counter — each command execution gets a unique trace ID
+let _execCounter = 0;
+
 module.exports = {
   name: "messageCreate",
   async execute(message, client) {
@@ -40,23 +43,30 @@ module.exports = {
     // Ignore gateway replays (messages sent before the bot started)
     if (Date.now() - message.createdTimestamp > 5000) return;
 
-    // Layer 1: in-memory dedup by message ID (synchronous)
-    if (processedMessages.has(message.id)) return;
+    // ── Layer 1: in-memory dedup by message ID (synchronous) ─────────────────
+    if (processedMessages.has(message.id)) {
+      logger.warn(`[DEDUP-1] message ${message.id} already in-memory — dropped`);
+      return;
+    }
     processedMessages.add(message.id);
     setTimeout(() => processedMessages.delete(message.id), 20_000);
 
-    // Layer 2: atomic file lock — blocks duplicate cross-process delivery (synchronous)
-    if (!claimMessage(message.id)) return;
+    // ── Layer 2: atomic file lock — blocks cross-process duplicates (synchronous)
+    if (!claimMessage(message.id)) {
+      logger.warn(`[DEDUP-2] message ${message.id} claimed by another process — dropped`);
+      return;
+    }
 
     const prefix    = config.prefix;
     const isCommand = message.content.startsWith(prefix);
 
-    // ── For commands: parse name and claim the per-user guard SYNCHRONOUSLY
-    //    This must happen before any `await` so that rapid duplicate messages
-    //    from the same user are blocked before any async gap opens.
+    // ── For commands: parse name and claim the per-user guard SYNCHRONOUSLY ──
+    //    Must happen before any `await` so rapid duplicate messages are blocked
+    //    before any async gap opens.
     let command   = null;
     let args      = [];
     let execKey   = null;
+    let traceId   = null;
 
     if (isCommand) {
       const parts = message.content.slice(prefix.length).trim().split(/\s+/);
@@ -69,9 +79,15 @@ module.exports = {
       if (command) {
         execKey = `${message.author.id}_${command.name}`;
 
-        // Layer 3: per-user/per-command guard — SYNCHRONOUS, before any await
-        if (activeCommands.has(execKey)) return;
+        // ── Layer 3: per-user/per-command guard (synchronous, before any await) ──
+        if (activeCommands.has(execKey)) {
+          logger.warn(`[DEDUP-3] ${execKey} already executing — dropped (msgId=${message.id})`);
+          return;
+        }
         activeCommands.add(execKey);
+
+        traceId = `${command.name}-${(++_execCounter).toString(36)}`;
+        logger.info(`[CMD:${traceId}] START — user=${message.author.id} cmd=${command.name} msgId=${message.id}`);
 
         args = parts.slice(1);
       }
@@ -120,7 +136,7 @@ module.exports = {
         return;
       }
     } catch (err) {
-      logger.error(`Erro no sistema de XP/antispam: ${err.message}`);
+      logger.error(`[CMD:${traceId}] XP/antispam error: ${err.message}`);
       if (!isCommand) return;
     }
 
@@ -148,9 +164,11 @@ module.exports = {
 
       message.channel.sendTyping().catch(() => {});
 
+      logger.info(`[CMD:${traceId}] EXECUTING command.execute()`);
       await command.execute(message, args, client);
+      logger.info(`[CMD:${traceId}] DONE`);
     } catch (err) {
-      logger.error(`Erro no comando [${command.name}]: ${err.message}\n${err.stack}`);
+      logger.error(`[CMD:${traceId}] ERROR in ${command.name}: ${err.message}\n${err.stack}`);
       message.reply({ embeds: [errorEmbed("Erro Interno", "Ocorreu um erro ao executar o comando.")] }).catch(() => {});
     } finally {
       if (execKey) activeCommands.delete(execKey);
