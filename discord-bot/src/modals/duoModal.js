@@ -7,6 +7,7 @@ const { sanitizeText } = require("../utils/sanitize");
 module.exports = {
   customId: /^duo_create_/,
   async execute(interaction, client) {
+    await interaction.deferReply({ ephemeral: false });
     const game = interaction.customId.replace("duo_create_", "");
     const rank = sanitizeText(interaction.fields.getTextInputValue("rank"), 30);
     const platform = sanitizeText(interaction.fields.getTextInputValue("platform"), 20);
@@ -50,9 +51,9 @@ module.exports = {
 
     if (duoChannel) {
       await duoChannel.send({ embeds: [embed], components: [row] });
-      return interaction.reply({ content: `✅ Perfil publicado em <#${duoChannel.id}>!`, ephemeral: true });
+      return interaction.editReply({ content: `✅ Perfil publicado em <#${duoChannel.id}>!` });
     }
 
-    await interaction.reply({ embeds: [embed], components: [row] });
+    await interaction.editReply({ embeds: [embed], components: [row] });
   },
 };
