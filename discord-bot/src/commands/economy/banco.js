@@ -44,7 +44,7 @@ module.exports = {
       const embed = new EmbedBuilder()
         .setColor(config.colors.success)
         .setTitle("🏦 Seu Banco")
-        .setDescription(interestEarned > 0 ? `✅ Juros aplicados: **+${interestEarned.toLocaleString("pt-BR")} 💰**\n` : "")
+        .setDescription(interestEarned > 0 ? `✅ Juros aplicados: **+${interestEarned.toLocaleString("pt-BR")} 💰**\n` : null)
         .addFields(
           { name: "💳 Carteira", value: `${(dbUser.economy.wallet || 0).toLocaleString("pt-BR")} 💰`, inline: true },
           { name: "🏦 Banco", value: `${(dbUser.economy.bank || 0).toLocaleString("pt-BR")} 💰`, inline: true },
