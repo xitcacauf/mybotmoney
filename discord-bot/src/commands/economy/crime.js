@@ -3,6 +3,7 @@ const config = require("../../config/config");
 const User = require("../../models/User");
 const { isEventActive } = require("../../systems/EventSystem");
 const { addHeat } = require("../../systems/SocialHeat");
+const { addLedgerEntry } = require("./extrato");
 
 const crimes = [
   { name: "Hackear banco", success: "💻 Você hackeou um banco e escapou sem deixar rastros!", fail: "💻 A polícia rastreou o IP e te prendeu!" },
@@ -57,6 +58,7 @@ module.exports = {
         { $inc: { "economy.wallet": amount, "economy.totalEarned": amount }, $set: { "economy.lastCrime": now.toISOString() } }
       );
       await addHeat(message.guild.id, 2).catch(() => {});
+      await addLedgerEntry(message.author.id, message.guild.id, "crime", amount, crime.name).catch(() => {});
     } else {
       amount = Math.floor(Math.random() * 300) + 50;
       description = `❌ ${crime.fail}\n\nVocê pagou **${amount.toLocaleString("pt-BR")} 💰** de multa!`;
@@ -66,6 +68,7 @@ module.exports = {
         { userId: message.author.id, guildId: message.guild.id },
         { $inc: { "economy.wallet": -fine }, $set: { "economy.lastCrime": now.toISOString() } }
       );
+      await addLedgerEntry(message.author.id, message.guild.id, "spend", -fine, `Multa: ${crime.name}`).catch(() => {});
     }
 
     if (isEventActive("tempestade_economica")) {

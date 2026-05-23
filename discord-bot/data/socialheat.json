@@ -1,0 +1,18 @@
+[
+  {
+    "guildId": "guild123",
+    "heat": 0,
+    "totalInteractions": 0,
+    "lastReset": "2026-05-23T07:33:21.345Z",
+    "createdAt": "2026-05-23T07:33:21.346Z",
+    "updatedAt": "2026-05-23T07:33:21.346Z"
+  },
+  {
+    "guildId": "testguild",
+    "heat": 0,
+    "totalInteractions": 0,
+    "lastReset": "2026-05-23T07:37:00.203Z",
+    "createdAt": "2026-05-23T07:37:00.204Z",
+    "updatedAt": "2026-05-23T07:37:00.204Z"
+  }
+]

@@ -2,6 +2,7 @@ const { EmbedBuilder } = require("discord.js");
 const config = require("../../config/config");
 const User = require("../../models/User");
 const { addHeat } = require("../../systems/SocialHeat");
+const { addLedgerEntry } = require("./extrato");
 
 module.exports = {
   name: "diario",
@@ -57,6 +58,7 @@ module.exports = {
     );
 
     await addHeat(message.guild.id, 2).catch(() => {});
+    await addLedgerEntry(message.author.id, message.guild.id, "daily", total, `Recompensa diária (streak ${streak})`).catch(() => {});
 
     const embed = new EmbedBuilder()
       .setColor(config.colors.success)

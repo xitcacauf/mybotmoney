@@ -118,6 +118,9 @@ const ensureFields = (user) => {
   if (!user.economy.lastInterest) user.economy.lastInterest = null;
   if (user.economy.streak === undefined) user.economy.streak = 0;
   if (user.economy.invested === undefined) user.economy.invested = 0;
+  if (user.economy.totalEarned === undefined) user.economy.totalEarned = 0;
+  if (!user.economy.ledger) user.economy.ledger = [];
+  if (user.economy.activeInvestment === undefined) user.economy.activeInvestment = null;
   if (!user.house.description) user.house.description = "";
   if (!user.social.lastSeen) user.social.lastSeen = null;
   if (!user.inventory) user.inventory = [];

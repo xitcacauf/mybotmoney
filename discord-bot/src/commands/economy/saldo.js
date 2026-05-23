@@ -1,18 +1,18 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 const config = require("../../config/config");
 const User = require("../../models/User");
-const { getHeatBonus } = require("../../systems/SocialHeat");
+const { getGuildHeat, getHeatBonus } = require("../../systems/SocialHeat");
 
-const cardTypes = [
-  { name: "⚫ Black Elite", min: 100000, color: 0x1a1a1a, perks: "Juros 3%/dia • Limite premium • Status máximo" },
-  { name: "💜 Dominador", min: 50000, color: 0x4b0082, perks: "Juros 2.5%/dia • Crime +10% • Transferência VIP" },
-  { name: "🔴 Luxúria", min: 25000, color: 0x8b0000, perks: "Juros 2%/dia • Presente dobrado • Loja -5%" },
-  { name: "🟣 Neon", min: 10000, color: 0x9b59b6, perks: "Juros 2%/dia • Bônus de XP" },
-  { name: "🟢 Standard", min: 0, color: 0x27ae60, perks: "Juros 2%/dia • Acesso básico" },
+const cardTiers = [
+  { name: "⚫ Black Elite", min: 100000, color: 0x111111, perks: "Juros 3%/dia • Crime +15% • Loja -10%" },
+  { name: "💜 Dominador",   min: 50000,  color: 0x4b0082, perks: "Juros 2.5%/dia • Crime +10% • Transfer VIP" },
+  { name: "🔴 Luxúria",    min: 25000,  color: 0x8b0000, perks: "Juros 2%/dia • Presente bônus duplo" },
+  { name: "🟣 Neon",       min: 10000,  color: 0x9b59b6, perks: "Juros 2%/dia • XP +10%" },
+  { name: "🟢 Standard",   min: 0,      color: 0x27ae60, perks: "Juros 2%/dia • Acesso básico" },
 ];
 
 function getCard(total) {
-  return cardTypes.find((c) => total >= c.min) || cardTypes[cardTypes.length - 1];
+  return cardTiers.find((c) => total >= c.min) || cardTiers[cardTiers.length - 1];
 }
 
 module.exports = {
@@ -25,16 +25,33 @@ module.exports = {
     const dbUser = await User.findOrCreate(target.id, message.guild.id, target.username);
 
     const wallet = dbUser.economy?.wallet || 0;
-    const bank = dbUser.economy?.bank || 0;
-    const total = wallet + bank;
+    const bank   = dbUser.economy?.bank   || 0;
+    const total  = wallet + bank;
     const totalEarned = dbUser.economy?.totalEarned || 0;
-    const streak = dbUser.economy?.streak || 0;
-    const card = getCard(total);
+    const streak      = dbUser.economy?.streak      || 0;
+    const card        = getCard(total);
 
-    const { econMult } = await getHeatBonus(message.guild.id).catch(() => ({ econMult: 1 }));
+    // Calcula bônus de calor corretamente
+    let econMult = 1;
+    try {
+      const heatRec = await getGuildHeat(message.guild.id);
+      econMult = getHeatBonus(heatRec.heat || 0).econMult;
+    } catch {}
+
     const projectedInterest = Math.floor(bank * 0.02);
 
     const isOwn = target.id === message.author.id;
+
+    // Próximo cartão
+    const cardIdx  = cardTiers.findIndex((c) => total >= c.min);
+    let nextCardLine;
+    if (cardIdx <= 0) {
+      nextCardLine = "✅ Tier máximo atingido!";
+    } else {
+      const next   = cardTiers[cardIdx - 1];
+      const needed = next.min - total;
+      nextCardLine = `${next.name}: faltam **${needed.toLocaleString("pt-BR")} 💰**`;
+    }
 
     const embed = new EmbedBuilder()
       .setColor(card.color)
@@ -44,52 +61,14 @@ module.exports = {
       })
       .setDescription(`> *${card.perks}*`)
       .addFields(
-        {
-          name: "👜 Carteira",
-          value: `**${wallet.toLocaleString("pt-BR")}** 💰`,
-          inline: true,
-        },
-        {
-          name: "🏦 Banco",
-          value: `**${bank.toLocaleString("pt-BR")}** 💰`,
-          inline: true,
-        },
-        {
-          name: "💎 Patrimônio",
-          value: `**${total.toLocaleString("pt-BR")}** 💰`,
-          inline: true,
-        },
-        {
-          name: "📈 Rendimento Previsto",
-          value: `+${projectedInterest.toLocaleString("pt-BR")} 💰/dia`,
-          inline: true,
-        },
-        {
-          name: "🌡️ Bônus Servidor",
-          value: `${econMult}x`,
-          inline: true,
-        },
-        {
-          name: "🔥 Streak Diária",
-          value: `${streak} dia(s)`,
-          inline: true,
-        },
-        {
-          name: "💹 Total Ganho",
-          value: `${totalEarned.toLocaleString("pt-BR")} 💰`,
-          inline: true,
-        },
-        {
-          name: "🏆 Próximo Cartão",
-          value: (() => {
-            const idx = cardTypes.findIndex((c) => total >= c.min);
-            if (idx === 0) return "✅ Máximo atingido!";
-            const next = cardTypes[idx - 1];
-            const needed = next.min - total;
-            return `${next.name}: faltam **${needed.toLocaleString("pt-BR")} 💰**`;
-          })(),
-          inline: false,
-        }
+        { name: "👜 Carteira",           value: `**${wallet.toLocaleString("pt-BR")}** 💰`,           inline: true },
+        { name: "🏦 Banco",             value: `**${bank.toLocaleString("pt-BR")}** 💰`,             inline: true },
+        { name: "💎 Patrimônio",        value: `**${total.toLocaleString("pt-BR")}** 💰`,            inline: true },
+        { name: "📈 Rendimento/dia",    value: `+${projectedInterest.toLocaleString("pt-BR")} 💰`,  inline: true },
+        { name: "🌡️ Bônus Servidor",    value: `${econMult}x`,                                      inline: true },
+        { name: "🔥 Streak Diária",     value: `${streak} dia(s)`,                                  inline: true },
+        { name: "💹 Total Acumulado",   value: `${totalEarned.toLocaleString("pt-BR")} 💰`,          inline: true },
+        { name: "🏆 Próximo Cartão",    value: nextCardLine,                                         inline: false },
       )
       .setFooter({ text: "!banco depositar | !trabalhar | !investir | !cartao" })
       .setTimestamp();
@@ -106,4 +85,6 @@ module.exports = {
 
     await message.reply({ embeds: [embed], components });
   },
+  cardTiers,
+  getCard,
 };

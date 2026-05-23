@@ -161,5 +161,384 @@
     "warnings": [],
     "createdAt": "2026-05-22T16:48:26.973Z",
     "updatedAt": "2026-05-22T16:56:57.043Z"
+  },
+  {
+    "userId": "test123",
+    "guildId": "guild123",
+    "username": "TestUser",
+    "profile": {
+      "bio": "",
+      "age": 0,
+      "gender": "",
+      "location": "",
+      "photo": "",
+      "personality": "",
+      "hobbies": [],
+      "favoriteGame": "",
+      "badges": [],
+      "reputation": 0,
+      "archetype": "misterioso",
+      "aura": "comum",
+      "auraExpiry": null,
+      "eliteTitle": null,
+      "eliteTitleExpiry": null,
+      "lastPost": null,
+      "_lastArchetypeChange": null,
+      "psychProfile": {
+        "loneliness": 50,
+        "popularity": 50,
+        "activityLevel": 0,
+        "lastAnalyzed": null
+      }
+    },
+    "economy": {
+      "wallet": 1000,
+      "bank": 0,
+      "totalEarned": 0,
+      "lastDaily": null,
+      "lastWork": null,
+      "lastCrime": null,
+      "lastInterest": null,
+      "streak": 0,
+      "invested": 0,
+      "investedAt": null,
+      "investmentType": null
+    },
+    "inventory": [],
+    "house": {
+      "level": 0,
+      "name": "",
+      "furniture": [],
+      "value": 0,
+      "description": "",
+      "theme": "default",
+      "visitors": 0,
+      "decorations": [],
+      "musicPlaylist": ""
+    },
+    "relationship": {
+      "status": "single",
+      "partnerId": null,
+      "partnerName": "",
+      "marriedAt": null,
+      "children": [],
+      "stage": "none",
+      "stageStartedAt": null,
+      "obsessionLevel": 0,
+      "bondXP": 0,
+      "memories": [],
+      "anniversary": null
+    },
+    "social": {
+      "xp": 0,
+      "level": 1,
+      "messages": 0,
+      "voiceMinutes": 0,
+      "lastSeen": null,
+      "socialHeat": 0
+    },
+    "darkLove": {
+      "role": "none",
+      "coleira": null,
+      "coleiradoAt": null,
+      "contractWith": null,
+      "contractType": null,
+      "contractTerms": null,
+      "trustLevel": 0,
+      "tasksCompleted": 0,
+      "punishments": 0
+    },
+    "dating": {
+      "active": false,
+      "profileData": {},
+      "matches": []
+    },
+    "duo": {
+      "active": false,
+      "profileData": {}
+    },
+    "pet": {
+      "adopted": false,
+      "name": "",
+      "type": "",
+      "emoji": "",
+      "hunger": 100,
+      "happiness": 100,
+      "lastCare": null,
+      "adoptedAt": null
+    },
+    "punishments": [],
+    "warnings": [],
+    "bonds": {},
+    "secretAdmiring": null,
+    "secretAdmirers": [],
+    "rpg": {
+      "charm": 10,
+      "manipulation": 5,
+      "seduction": 5,
+      "intelligence": 10,
+      "dominance": 5,
+      "carencia": 5
+    },
+    "createdAt": "2026-05-23T07:33:19.375Z",
+    "updatedAt": "2026-05-23T07:33:19.377Z"
+  },
+  {
+    "userId": "user1",
+    "guildId": "guild1",
+    "username": "",
+    "profile": {
+      "bio": "",
+      "age": 0,
+      "gender": "",
+      "location": "",
+      "photo": "",
+      "personality": "",
+      "hobbies": [],
+      "favoriteGame": "",
+      "badges": [],
+      "reputation": 0,
+      "archetype": "misterioso",
+      "aura": "comum",
+      "auraExpiry": null,
+      "eliteTitle": null,
+      "eliteTitleExpiry": null,
+      "lastPost": null,
+      "_lastArchetypeChange": null,
+      "psychProfile": {
+        "loneliness": 50,
+        "popularity": 50,
+        "activityLevel": 0,
+        "lastAnalyzed": null
+      }
+    },
+    "economy": {
+      "wallet": 1000,
+      "bank": 0,
+      "totalEarned": 0,
+      "lastDaily": null,
+      "lastWork": null,
+      "lastCrime": null,
+      "lastInterest": null,
+      "streak": 0,
+      "invested": 0,
+      "investedAt": null,
+      "investmentType": null,
+      "ledger": [
+        {
+          "type": "daily",
+          "amount": 500,
+          "description": "Recompensa diária (streak 1)",
+          "timestamp": "2026-05-23T07:37:01.824Z"
+        }
+      ],
+      "activeInvestment": {
+        "type": "acoes",
+        "typeName": "Ações",
+        "amount": 1000,
+        "returnRate": 0.3,
+        "projectedProfit": 300,
+        "readyAt": "2026-05-23T07:37:00.825Z"
+      }
+    },
+    "inventory": [],
+    "house": {
+      "level": 0,
+      "name": "",
+      "furniture": [],
+      "value": 0,
+      "description": "",
+      "theme": "default",
+      "visitors": 0,
+      "decorations": [],
+      "musicPlaylist": ""
+    },
+    "relationship": {
+      "status": "single",
+      "partnerId": null,
+      "partnerName": "",
+      "marriedAt": null,
+      "children": [],
+      "stage": "none",
+      "stageStartedAt": null,
+      "obsessionLevel": 0,
+      "bondXP": 0,
+      "memories": [],
+      "anniversary": null
+    },
+    "social": {
+      "xp": 0,
+      "level": 1,
+      "messages": 0,
+      "voiceMinutes": 0,
+      "lastSeen": null,
+      "socialHeat": 0
+    },
+    "darkLove": {
+      "role": "none",
+      "coleira": null,
+      "coleiradoAt": null,
+      "contractWith": null,
+      "contractType": null,
+      "contractTerms": null,
+      "trustLevel": 0,
+      "tasksCompleted": 0,
+      "punishments": 0
+    },
+    "dating": {
+      "active": false,
+      "profileData": {},
+      "matches": []
+    },
+    "duo": {
+      "active": false,
+      "profileData": {}
+    },
+    "pet": {
+      "adopted": false,
+      "name": "",
+      "type": "",
+      "emoji": "",
+      "hunger": 100,
+      "happiness": 100,
+      "lastCare": null,
+      "adoptedAt": null
+    },
+    "punishments": [],
+    "warnings": [],
+    "bonds": {},
+    "secretAdmiring": null,
+    "secretAdmirers": [],
+    "rpg": {
+      "charm": 10,
+      "manipulation": 5,
+      "seduction": 5,
+      "intelligence": 10,
+      "dominance": 5,
+      "carencia": 5
+    },
+    "createdAt": "2026-05-23T07:37:01.823Z",
+    "updatedAt": "2026-05-23T07:37:01.825Z"
+  },
+  {
+    "userId": "testbanco",
+    "guildId": "guild1",
+    "username": "BancoUser",
+    "profile": {
+      "bio": "",
+      "age": 0,
+      "gender": "",
+      "location": "",
+      "photo": "",
+      "personality": "",
+      "hobbies": [],
+      "favoriteGame": "",
+      "badges": [],
+      "reputation": 0,
+      "archetype": "misterioso",
+      "aura": "comum",
+      "auraExpiry": null,
+      "eliteTitle": null,
+      "eliteTitleExpiry": null,
+      "lastPost": null,
+      "_lastArchetypeChange": null,
+      "psychProfile": {
+        "loneliness": 50,
+        "popularity": 50,
+        "activityLevel": 0,
+        "lastAnalyzed": null
+      }
+    },
+    "economy": {
+      "wallet": 1000,
+      "bank": 0,
+      "totalEarned": 0,
+      "lastDaily": null,
+      "lastWork": null,
+      "lastCrime": null,
+      "lastInterest": null,
+      "streak": 0,
+      "invested": 0,
+      "investedAt": null,
+      "investmentType": null
+    },
+    "inventory": [],
+    "house": {
+      "level": 0,
+      "name": "",
+      "furniture": [],
+      "value": 0,
+      "description": "",
+      "theme": "default",
+      "visitors": 0,
+      "decorations": [],
+      "musicPlaylist": ""
+    },
+    "relationship": {
+      "status": "single",
+      "partnerId": null,
+      "partnerName": "",
+      "marriedAt": null,
+      "children": [],
+      "stage": "none",
+      "stageStartedAt": null,
+      "obsessionLevel": 0,
+      "bondXP": 0,
+      "memories": [],
+      "anniversary": null
+    },
+    "social": {
+      "xp": 0,
+      "level": 1,
+      "messages": 0,
+      "voiceMinutes": 0,
+      "lastSeen": null,
+      "socialHeat": 0
+    },
+    "darkLove": {
+      "role": "none",
+      "coleira": null,
+      "coleiradoAt": null,
+      "contractWith": null,
+      "contractType": null,
+      "contractTerms": null,
+      "trustLevel": 0,
+      "tasksCompleted": 0,
+      "punishments": 0
+    },
+    "dating": {
+      "active": false,
+      "profileData": {},
+      "matches": []
+    },
+    "duo": {
+      "active": false,
+      "profileData": {}
+    },
+    "pet": {
+      "adopted": false,
+      "name": "",
+      "type": "",
+      "emoji": "",
+      "hunger": 100,
+      "happiness": 100,
+      "lastCare": null,
+      "adoptedAt": null
+    },
+    "punishments": [],
+    "warnings": [],
+    "bonds": {},
+    "secretAdmiring": null,
+    "secretAdmirers": [],
+    "rpg": {
+      "charm": 10,
+      "manipulation": 5,
+      "seduction": 5,
+      "intelligence": 10,
+      "dominance": 5,
+      "carencia": 5
+    },
+    "createdAt": "2026-05-23T07:37:01.826Z",
+    "updatedAt": "2026-05-23T07:37:01.826Z"
   }
 ]

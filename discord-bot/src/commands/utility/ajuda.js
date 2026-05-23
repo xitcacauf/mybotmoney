@@ -70,7 +70,7 @@ module.exports = {
       )
       .setThumbnail(message.guild.iconURL({ dynamic: true }))
       .setFooter({
-        text: `Use o menu ↓ para detalhes de cada categoria • ${client.commands.size} comandos disponíveis`,
+        text: `Use o menu ↓ para detalhes de cada categoria`,
         iconURL: message.author.displayAvatarURL({ dynamic: true }),
       })
       .setTimestamp();

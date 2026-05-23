@@ -3,6 +3,7 @@ const config = require("../../config/config");
 const User = require("../../models/User");
 const { isEventActive } = require("../../systems/EventSystem");
 const { addHeat } = require("../../systems/SocialHeat");
+const { addLedgerEntry } = require("./extrato");
 
 const jobs = [
   { name: "Programador", emoji: "💻", min: 150, max: 400 },
@@ -67,6 +68,7 @@ module.exports = {
     );
 
     await addHeat(message.guild.id, 1).catch(() => {});
+    await addLedgerEntry(message.author.id, message.guild.id, "work", earned, `Trabalhou como ${job.name}`).catch(() => {});
 
     const newWallet = (dbUser.economy?.wallet || 0) + earned;
 
