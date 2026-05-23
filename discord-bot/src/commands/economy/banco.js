@@ -2,10 +2,10 @@ const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("
 const config = require("../../config/config");
 const User = require("../../models/User");
 
-const WEB_PORT = process.env.WEB_PORT || 3000;
 function getBankURL() {
-  const domain = process.env.REPLIT_DEV_DOMAIN;
-  return domain ? `https://${domain}:${WEB_PORT}` : `http://localhost:${WEB_PORT}`;
+  if (process.env.BANK_URL) return process.env.BANK_URL.replace(/\/$/, "");
+  if (process.env.REPLIT_DEV_DOMAIN) return `https://${process.env.REPLIT_DEV_DOMAIN}`;
+  return `http://localhost:${process.env.WEB_PORT || 3000}`;
 }
 
 const INTEREST_RATE = 0.02; // 2% ao dia
