@@ -3,631 +3,744 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Love Link — Dashboard</title>
+  <title>Love Link — Comandos</title>
   <style>
     :root {
-      --bg:#06060f; --surface:#0e0e1c; --surface2:#161628; --surface3:#1d1d35;
-      --border:#252542; --border2:#30305a;
-      --text:#eeeeff; --muted:#8888aa; --muted2:#6666888;
-      --pink:#e91e8c; --pink2:#ff4db8; --purple:#8b2aff; --purple2:#a855f7;
-      --green:#00d4aa; --gold:#ffd000; --red:#ff4757; --blue:#2ed9ff;
-      --gradient:linear-gradient(135deg,var(--pink),var(--purple));
-      --glow-pink:rgba(233,30,140,.18); --glow-purple:rgba(139,42,255,.18);
+      --bg:#07070f; --s1:#0d0d1a; --s2:#131325; --s3:#191932;
+      --border:#22223a; --border2:#2e2e52;
+      --text:#eeeeff; --muted:#8080a8; --muted2:#5a5a7a;
+      --pink:#e91e8c; --pink2:#ff55b5; --purple:#8b2aff; --purple2:#a855f7;
+      --green:#00d4aa; --gold:#ffd000; --red:#ff4060; --blue:#29d9ff;
+      --cyan:#00f5d4;
+      --g1:linear-gradient(135deg,#e91e8c,#8b2aff);
+      --g2:linear-gradient(135deg,#8b2aff,#29d9ff);
+      --g3:linear-gradient(135deg,#ffd000,#e91e8c);
+      --g4:linear-gradient(135deg,#00d4aa,#8b2aff);
+      --g5:linear-gradient(135deg,#1a0030,#e91e8c);
+      --g6:linear-gradient(135deg,#001520,#29d9ff);
     }
     *{margin:0;padding:0;box-sizing:border-box;}
     html{scroll-behavior:smooth;}
     body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;overflow-x:hidden;}
 
-    /* ── Scrollbar ── */
-    ::-webkit-scrollbar{width:5px;height:5px;}
-    ::-webkit-scrollbar-track{background:var(--surface);}
-    ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px;}
+    ::-webkit-scrollbar{width:4px;} ::-webkit-scrollbar-track{background:var(--s1);} ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px;}
+
+    /* ── Animated bg ── */
+    body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 20% -10%,rgba(139,42,255,.12),transparent),radial-gradient(ellipse 60% 40% at 80% 100%,rgba(233,30,140,.1),transparent);pointer-events:none;z-index:0;}
 
     /* ── Header ── */
-    .header{background:rgba(14,14,28,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:100;}
-    .header-logo{font-size:26px;filter:drop-shadow(0 0 8px var(--pink));}
-    .header-title{font-size:20px;font-weight:800;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-.3px;}
-    .header-sub{font-size:12px;color:var(--muted);margin-top:1px;}
-    .header-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);margin-left:auto;flex-shrink:0;animation:pulse 2s infinite;}
-    @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+    .header{position:sticky;top:0;z-index:100;background:rgba(7,7,15,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 20px;}
+    .header-inner{max-width:1100px;margin:0 auto;height:62px;display:flex;align-items:center;gap:16px;}
+    .logo{font-size:28px;filter:drop-shadow(0 0 10px var(--pink));}
+    .brand{font-size:20px;font-weight:900;background:var(--g1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-.5px;}
+    .brand-sub{font-size:11px;color:var(--muted);letter-spacing:.3px;margin-top:1px;}
+    .header-search{margin-left:auto;position:relative;}
+    .search-box{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:9px 14px 9px 38px;color:var(--text);font-size:13px;width:220px;outline:none;transition:border-color .2s,box-shadow .2s;}
+    .search-box:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(139,42,255,.15);}
+    .search-box::placeholder{color:var(--muted);}
+    .search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;}
+    .cmd-count{background:var(--g1);color:#fff;font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;margin-left:auto;}
 
-    /* ── Container ── */
-    .container{max-width:880px;margin:0 auto;padding:20px 16px 40px;}
+    /* ── Hero ── */
+    .hero{position:relative;z-index:1;text-align:center;padding:56px 20px 40px;}
+    .hero-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(233,30,140,.1);border:1px solid rgba(233,30,140,.25);border-radius:99px;padding:6px 16px;font-size:12px;color:var(--pink);font-weight:600;margin-bottom:20px;animation:fadeDown .6s ease both;}
+    .hero-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse 2s infinite;}
+    .hero h1{font-size:clamp(28px,6vw,52px);font-weight:900;background:var(--g1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1;margin-bottom:14px;animation:fadeDown .6s .1s ease both;}
+    .hero p{font-size:15px;color:var(--muted);max-width:500px;margin:0 auto 28px;animation:fadeDown .6s .2s ease both;}
+    .prefix-badge{display:inline-flex;align-items:center;gap:8px;background:var(--s2);border:1px solid var(--border2);border-radius:12px;padding:10px 20px;font-size:14px;animation:fadeDown .6s .3s ease both;}
+    .prefix-badge span{font-size:22px;background:var(--g1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:900;}
 
-    /* ── Search ── */
-    .search-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px;margin-bottom:22px;}
-    .search-card h2{font-size:15px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:14px;}
-    .input-row{display:flex;gap:10px;flex-wrap:wrap;}
-    .search-input{flex:1;min-width:180px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-size:14px;outline:none;transition:border-color .2s,box-shadow .2s;}
-    .search-input:focus{border-color:var(--purple);box-shadow:0 0 0 3px var(--glow-purple);}
-    .search-input::placeholder{color:var(--muted);}
-    .search-btn{background:var(--gradient);border:none;border-radius:10px;padding:12px 22px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .2s,transform .1s;white-space:nowrap;}
-    .search-btn:hover{opacity:.88;}
-    .search-btn:active{transform:scale(.97);}
-    .error-msg{background:rgba(255,71,87,.08);border:1px solid rgba(255,71,87,.25);border-radius:10px;padding:12px;color:var(--red);margin-top:10px;font-size:14px;}
+    /* ── Category filters ── */
+    .filters{position:sticky;top:62px;z-index:99;background:rgba(7,7,15,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:10px 20px;}
+    .filters-inner{max-width:1100px;margin:0 auto;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;}
+    .filters-inner::-webkit-scrollbar{display:none;}
+    .filter-btn{flex:0 0 auto;padding:7px 14px;border:1px solid var(--border);border-radius:8px;background:var(--s1);color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;}
+    .filter-btn.active,.filter-btn:hover{border-color:var(--purple);color:var(--text);background:rgba(139,42,255,.12);}
+    .filter-btn.active{background:rgba(139,42,255,.2);color:var(--purple2);}
 
-    /* ── Tabs ── */
-    .tabs-wrap{overflow-x:auto;scrollbar-width:none;margin-bottom:18px;}
-    .tabs-wrap::-webkit-scrollbar{display:none;}
-    .tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:5px;width:max-content;min-width:100%;}
-    .tab{flex:0 0 auto;padding:9px 15px;border:none;background:none;color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;border-radius:9px;transition:all .2s;white-space:nowrap;}
-    .tab.active{background:var(--gradient);color:#fff;font-weight:700;box-shadow:0 2px 12px var(--glow-pink);}
+    /* ── Main ── */
+    .main{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:32px 20px 60px;}
 
-    /* ── Cards ── */
-    .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:14px;}
-    .card-glow{box-shadow:0 0 30px var(--glow-pink);}
-    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
-    .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px;}
-    @media(max-width:580px){.grid3{grid-template-columns:1fr 1fr;}}
-    @media(max-width:360px){.grid2,.grid3{grid-template-columns:1fr;}}
+    /* ── Category section ── */
+    .cat-section{margin-bottom:44px;}
+    .cat-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+    .cat-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+    .cat-title{font-size:19px;font-weight:800;}
+    .cat-count{font-size:12px;color:var(--muted);background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:3px 9px;margin-left:auto;}
+    .cat-divider{height:1px;background:linear-gradient(90deg,var(--border2),transparent);margin-bottom:20px;}
 
-    /* ── Stat boxes ── */
-    .stat{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px;}
-    .stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;}
-    .stat-val{font-size:21px;font-weight:800;line-height:1;}
-    .stat-sub{font-size:12px;color:var(--muted);margin-top:4px;}
+    /* ── Command grid ── */
+    .cmd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px;}
 
-    /* ── Colours ── */
-    .c-pink{color:var(--pink)!important;} .c-purple{color:var(--purple2)!important;}
-    .c-green{color:var(--green)!important;} .c-gold{color:var(--gold)!important;}
-    .c-red{color:var(--red)!important;} .c-blue{color:var(--blue)!important;}
-    .c-muted{color:var(--muted)!important;}
+    /* ── Command card ── */
+    .cmd-card{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:16px;cursor:default;transition:transform .25s,border-color .25s,box-shadow .25s;position:relative;overflow:hidden;opacity:0;transform:translateY(16px);}
+    .cmd-card.visible{animation:slideUp .4s ease forwards;}
+    .cmd-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;opacity:0;transition:opacity .25s;}
+    .cmd-card:hover{transform:translateY(-3px);border-color:var(--border2);box-shadow:0 8px 32px rgba(0,0,0,.4);}
+    .cmd-card:hover::before{opacity:1;}
+    .cmd-card.hidden{display:none;}
 
-    /* ── Virtual card ── */
-    .vcard{border-radius:20px;padding:24px;position:relative;overflow:hidden;min-height:160px;display:flex;flex-direction:column;justify-content:space-between;margin-bottom:14px;transition:transform .2s;}
-    .vcard:hover{transform:translateY(-3px);}
-    .vcard::before{content:'';position:absolute;top:-50px;right:-50px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.04);pointer-events:none;}
-    .vcard-glow{position:absolute;bottom:-30px;left:-30px;width:180px;height:180px;border-radius:50%;filter:blur(60px);opacity:.3;pointer-events:none;}
-    .vc-tier{font-size:12px;font-weight:700;opacity:.85;letter-spacing:.5px;}
-    .vc-number{font-size:17px;letter-spacing:4px;font-family:'Courier New',monospace;margin:16px 0 6px;opacity:.9;}
-    .vc-name{font-size:15px;font-weight:700;}
-    .vc-perks{font-size:11px;opacity:.6;margin-top:3px;}
+    .cmd-name{font-size:15px;font-weight:800;margin-bottom:5px;display:flex;align-items:center;gap:8px;}
+    .cmd-prefix{color:var(--muted);font-weight:400;}
+    .cmd-admin-tag{font-size:10px;background:rgba(255,64,96,.12);border:1px solid rgba(255,64,96,.25);border-radius:4px;padding:2px 7px;color:var(--red);font-weight:700;}
+    .cmd-desc{font-size:13px;color:var(--muted);line-height:1.55;margin-bottom:10px;}
+    .cmd-aliases{display:flex;flex-wrap:wrap;gap:4px;}
+    .alias-tag{font-size:11px;background:var(--s2);border:1px solid var(--border);border-radius:5px;padding:2px 8px;color:var(--muted2);font-family:'Courier New',monospace;}
+    .cmd-usage{font-size:11px;color:var(--purple2);font-family:'Courier New',monospace;margin-top:8px;padding:6px 10px;background:rgba(139,42,255,.06);border-radius:6px;border-left:2px solid var(--purple);}
 
-    /* ── Section title ── */
-    .sec{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.9px;margin:18px 0 10px;display:flex;align-items:center;gap:7px;}
-    .sec:first-child{margin-top:0;}
+    /* ── Category colour themes ── */
+    .cat-economia .cmd-card:hover{border-color:rgba(255,208,0,.3);box-shadow:0 8px 32px rgba(255,208,0,.08);}
+    .cat-economia .cmd-card::before{background:linear-gradient(90deg,var(--gold),transparent);}
+    .cat-economia .cmd-card:hover .cmd-name{color:var(--gold);}
 
-    /* ── Progress bar ── */
-    .prog-wrap{margin-top:8px;}
-    .prog-labels{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:5px;}
-    .prog-bar{background:var(--surface3);border-radius:99px;height:8px;overflow:hidden;}
-    .prog-fill{height:100%;border-radius:99px;background:var(--gradient);transition:width .5s ease;}
+    .cat-social .cmd-card:hover{border-color:rgba(233,30,140,.3);box-shadow:0 8px 32px rgba(233,30,140,.08);}
+    .cat-social .cmd-card::before{background:linear-gradient(90deg,var(--pink),transparent);}
+    .cat-social .cmd-card:hover .cmd-name{color:var(--pink2);}
 
-    /* ── Ledger ── */
-    .ledger-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);}
-    .ledger-item:last-child{border-bottom:none;}
-    .ledger-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
-    .li-earn{background:rgba(0,212,170,.1);} .li-spend{background:rgba(255,71,87,.1);}
-    .li-crime{background:rgba(139,42,255,.1);} .li-daily{background:rgba(255,208,0,.1);}
-    .li-work{background:rgba(46,217,255,.1);} .li-steal{background:rgba(255,71,87,.12);}
-    .li-interest{background:rgba(0,212,170,.1);}
-    .ledger-desc{flex:1;min-width:0;}
-    .ledger-name{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    .ledger-time{font-size:11px;color:var(--muted);margin-top:2px;}
-    .ledger-amount{font-size:15px;font-weight:800;white-space:nowrap;}
+    .cat-dark .cmd-card:hover{border-color:rgba(139,42,255,.35);box-shadow:0 8px 32px rgba(139,42,255,.1);}
+    .cat-dark .cmd-card::before{background:linear-gradient(90deg,var(--purple),transparent);}
+    .cat-dark .cmd-card:hover .cmd-name{color:var(--purple2);}
 
-    /* ── Chip ── */
-    .chip{display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:3px 9px;font-size:12px;color:var(--muted);margin:2px;}
+    .cat-admin .cmd-card:hover{border-color:rgba(255,64,96,.3);box-shadow:0 8px 32px rgba(255,64,96,.08);}
+    .cat-admin .cmd-card::before{background:linear-gradient(90deg,var(--red),transparent);}
+    .cat-admin .cmd-card:hover .cmd-name{color:var(--red);}
 
-    /* ── Ranking ── */
-    .rank-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);}
-    .rank-item:last-child{border-bottom:none;}
-    .rank-num{font-size:17px;font-weight:800;width:30px;text-align:center;flex-shrink:0;}
-    .rank-info{flex:1;}
-    .rank-name{font-size:14px;font-weight:600;}
-    .rank-badge{font-size:11px;color:var(--muted);margin-top:1px;}
-    .rank-total{font-size:14px;font-weight:800;}
+    .cat-util .cmd-card:hover{border-color:rgba(41,217,255,.3);box-shadow:0 8px 32px rgba(41,217,255,.08);}
+    .cat-util .cmd-card::before{background:linear-gradient(90deg,var(--blue),transparent);}
+    .cat-util .cmd-card:hover .cmd-name{color:var(--blue);}
 
-    /* ── RPG bar ── */
-    .rpg-row{display:flex;align-items:center;gap:10px;margin:6px 0;}
-    .rpg-label{font-size:12px;color:var(--muted);width:115px;flex-shrink:0;}
-    .rpg-bar{flex:1;background:var(--surface3);border-radius:99px;height:6px;overflow:hidden;}
-    .rpg-fill{height:100%;border-radius:99px;transition:width .5s ease;}
-    .rpg-val{font-size:13px;font-weight:700;width:28px;text-align:right;flex-shrink:0;}
+    /* ── No results ── */
+    .no-results{text-align:center;padding:60px 20px;color:var(--muted);display:none;}
+    .no-results.visible{display:block;}
+    .no-results .emoji{font-size:48px;display:block;margin-bottom:14px;}
 
-    /* ── Psych ── */
-    .psych-row{margin:10px 0;}
-    .psych-top{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;}
+    /* ── Stats bar ── */
+    .stats-bar{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;margin-bottom:36px;padding:18px;background:var(--s1);border:1px solid var(--border);border-radius:16px;}
+    .stat-item{text-align:center;}
+    .stat-n{font-size:24px;font-weight:900;background:var(--g1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .stat-l{font-size:11px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.6px;}
 
-    /* ── Dark love ── */
-    .dl-badge{display:inline-flex;align-items:center;gap:6px;border-radius:8px;padding:5px 13px;font-size:13px;font-weight:600;}
-    .dl-none{background:rgba(136,136,153,.1);color:var(--muted);}
-    .dl-dom{background:rgba(255,71,87,.08);color:var(--red);border:1px solid rgba(255,71,87,.25);}
-    .dl-sub{background:rgba(139,42,255,.08);color:var(--purple2);border:1px solid rgba(139,42,255,.25);}
+    /* ── Animations ── */
+    @keyframes fadeDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:none}}
+    @keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
-    /* ── Pet ── */
-    .pet-card{text-align:center;padding:26px 18px;}
-    .pet-emoji{font-size:52px;display:block;margin-bottom:14px;filter:drop-shadow(0 0 12px var(--pink));}
-
-    /* ── Rel badge ── */
-    .rel-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(233,30,140,.08);border:1px solid rgba(233,30,140,.2);border-radius:8px;padding:4px 11px;font-size:12px;color:var(--pink);}
-
-    /* ── Invest card ── */
-    .inv-card{background:linear-gradient(135deg,#0a0020,#14003a);border:1px solid rgba(139,42,255,.3);border-radius:16px;padding:22px;margin-bottom:14px;}
-
-    /* ── Loading ── */
-    .loading{text-align:center;padding:50px 0;color:var(--muted);font-size:14px;}
-    .loading::before{content:'';display:block;width:32px;height:32px;border:3px solid var(--border2);border-top-color:var(--pink);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 14px;}
-    @keyframes spin{to{transform:rotate(360deg);}}
-
-    /* ── Divider ── */
-    hr{border:none;border-top:1px solid var(--border);margin:14px 0;}
-
-    /* ── Badge hider ── */
-    [id*="badge-container"],[class*="badge-ui"],iframe[src*="/badge"]{display:none!important;}
+    @media(max-width:600px){
+      .header-search{display:none;}
+      .cmd-grid{grid-template-columns:1fr;}
+      .hero h1{font-size:28px;}
+      .stats-bar{gap:16px;}
+    }
   </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="header-logo">🌸</div>
-  <div>
-    <div class="header-title">Love Link</div>
-    <div class="header-sub" id="headerSub">Dashboard do Servidor</div>
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">🌸</div>
+    <div>
+      <div class="brand">Love Link</div>
+      <div class="brand-sub">Comunidade Gamer &amp; Social</div>
+    </div>
+    <div class="header-search">
+      <span class="search-icon">🔍</span>
+      <input class="search-box" id="searchBox" placeholder="Buscar comando..." oninput="filterAll()"/>
+    </div>
+    <div class="cmd-count" id="totalCount">63 comandos</div>
   </div>
-  <div class="header-dot" title="Online"></div>
+</header>
+
+<!-- CATEGORY FILTERS -->
+<div class="filters">
+  <div class="filters-inner" id="filterBar">
+    <button class="filter-btn active" onclick="setFilter('all',this)">🌟 Todos</button>
+    <button class="filter-btn" onclick="setFilter('economia',this)">💰 Economia</button>
+    <button class="filter-btn" onclick="setFilter('social',this)">❤️ Social &amp; Dating</button>
+    <button class="filter-btn" onclick="setFilter('dark',this)">🖤 Dark Love</button>
+    <button class="filter-btn" onclick="setFilter('admin',this)">🛡️ Admin</button>
+    <button class="filter-btn" onclick="setFilter('util',this)">⚙️ Utilidade</button>
+  </div>
 </div>
 
-<div class="container">
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">🤖 Bot Online · Love Link#4101</div>
+  <h1>Todos os Comandos</h1>
+  <p>Tudo que você precisa para dominar a comunidade — economia, relacionamentos, dark love e muito mais.</p>
+  <div class="prefix-badge">Prefixo: <span>!</span> &nbsp;·&nbsp; Ex: <span>!saldo</span> · <span>!perfil</span> · <span>!banco</span></div>
+</div>
 
-  <!-- Search -->
-  <div class="search-card" id="searchWrap">
-    <h2>🔍 Buscar Conta</h2>
-    <div class="input-row">
-      <input class="search-input" id="searchId" placeholder="Cole seu User ID do Discord..."/>
-      <input class="search-input" id="searchGuild" placeholder="Guild ID (opcional)" style="max-width:200px"/>
-      <button class="search-btn" onclick="loadUser()">Buscar</button>
-    </div>
-    <div id="searchError"></div>
+<div class="main">
+
+  <!-- Stats -->
+  <div class="stats-bar">
+    <div class="stat-item"><div class="stat-n">63</div><div class="stat-l">Comandos</div></div>
+    <div class="stat-item"><div class="stat-n">6</div><div class="stat-l">Categorias</div></div>
+    <div class="stat-item"><div class="stat-n">20</div><div class="stat-l">Economia</div></div>
+    <div class="stat-item"><div class="stat-n">20</div><div class="stat-l">Social</div></div>
+    <div class="stat-item"><div class="stat-n">7</div><div class="stat-l">Dark Love</div></div>
+    <div class="stat-item"><div class="stat-n">9</div><div class="stat-l">Admin</div></div>
   </div>
 
-  <!-- Main content -->
-  <div id="mainContent" style="display:none">
-    <div class="tabs-wrap">
-      <div class="tabs" id="tabsBar">
-        <button class="tab active"  onclick="switchTab('banco')">💳 Banco</button>
-        <button class="tab"         onclick="switchTab('extrato')">📋 Extrato</button>
-        <button class="tab"         onclick="switchTab('investir')">📊 Investir</button>
-        <button class="tab"         onclick="switchTab('perfil')">👤 Perfil</button>
-        <button class="tab"         onclick="switchTab('social')">❤️ Social</button>
-        <button class="tab"         onclick="switchTab('psicologia')">🧠 Psicologia</button>
-        <button class="tab"         onclick="switchTab('darklove')">🖤 Dark Love</button>
-        <button class="tab"         onclick="switchTab('vida')">🏡 Vida</button>
+  <div id="noResults" class="no-results"><span class="emoji">😶</span>Nenhum comando encontrado para "<span id="noQuery"></span>"</div>
+
+  <!-- ══════════════════════════ ECONOMIA ══════════════════════════ -->
+  <div class="cat-section cat-economia" data-cat="economia">
+    <div class="cat-header">
+      <div class="cat-icon" style="background:rgba(255,208,0,.12);border:1px solid rgba(255,208,0,.2);">💰</div>
+      <div><div class="cat-title" style="color:var(--gold)">Economia</div><div style="font-size:12px;color:var(--muted);margin-top:2px">Dinheiro, banco, investimentos e crimes</div></div>
+      <div class="cat-count">20 cmds</div>
+    </div>
+    <div class="cat-divider"></div>
+    <div class="cmd-grid">
+
+      <div class="cmd-card" data-cmd="saldo bal carteira coins conta painel financeiro saldo banco cartão bônus">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>saldo</div>
+        <div class="cmd-desc">Painel financeiro completo — carteira, banco, cartão virtual e bônus disponíveis.</div>
+        <div class="cmd-aliases"><span class="alias-tag">bal</span><span class="alias-tag">carteira</span><span class="alias-tag">coins</span><span class="alias-tag">conta</span></div>
       </div>
+
+      <div class="cmd-card" data-cmd="banco bank juros rendimento depositar sacar gerencie banco">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>banco</div>
+        <div class="cmd-desc">Gerencie seu banco. Veja saldo, deposite, saque e acompanhe os juros diários de 2%.</div>
+        <div class="cmd-aliases"><span class="alias-tag">bank</span><span class="alias-tag">juros</span><span class="alias-tag">rendimento</span></div>
+        <div class="cmd-usage">!banco · !banco depositar 1000 · !banco sacar 500</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="cartao card credito conta virtual tier benefícios">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>cartao</div>
+        <div class="cmd-desc">Seu cartão virtual animado — mostra tier (Standard → Black Elite) e benefícios exclusivos.</div>
+        <div class="cmd-aliases"><span class="alias-tag">card</span><span class="alias-tag">credito</span></div>
+      </div>
+
+      <div class="cmd-card" data-cmd="patrimonio wealth riqueza networth fortuna visão completa riqueza">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>patrimonio</div>
+        <div class="cmd-desc">Visão completa de toda sua fortuna virtual — carteira, banco, investimentos e itens.</div>
+        <div class="cmd-aliases"><span class="alias-tag">wealth</span><span class="alias-tag">riqueza</span><span class="alias-tag">networth</span><span class="alias-tag">fortuna</span></div>
+      </div>
+
+      <div class="cmd-card" data-cmd="diario daily recompensa resgate recompensa diária">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>diario</div>
+        <div class="cmd-desc">Resgate sua recompensa diária! Sequências longas dão bônus crescentes.</div>
+        <div class="cmd-aliases"><span class="alias-tag">daily</span><span class="alias-tag">recompensa</span></div>
+      </div>
+
+      <div class="cmd-card" data-cmd="trabalhar work trabalho trampo trabalhe ganhe moedas">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>trabalhar</div>
+        <div class="cmd-desc">Trabalhe em um dos empregos disponíveis e ganhe moedas. Cooldown de 1 hora.</div>
+        <div class="cmd-aliases"><span class="alias-tag">work</span><span class="alias-tag">trabalho</span><span class="alias-tag">trampo</span></div>
+      </div>
+
+      <div class="cmd-card" data-cmd="crime hack golpe criminoso tente cometer crime arrisque">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>crime</div>
+        <div class="cmd-desc">Tente cometer um crime! Alta recompensa, alto risco. Pode sair com fortuna ou preso.</div>
+        <div class="cmd-aliases"><span class="alias-tag">hack</span><span class="alias-tag">golpe</span><span class="alias-tag">criminoso</span></div>
+      </div>
+
+      <div class="cmd-card" data-cmd="roubar rob assaltar furtar roubar moedas carteira alguém">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>roubar</div>
+        <div class="cmd-desc">Tente roubar moedas da carteira de outro usuário. Cuidado com a multa se falhar!</div>
+        <div class="cmd-aliases"><span class="alias-tag">rob</span><span class="alias-tag">assaltar</span><span class="alias-tag">furtar</span></div>
+        <div class="cmd-usage">!roubar @user</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="investir invest aplicar aportar investimento ações crypto imóveis">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>investir</div>
+        <div class="cmd-desc">Invista em ações, crypto, imóveis ou negócios. Resgate depois para lucrar (ou perder!).</div>
+        <div class="cmd-aliases"><span class="alias-tag">invest</span><span class="alias-tag">aplicar</span><span class="alias-tag">aportar</span></div>
+        <div class="cmd-usage">!investir 5000 crypto · !investir resgatar</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="pagar pay transferir enviar mandar transferência moedas usuário">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>pagar</div>
+        <div class="cmd-desc">Transfere moedas para outro usuário diretamente da sua carteira.</div>
+        <div class="cmd-aliases"><span class="alias-tag">pay</span></div>
+        <div class="cmd-usage">!pagar @user 500</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="pix transferir enviar mandar pix estilizado mensagem">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>pix</div>
+        <div class="cmd-desc">Faça um PIX estilizado com mensagem personalizada para alguém da comunidade.</div>
+        <div class="cmd-aliases"><span class="alias-tag">transferir</span><span class="alias-tag">enviar</span><span class="alias-tag">mandar</span></div>
+        <div class="cmd-usage">!pix @user 1000 obrigado!</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="presente gift dar oferecer presente rosa flor item">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>presente</div>
+        <div class="cmd-desc">Dê um presente virtual para alguém. Use !presente lista para ver o catálogo.</div>
+        <div class="cmd-aliases"><span class="alias-tag">gift</span><span class="alias-tag">dar</span><span class="alias-tag">oferecer</span></div>
+        <div class="cmd-usage">!presente @user flower · !presente lista</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="loja shop mercado ver loja itens disponíveis">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>loja</div>
+        <div class="cmd-desc">Veja a loja do servidor — itens, pets, badges e consumíveis disponíveis para compra.</div>
+        <div class="cmd-aliases"><span class="alias-tag">shop</span><span class="alias-tag">mercado</span></div>
+        <div class="cmd-usage">!loja · !loja pets · !loja status</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="comprar buy adquirir comprar item loja">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>comprar</div>
+        <div class="cmd-desc">Compra um item da loja usando moedas da sua carteira.</div>
+        <div class="cmd-aliases"><span class="alias-tag">buy</span><span class="alias-tag">adquirir</span></div>
+        <div class="cmd-usage">!comprar ring</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="usar use consumir usar item consumível inventário poção">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>usar</div>
+        <div class="cmd-desc">Usa um item consumível do seu inventário — poções de XP, boosters e mais.</div>
+        <div class="cmd-aliases"><span class="alias-tag">use</span><span class="alias-tag">consumir</span></div>
+        <div class="cmd-usage">!usar potion_xp</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="inventario inv itens inventory bolsa inventário completo equipamentos">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>inventario</div>
+        <div class="cmd-desc">Vê seu inventário completo — itens, pets, badges e equipamentos adquiridos.</div>
+        <div class="cmd-aliases"><span class="alias-tag">inv</span><span class="alias-tag">itens</span><span class="alias-tag">bolsa</span></div>
+      </div>
+
+      <div class="cmd-card" data-cmd="extrato historico transacoes statement histórico financeiro ganhos gastos">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>extrato</div>
+        <div class="cmd-desc">Histórico financeiro completo — todas as entradas, saídas e transferências registradas.</div>
+        <div class="cmd-aliases"><span class="alias-tag">historico</span><span class="alias-tag">transacoes</span><span class="alias-tag">statement</span></div>
+      </div>
+
+      <div class="cmd-card" data-cmd="depositar dep sacar depositar sacar banco">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>depositar</div>
+        <div class="cmd-desc">Deposita ou saca dinheiro do banco de forma rápida.</div>
+        <div class="cmd-aliases"><span class="alias-tag">dep</span><span class="alias-tag">sacar</span></div>
+        <div class="cmd-usage">!depositar 500 · !sacar 500 · !depositar tudo</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="ranking top leaderboard rankings ricos xp mensagens casais">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>ranking</div>
+        <div class="cmd-desc">Rankings do servidor — mais ricos, maior XP, mais mensagens, casais e usuários ativos.</div>
+        <div class="cmd-aliases"><span class="alias-tag">top</span><span class="alias-tag">leaderboard</span></div>
+        <div class="cmd-usage">!ranking · !ranking xp · !ranking casais</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="tesouro treasure esconder achar caça ao tesouro evento">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>tesouro</div>
+        <div class="cmd-desc">Participa da Caça ao Tesouro quando o evento estiver ativo — encontre e ganhe prêmios!</div>
+        <div class="cmd-aliases"><span class="alias-tag">treasure</span><span class="alias-tag">esconder</span><span class="alias-tag">achar</span></div>
+      </div>
+
     </div>
-    <div id="tabBanco"></div>
-    <div id="tabExtrato"    style="display:none"></div>
-    <div id="tabInvestir"   style="display:none"></div>
-    <div id="tabPerfil"     style="display:none"></div>
-    <div id="tabSocial"     style="display:none"></div>
-    <div id="tabPsicologia" style="display:none"></div>
-    <div id="tabDarklove"   style="display:none"></div>
-    <div id="tabVida"       style="display:none"></div>
   </div>
 
-  <!-- Ranking global -->
-  <div id="rankSection">
-    <div class="sec">🏆 Ranking Global</div>
-    <div class="card" id="rankList"><div class="loading"></div></div>
+  <!-- ══════════════════════════ SOCIAL & DATING ══════════════════════════ -->
+  <div class="cat-section cat-social" data-cat="social">
+    <div class="cat-header">
+      <div class="cat-icon" style="background:rgba(233,30,140,.12);border:1px solid rgba(233,30,140,.2);">❤️</div>
+      <div><div class="cat-title" style="color:var(--pink2)">Social &amp; Dating</div><div style="font-size:12px;color:var(--muted);margin-top:2px">Relacionamentos, perfil, pets e vida virtual</div></div>
+      <div class="cat-count">20 cmds</div>
+    </div>
+    <div class="cat-divider"></div>
+    <div class="cmd-grid">
+
+      <div class="cmd-card" data-cmd="perfil profile eu veja perfil social membro">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>perfil</div>
+        <div class="cmd-desc">Veja seu perfil completo ou de outro membro — arquétipo, relacionamento, fortuna, badges e mais.</div>
+        <div class="cmd-aliases"><span class="alias-tag">profile</span><span class="alias-tag">eu</span></div>
+        <div class="cmd-usage">!perfil · !perfil @user</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="bio setbio descricao definir bio descrição">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>bio</div>
+        <div class="cmd-desc">Define sua bio personalizada que aparece no perfil para todos verem.</div>
+        <div class="cmd-aliases"><span class="alias-tag">setbio</span><span class="alias-tag">descricao</span></div>
+        <div class="cmd-usage">!bio Sou um gamer louco!</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="nivel xp level exp veja nível atual experiência">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>nivel</div>
+        <div class="cmd-desc">Veja seu nível atual, XP acumulado e quanto falta para o próximo nível.</div>
+        <div class="cmd-aliases"><span class="alias-tag">xp</span><span class="alias-tag">level</span><span class="alias-tag">exp</span></div>
+      </div>
+
+      <div class="cmd-card" data-cmd="namoro dating stage etapa relacionar progrida relacionamento">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>namoro</div>
+        <div class="cmd-desc">Progrida nas etapas do relacionamento — Conhecendo → Flertando → Ficante → Namorando → Aliança.</div>
+        <div class="cmd-aliases"><span class="alias-tag">dating</span><span class="alias-tag">stage</span><span class="alias-tag">etapa</span></div>
+        <div class="cmd-usage">!namoro @user · !namoro ver</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="casar marry pedido casamento pedido de casamento">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>casar</div>
+        <div class="cmd-desc">Faz um pedido de casamento para alguém especial. Requer aliança no inventário!</div>
+        <div class="cmd-aliases"><span class="alias-tag">marry</span><span class="alias-tag">pedido</span></div>
+        <div class="cmd-usage">!casar @user</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="divorcio divorce separar processo divórcio">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>divorcio</div>
+        <div class="cmd-desc">Inicia o processo de divórcio — requer confirmação de ambas as partes.</div>
+        <div class="cmd-aliases"><span class="alias-tag">divorce</span><span class="alias-tag">separar</span></div>
+      </div>
+
+      <div class="cmd-card" data-cmd="cantada flirtar crush enviar cantada flerte">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>cantada</div>
+        <div class="cmd-desc">Envia uma cantada aleatória ou personalizada para alguém tentar a sorte!</div>
+        <div class="cmd-aliases"><span class="alias-tag">flirtar</span><span class="alias-tag">crush</span></div>
+        <div class="cmd-usage">!cantada @user</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="duo pduo parceiro squad parceiro de jogo buscar duo">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>duo</div>
+        <div class="cmd-desc">Procura um parceiro de jogo — configure seu perfil com game, rank, plataforma e estilo.</div>
+        <div class="cmd-aliases"><span class="alias-tag">pduo</span><span class="alias-tag">parceiro</span><span class="alias-tag">squad</span></div>
+      </div>
+
+      <div class="cmd-card" data-cmd="reputacao rep reputar estrela dar reputação positiva">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>reputacao</div>
+        <div class="cmd-desc">Dá +1 de reputação para alguém que você admira. Apenas 1 vez por dia.</div>
+        <div class="cmd-aliases"><span class="alias-tag">rep</span><span class="alias-tag">reputar</span><span class="alias-tag">estrela</span></div>
+        <div class="cmd-usage">!reputacao @user</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="segredo admira crush admirar admire alguém secretamente admiradores">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>segredo</div>
+        <div class="cmd-desc">Admire alguém em segredo ou veja quem te admira — sistema anônimo de crush.</div>
+        <div class="cmd-aliases"><span class="alias-tag">admira</span><span class="alias-tag">crush</span><span class="alias-tag">admirar</span></div>
+        <div class="cmd-usage">!segredo @user · !segredo ver</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="vinculo bond obsessao conexao ligacao vínculos obsessão usuários">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>vinculo</div>
+        <div class="cmd-desc">Veja seus vínculos de obsessão com outros usuários — quanto mais interagem, mais forte o vínculo.</div>
+        <div class="cmd-aliases"><span class="alias-tag">bond</span><span class="alias-tag">obsessao</span><span class="alias-tag">conexao</span></div>
+        <div class="cmd-usage">!vinculo · !vinculo @user</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="memorias memories historia album memórias casal histórico">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>memorias</div>
+        <div class="cmd-desc">Veja as memórias registradas do casal — marcos importantes da relação.</div>
+        <div class="cmd-aliases"><span class="alias-tag">memories</span><span class="alias-tag">historia</span><span class="alias-tag">album</span></div>
+        <div class="cmd-usage">!memorias · !memorias @user</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="personalidade arquetipo aura psico arquétipo psicológico escolha">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>personalidade</div>
+        <div class="cmd-desc">Veja ou escolha seu arquétipo psicológico — Misterioso, Dominador, Sedutor, Protetor e mais.</div>
+        <div class="cmd-aliases"><span class="alias-tag">arquetipo</span><span class="alias-tag">aura</span><span class="alias-tag">psico</span></div>
+      </div>
+
+      <div class="cmd-card" data-cmd="pet bichinho animal ver cuidar pet info largar">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>pet</div>
+        <div class="cmd-desc">Cuide do seu pet virtual — alimente, brinque e acompanhe fome e felicidade.</div>
+        <div class="cmd-aliases"><span class="alias-tag">bichinho</span><span class="alias-tag">animal</span></div>
+        <div class="cmd-usage">!pet · !pet cuidar · !pet info · !pet largar</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="casa house lar moradia home casa virtual gerencie">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>casa</div>
+        <div class="cmd-desc">Gerencie sua casa virtual — compre, decore com temas e receba visitas de outros.</div>
+        <div class="cmd-aliases"><span class="alias-tag">house</span><span class="alias-tag">lar</span><span class="alias-tag">moradia</span><span class="alias-tag">home</span></div>
+        <div class="cmd-usage">!casa · !casa info · !casa tema neon</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="filhos filho adotar bebe crianca filhos adote gerenciar">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>filhos</div>
+        <div class="cmd-desc">Adote filhos virtuais, cuide deles e ensine habilidades — sistema de família completo.</div>
+        <div class="cmd-aliases"><span class="alias-tag">filho</span><span class="alias-tag">adotar</span><span class="alias-tag">bebe</span></div>
+        <div class="cmd-usage">!filhos · !filhos adotar · !filhos cuidar</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="feed post postar publicar timeline feed social poste">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>feed</div>
+        <div class="cmd-desc">Posta no feed social do servidor — texto, reações e interações com outros membros.</div>
+        <div class="cmd-aliases"><span class="alias-tag">post</span><span class="alias-tag">postar</span><span class="alias-tag">publicar</span><span class="alias-tag">timeline</span></div>
+        <div class="cmd-usage">!feed postar &lt;texto&gt; · !feed ver · !feed reagir &lt;id&gt;</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="status titulo elite estatuto títulos elite servidor">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>status</div>
+        <div class="cmd-desc">Veja os títulos de elite do servidor e quem os possui atualmente.</div>
+        <div class="cmd-aliases"><span class="alias-tag">titulo</span><span class="alias-tag">elite</span><span class="alias-tag">estatuto</span></div>
+        <div class="cmd-usage">!status · !status @user</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="calor heat atividade hype calor social servidor bônus">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>calor</div>
+        <div class="cmd-desc">Veja o calor social do servidor — quanto mais quente, mais bônus de XP e moedas para todos!</div>
+        <div class="cmd-aliases"><span class="alias-tag">heat</span><span class="alias-tag">atividade</span><span class="alias-tag">hype</span></div>
+      </div>
+
+      <div class="cmd-card" data-cmd="evento event eventos veja evento ativo momento">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>evento</div>
+        <div class="cmd-desc">Veja o evento que está rodando agora — bônus de XP, caça ao tesouro, bingo e mais.</div>
+        <div class="cmd-aliases"><span class="alias-tag">event</span><span class="alias-tag">eventos</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════ DARK LOVE ══════════════════════════ -->
+  <div class="cat-section cat-dark" data-cat="dark">
+    <div class="cat-header">
+      <div class="cat-icon" style="background:rgba(139,42,255,.12);border:1px solid rgba(139,42,255,.25);">🖤</div>
+      <div><div class="cat-title" style="color:var(--purple2)">Dark Love</div><div style="font-size:12px;color:var(--muted);margin-top:2px">Sistema D/s, coleiras, contratos e desafios</div></div>
+      <div class="cat-count">7 cmds</div>
+    </div>
+    <div class="cat-divider"></div>
+    <div class="cmd-grid">
+
+      <div class="cmd-card" data-cmd="darklove dl dark bdsm sistema dark love perfil coleira">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>darklove</div>
+        <div class="cmd-desc">Painel do sistema Dark Love — configure seu papel (Dom/Sub), veja status e comandos disponíveis.</div>
+        <div class="cmd-aliases"><span class="alias-tag">dl</span><span class="alias-tag">dark</span><span class="alias-tag">bdsm</span></div>
+      </div>
+
+      <div class="cmd-card" data-cmd="coleira collar leash corrente colocar coleira digital alguém">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>coleira</div>
+        <div class="cmd-desc">Coloca uma coleira digital simbólica em alguém, marcando o vínculo Dom/Sub entre vocês.</div>
+        <div class="cmd-aliases"><span class="alias-tag">collar</span><span class="alias-tag">leash</span><span class="alias-tag">corrente</span></div>
+        <div class="cmd-usage">!coleira @user</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="tirarcoleira removecoleira soltar libertar remover coleira">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>tirarcoleira</div>
+        <div class="cmd-desc">Remove a coleira — tanto o dominante quanto o coleirado podem usar este comando.</div>
+        <div class="cmd-aliases"><span class="alias-tag">removecoleira</span><span class="alias-tag">soltar</span><span class="alias-tag">libertar</span></div>
+        <div class="cmd-usage">!tirarcoleira @user</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="contrato contract pacto criar contrato dark love submissão">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>contrato</div>
+        <div class="cmd-desc">Cria um contrato simbólico — Submissão, Proteção, Fidelidade, Treino ou Adoração.</div>
+        <div class="cmd-aliases"><span class="alias-tag">contract</span><span class="alias-tag">pacto</span></div>
+        <div class="cmd-usage">!contrato @user submissao</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="desafio challenge darkdesafio enviar desafio dark">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>desafio</div>
+        <div class="cmd-desc">Envia um desafio dark para alguém. Pode ser aleatório ou personalizado.</div>
+        <div class="cmd-aliases"><span class="alias-tag">challenge</span><span class="alias-tag">darkdesafio</span></div>
+        <div class="cmd-usage">!desafio @user · !desafio @user [texto]</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="confissao confession anonimo confessar confissão anônima canal">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>confissao</div>
+        <div class="cmd-desc">Envia uma confissão anônima no canal configurado — ninguém saberá que foi você.</div>
+        <div class="cmd-aliases"><span class="alias-tag">confession</span><span class="alias-tag">anonimo</span><span class="alias-tag">confessar</span></div>
+      </div>
+
+      <div class="cmd-card" data-cmd="prova proof evidencia enviar prova imagem vídeo auto-delete">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>prova</div>
+        <div class="cmd-desc">Envia uma prova (imagem/vídeo) para alguém visualizar. Auto-delete após alguns segundos.</div>
+        <div class="cmd-aliases"><span class="alias-tag">proof</span><span class="alias-tag">evidencia</span></div>
+        <div class="cmd-usage">!prova @user [arquivo]</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════ ADMIN ══════════════════════════ -->
+  <div class="cat-section cat-admin" data-cat="admin">
+    <div class="cat-header">
+      <div class="cat-icon" style="background:rgba(255,64,96,.1);border:1px solid rgba(255,64,96,.2);">🛡️</div>
+      <div><div class="cat-title" style="color:var(--red)">Administração</div><div style="font-size:12px;color:var(--muted);margin-top:2px">Moderação e ferramentas de gerenciamento</div></div>
+      <div class="cat-count">9 cmds</div>
+    </div>
+    <div class="cat-divider"></div>
+    <div class="cmd-grid">
+
+      <div class="cmd-card" data-cmd="ban banir bane membro servidor moderação">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>ban <span class="cmd-admin-tag">MOD</span></div>
+        <div class="cmd-desc">Bane um membro permanentemente do servidor com registro de motivo.</div>
+        <div class="cmd-aliases"><span class="alias-tag">banir</span></div>
+        <div class="cmd-usage">!ban @user motivo</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="kick expulsar expulsa membro servidor">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>kick <span class="cmd-admin-tag">MOD</span></div>
+        <div class="cmd-desc">Expulsa um membro do servidor (pode voltar com convite).</div>
+        <div class="cmd-aliases"><span class="alias-tag">expulsar</span></div>
+        <div class="cmd-usage">!kick @user motivo</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="mute silenciar timeout silencia membro tempo">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>mute <span class="cmd-admin-tag">MOD</span></div>
+        <div class="cmd-desc">Silencia um membro por um tempo determinado. Aceita: 10m, 1h, 1d.</div>
+        <div class="cmd-aliases"><span class="alias-tag">silenciar</span><span class="alias-tag">timeout</span></div>
+        <div class="cmd-usage">!mute @user 10m spam</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="warn avisar advertir adverte membro">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>warn <span class="cmd-admin-tag">MOD</span></div>
+        <div class="cmd-desc">Adverte um membro com registro de motivo. Acúmulo de warns pode gerar punição.</div>
+        <div class="cmd-aliases"><span class="alias-tag">avisar</span><span class="alias-tag">advertir</span></div>
+        <div class="cmd-usage">!warn @user comportamento</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="warns advertencias warnlist lista advertências membro">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>warns <span class="cmd-admin-tag">MOD</span></div>
+        <div class="cmd-desc">Lista todas as advertências de um membro com data, motivo e moderador responsável.</div>
+        <div class="cmd-aliases"><span class="alias-tag">advertencias</span><span class="alias-tag">warnlist</span></div>
+        <div class="cmd-usage">!warns @user</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="softban sb bane desbane imediatamente limpa mensagens">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>softban <span class="cmd-admin-tag">MOD</span></div>
+        <div class="cmd-desc">Bane e desbane imediatamente — limpa as mensagens do usuário sem bani-lo permanentemente.</div>
+        <div class="cmd-aliases"><span class="alias-tag">sb</span></div>
+        <div class="cmd-usage">!softban @user</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="unban desbanir desbane usuário id">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>unban <span class="cmd-admin-tag">MOD</span></div>
+        <div class="cmd-desc">Desbane um usuário usando o ID do Discord.</div>
+        <div class="cmd-aliases"><span class="alias-tag">desbanir</span></div>
+        <div class="cmd-usage">!unban 123456789</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="clear purge limpar apagar apaga mensagens canal">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>clear <span class="cmd-admin-tag">MOD</span></div>
+        <div class="cmd-desc">Apaga várias mensagens do canal de uma vez. Máximo de 100 mensagens por uso.</div>
+        <div class="cmd-aliases"><span class="alias-tag">purge</span><span class="alias-tag">limpar</span><span class="alias-tag">apagar</span></div>
+        <div class="cmd-usage">!clear 10</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="config configurar setup painel configuração bot canal cargo">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>config <span class="cmd-admin-tag">ADMIN</span></div>
+        <div class="cmd-desc">Painel de configuração completo — boas-vindas, tickets, calls privadas, anti-nuke e economia.</div>
+        <div class="cmd-aliases"><span class="alias-tag">configurar</span><span class="alias-tag">setup</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════ UTILIDADE ══════════════════════════ -->
+  <div class="cat-section cat-util" data-cat="util">
+    <div class="cat-header">
+      <div class="cat-icon" style="background:rgba(41,217,255,.1);border:1px solid rgba(41,217,255,.2);">⚙️</div>
+      <div><div class="cat-title" style="color:var(--blue)">Utilidade</div><div style="font-size:12px;color:var(--muted);margin-top:2px">Informações, ajuda e ferramentas gerais</div></div>
+      <div class="cat-count">7 cmds</div>
+    </div>
+    <div class="cat-divider"></div>
+    <div class="cmd-grid">
+
+      <div class="cmd-card" data-cmd="ajuda help h menu comandos painel todos comandos">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>ajuda</div>
+        <div class="cmd-desc">Painel principal de ajuda — todos os comandos organizados por categoria dentro do Discord.</div>
+        <div class="cmd-aliases"><span class="alias-tag">help</span><span class="alias-tag">menu</span><span class="alias-tag">comandos</span></div>
+      </div>
+
+      <div class="cmd-card" data-cmd="ping p latencia latência bot">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>ping</div>
+        <div class="cmd-desc">Mostra a latência atual do bot com o servidor do Discord.</div>
+        <div class="cmd-aliases"><span class="alias-tag">p</span><span class="alias-tag">latencia</span></div>
+      </div>
+
+      <div class="cmd-card" data-cmd="serverinfo servidor si informações servidor membros">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>serverinfo</div>
+        <div class="cmd-desc">Informações detalhadas do servidor — membros, cargos, canais, boost e data de criação.</div>
+        <div class="cmd-aliases"><span class="alias-tag">servidor</span><span class="alias-tag">si</span></div>
+      </div>
+
+      <div class="cmd-card" data-cmd="userinfo ui usuario informações usuário id discord">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>userinfo</div>
+        <div class="cmd-desc">Informações detalhadas de um usuário — ID, cargos, data de entrada e data de criação.</div>
+        <div class="cmd-aliases"><span class="alias-tag">ui</span><span class="alias-tag">usuario</span></div>
+        <div class="cmd-usage">!userinfo · !userinfo @user</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="ticket suporte help-ticket abrir ticket suporte">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>ticket</div>
+        <div class="cmd-desc">Abre um ticket de suporte privado com a equipe do servidor.</div>
+        <div class="cmd-aliases"><span class="alias-tag">suporte</span><span class="alias-tag">abrir</span></div>
+      </div>
+
+      <div class="cmd-card" data-cmd="addgrana addmoney addsaldo admin adiciona dinheiro">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>addgrana <span class="cmd-admin-tag">ADMIN</span></div>
+        <div class="cmd-desc">Adiciona dinheiro à conta de um usuário. Apenas administradores.</div>
+        <div class="cmd-aliases"><span class="alias-tag">addmoney</span><span class="alias-tag">addsaldo</span></div>
+        <div class="cmd-usage">!addgrana @user 1000</div>
+      </div>
+
+      <div class="cmd-card" data-cmd="resetgrana resetmoney resetsaldo zeargrana admin zera dinheiro">
+        <div class="cmd-name"><span class="cmd-prefix">!</span>resetgrana <span class="cmd-admin-tag">ADMIN</span></div>
+        <div class="cmd-desc">Zera o saldo de um usuário. Apenas administradores.</div>
+        <div class="cmd-aliases"><span class="alias-tag">resetmoney</span><span class="alias-tag">zeargrana</span></div>
+        <div class="cmd-usage">!resetgrana @user</div>
+      </div>
+
+    </div>
   </div>
 
 </div>
 
 <script>
-// ── Constants ────────────────────────────────────────────────────────────────
-const CARD_TIERS = [
-  { name:"Black Elite", min:100000, color:"#10101e", glow:"#c9a000", icon:"⚫", perks:"Juros 3%/dia • Crime +15% • Loja -10%" },
-  { name:"Dominador",   min:50000,  color:"#0d0030", glow:"#9b59b6", icon:"💜", perks:"Juros 2.5%/dia • Crime +10% • Transfer VIP" },
-  { name:"Luxúria",     min:25000,  color:"#1a0000", glow:"#e74c3c", icon:"🔴", perks:"Juros 2%/dia • Presente bônus duplo" },
-  { name:"Neon",        min:10000,  color:"#080020", glow:"#a855f7", icon:"🟣", perks:"Juros 2%/dia • XP +10%" },
-  { name:"Standard",    min:0,      color:"#00100a", glow:"#27ae60", icon:"🟢", perks:"Juros 2%/dia • Acesso básico" },
-];
-const TYPE_ICONS = {
-  earn:"💚", spend:"🔴", transfer_in:"💙", transfer_out:"🟠", interest:"📈",
-  crime:"🔫", daily:"🎁", work:"💼", gift:"🎀", steal:"🦹", pix:"💸",
-};
-const TYPE_CLS = {
-  earn:"li-earn", spend:"li-spend", interest:"li-interest", crime:"li-crime",
-  daily:"li-daily", work:"li-work", gift:"li-earn", steal:"li-steal",
-  transfer_in:"li-earn", transfer_out:"li-spend", pix:"li-spend",
-};
-const TABS = ["banco","extrato","investir","perfil","social","psicologia","darklove","vida"];
+let activeFilter = 'all';
 
-let currentUser = null;
-let currentTab  = "banco";
+// ── Intersection Observer: animate cards on scroll ────────────────────────────
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting && !e.target.classList.contains('visible') && !e.target.classList.contains('hidden')) {
+      e.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.05, rootMargin: '0px 0px -20px 0px' });
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
-const fmt = n => (n||0).toLocaleString("pt-BR");
-const fmtM = n => fmt(n) + " 💰";
-function fmtDate(iso) {
-  if (!iso) return "—";
-  const d=new Date(iso), now=new Date(), diff=Math.floor((now-d)/1000);
-  if (diff<60)    return "agora mesmo";
-  if (diff<3600)  return Math.floor(diff/60)+"m atrás";
-  if (diff<86400) return Math.floor(diff/3600)+"h atrás";
-  if (diff<604800)return Math.floor(diff/86400)+"d atrás";
-  return d.toLocaleDateString("pt-BR");
-}
-function getCard(total){ return CARD_TIERS.find(c=>total>=c.min)||CARD_TIERS[CARD_TIERS.length-1]; }
-function progBar(pct,color){
-  return `<div class="prog-bar"><div class="prog-fill" style="width:${Math.min(100,pct)}%;${color?`background:${color}`:''}"></div></div>`;
-}
-function rpgBar(val,max,color){
-  return `<div class="rpg-bar"><div class="rpg-fill" style="width:${Math.min(100,val/max*100)}%;background:${color}"></div></div>`;
-}
-function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+document.querySelectorAll('.cmd-card').forEach((c, i) => {
+  c.style.animationDelay = `${(i % 8) * 0.04}s`;
+  observer.observe(c);
+});
 
-// ── Load user ────────────────────────────────────────────────────────────────
-async function loadUser(){
-  const userId  = document.getElementById("searchId").value.trim();
-  const guildId = document.getElementById("searchGuild").value.trim();
-  const errEl   = document.getElementById("searchError");
-  errEl.innerHTML = "";
-  if (!userId){ errEl.innerHTML = `<div class="error-msg">⚠️ Informe o User ID do Discord</div>`; return; }
-  try {
-    const res = await fetch(`/api/user/${userId}${guildId?"?g="+guildId:""}`);
-    if (!res.ok){ errEl.innerHTML=`<div class="error-msg">❌ Usuário não encontrado. Verifique o ID.</div>`; return; }
-    currentUser = await res.json();
-    document.getElementById("rankSection").style.display = "none";
-    document.getElementById("mainContent").style.display = "block";
-    document.getElementById("headerSub").textContent = currentUser.username;
-    switchTab(currentTab);
-    loadRanking(guildId);
-  } catch(e){ errEl.innerHTML=`<div class="error-msg">❌ Erro ao conectar: ${e.message}</div>`; }
-}
+// ── Search ────────────────────────────────────────────────────────────────────
+function filterAll() {
+  const q = document.getElementById('searchBox').value.toLowerCase().trim();
+  let visible = 0;
 
-// ── Tabs ─────────────────────────────────────────────────────────────────────
-function switchTab(tab){
-  currentTab = tab;
-  document.querySelectorAll(".tab").forEach((t,i)=>t.classList.toggle("active",TABS[i]===tab));
-  TABS.forEach(t=>{ document.getElementById("tab"+cap(t)).style.display = t===tab?"block":"none"; });
-  const renders={banco:renderBanco,extrato:renderExtrato,investir:renderInvestir,perfil:renderPerfil,social:renderSocial,psicologia:renderPsicologia,darklove:renderDarkLove,vida:renderVida};
-  if (currentUser && renders[tab]) renders[tab]();
-}
+  document.querySelectorAll('.cmd-card').forEach(card => {
+    const data  = card.dataset.cmd || '';
+    const text  = card.innerText.toLowerCase();
+    const match = !q || data.includes(q) || text.includes(q);
+    const catOk = activeFilter === 'all' || card.closest('[data-cat]')?.dataset.cat === activeFilter;
 
-// ── BANCO ────────────────────────────────────────────────────────────────────
-function renderBanco(){
-  const u=currentUser, card=getCard(u.total), cardIdx=CARD_TIERS.indexOf(card);
-  const next=cardIdx>0?CARD_TIERS[cardIdx-1]:null;
-  const pct=next?Math.min(100,Math.floor(u.total/next.min*100)):100;
-  document.getElementById("tabBanco").innerHTML=`
-    <div class="vcard card-glow" style="background:${card.color};border:1px solid ${card.glow}30;box-shadow:0 0 40px ${card.glow}18">
-      <div class="vcard-glow" style="background:${card.glow}"></div>
-      <div class="vc-tier">${card.icon} ${card.name}</div>
-      <div>
-        <div class="vc-number">•••• •••• •••• ${u.userId.slice(-4)}</div>
-        <div class="vc-name">${u.username}</div>
-        <div class="vc-perks">${card.perks}</div>
-      </div>
-    </div>
+    if (match && catOk) {
+      card.classList.remove('hidden');
+      if (!card.classList.contains('visible')) card.classList.add('visible');
+      visible++;
+    } else {
+      card.classList.add('hidden');
+      card.classList.remove('visible');
+    }
+  });
 
-    <div class="grid3">
-      <div class="stat"><div class="stat-label">👜 Carteira</div><div class="stat-val c-green">${fmtM(u.wallet)}</div></div>
-      <div class="stat"><div class="stat-label">🏦 Banco</div><div class="stat-val">${fmtM(u.bank)}</div></div>
-      <div class="stat"><div class="stat-label">💎 Patrimônio</div><div class="stat-val c-gold">${fmtM(u.total)}</div></div>
-    </div>
-    <div class="grid3">
-      <div class="stat"><div class="stat-label">📈 Rend./dia</div><div class="stat-val c-green">+${fmtM(Math.floor(u.bank*.02))}</div></div>
-      <div class="stat"><div class="stat-label">🔥 Streak</div><div class="stat-val c-pink">${u.streak} dia(s)</div></div>
-      <div class="stat"><div class="stat-label">💹 Acumulado</div><div class="stat-val">${fmtM(u.totalEarned)}</div></div>
-    </div>
+  // Show/hide category sections
+  document.querySelectorAll('.cat-section').forEach(sec => {
+    const catOk  = activeFilter === 'all' || sec.dataset.cat === activeFilter;
+    const hasVis = catOk && [...sec.querySelectorAll('.cmd-card')].some(c => !c.classList.contains('hidden'));
+    sec.style.display = hasVis ? '' : 'none';
+  });
 
-    ${next?`
-    <div class="card">
-      <div class="sec" style="margin-top:0">⬆️ Progresso para ${next.icon} ${next.name}</div>
-      <div class="prog-wrap">
-        <div class="prog-labels"><span>${fmtM(u.total)}</span><span>${fmtM(next.min)}</span></div>
-        ${progBar(pct)}
-        <div style="font-size:12px;color:var(--muted);margin-top:6px">Faltam <strong>${fmtM(next.min-u.total)}</strong> para o próximo tier</div>
-      </div>
-    </div>`:
-    `<div class="card" style="text-align:center;padding:22px"><div style="font-size:32px">⚫👑</div><div style="font-weight:700;margin-top:8px">Tier Máximo!</div><div style="color:var(--muted);font-size:13px;margin-top:4px">Você chegou ao topo</div></div>`}
-
-    <div class="sec">🏆 Ranking do Servidor</div>
-    <div class="card" id="rankListInline"><div class="loading"></div></div>
-  `;
-  loadRankingInto("rankListInline", document.getElementById("searchGuild").value.trim());
-}
-
-// ── EXTRATO ──────────────────────────────────────────────────────────────────
-function renderExtrato(){
-  const ledger=(currentUser.ledger||[]);
-  const items=ledger.length?ledger.map(e=>{
-    const cls=TYPE_CLS[e.type]||"li-earn", icon=TYPE_ICONS[e.type]||"⚪", pos=(e.amount||0)>=0;
-    return `<div class="ledger-item">
-      <div class="ledger-icon ${cls}">${icon}</div>
-      <div class="ledger-desc">
-        <div class="ledger-name">${e.description||e.type||"Transação"}</div>
-        <div class="ledger-time">${fmtDate(e.timestamp)}</div>
-      </div>
-      <div class="ledger-amount" style="color:${pos?"var(--green)":"var(--red)"}">${pos?"+":""}${fmtM(e.amount)}</div>
-    </div>`;
-  }).join(""):`<div class="loading" style="padding:30px 0">Nenhuma transação ainda</div>`;
-  document.getElementById("tabExtrato").innerHTML=`
-    <div class="sec">📋 Histórico de Transações</div>
-    <div class="card">${items}</div>
-  `;
-}
-
-// ── INVESTIR ─────────────────────────────────────────────────────────────────
-function renderInvestir(){
-  const inv=currentUser.activeInvestment;
-  const invTypes={
-    acoes:{icon:"📊",name:"Ações Fictícias",risk:"Médio"},
-    crypto:{icon:"🪙",name:"Criptomoedas",risk:"Alto"},
-    imovel:{icon:"🏗️",name:"Imóveis",risk:"Baixo"},
-    negocio:{icon:"🏪",name:"Negócio",risk:"Médio-Alto"},
-    cassino:{icon:"🎰",name:"Cassino Virtual",risk:"Extremo"},
-  };
-  let invHtml="";
-  if(inv){
-    const t=invTypes[inv.type]||{icon:"📈",name:inv.typeName||inv.type,risk:"?"};
-    const ready=new Date(inv.readyAt)<=new Date();
-    const profit=inv.projectedProfit||0;
-    invHtml=`<div class="inv-card">
-      <div style="font-size:32px;margin-bottom:10px">${t.icon}</div>
-      <div style="font-size:18px;font-weight:700">${t.name}</div>
-      <div class="grid2" style="margin-top:14px">
-        <div class="stat"><div class="stat-label">💰 Investido</div><div class="stat-val">${fmtM(inv.amount)}</div></div>
-        <div class="stat"><div class="stat-label">📊 Projeção</div><div class="stat-val" style="color:${profit>=0?"var(--green)":"var(--red)"}">${profit>=0?"+":""}${fmtM(profit)}</div></div>
-      </div>
-      <div style="margin-top:12px;font-size:14px">
-        ${ready?`<span style="color:var(--green)">✅ Pronto! Use <code>!investir resgatar</code></span>`:`⏳ Retorno: <strong>${fmtDate(inv.readyAt)}</strong>`}
-      </div>
-    </div>`;
+  document.getElementById('totalCount').textContent = visible + ' comandos';
+  const nr = document.getElementById('noResults');
+  if (!visible) {
+    nr.classList.add('visible');
+    document.getElementById('noQuery').textContent = q || activeFilter;
   } else {
-    invHtml=`<div class="card" style="text-align:center;padding:40px 20px">
-      <div style="font-size:36px">📈</div>
-      <div style="font-weight:700;margin:12px 0">Nenhum Investimento Ativo</div>
-      <div style="color:var(--muted);font-size:14px">Use <code>!investir &lt;valor&gt; &lt;tipo&gt;</code> no Discord</div>
-    </div>`;
+    nr.classList.remove('visible');
   }
-  document.getElementById("tabInvestir").innerHTML=`
-    <div class="sec">📊 Investimento Ativo</div>
-    ${invHtml}
-    <div class="sec">📋 Tipos Disponíveis</div>
-    <div class="card">
-      ${Object.entries(invTypes).map(([k,v])=>`
-        <div style="padding:11px 0;border-bottom:1px solid var(--border)">
-          <div style="font-weight:600">${v.icon} ${v.name} <span class="chip">${k}</span></div>
-          <div style="font-size:12px;color:var(--muted);margin-top:3px">Risco: ${v.risk} • <code>!investir 5000 ${k}</code></div>
-        </div>`).join("")}
-    </div>
-  `;
 }
 
-// ── PERFIL ───────────────────────────────────────────────────────────────────
-function renderPerfil(){
-  const u=currentUser, p=u.profile||{};
-  const archetypes={misterioso:"🌑",dominador:"👑",carente:"💔",sedutor:"💋",protetor:"🛡️",manipulador:"🕷️",poetico:"✍️"};
-  const auraColors={divino:"#f1c40f",venenoso:"#a855f7",magnetico:"#e91e8c",sombrio:"#555",fogoETrevas:"#e74c3c",comum:"#555"};
-  const archIcon=archetypes[p.archetype]||"🌑", auraColor=auraColors[p.aura]||"#555";
-  const rpg=u.rpg||{};
-  const rpgStats=[
-    {name:"✨ Charme",key:"charm",color:"#e91e8c"},
-    {name:"🕷️ Manipulação",key:"manipulation",color:"#9b59b6"},
-    {name:"💋 Sedução",key:"seduction",color:"#e74c3c"},
-    {name:"🧠 Inteligência",key:"intelligence",color:"#3498db"},
-    {name:"👑 Dominância",key:"dominance",color:"#f1c40f"},
-    {name:"💔 Carência",key:"carencia",color:"#888"},
-  ];
-  document.getElementById("tabPerfil").innerHTML=`
-    <div class="card" style="text-align:center;padding:26px">
-      <div style="font-size:48px;filter:drop-shadow(0 0 10px ${auraColor})">${archIcon}</div>
-      <div style="font-size:20px;font-weight:800;margin:10px 0">${u.username}</div>
-      ${p.eliteTitle?`<div class="chip" style="color:var(--gold);border-color:${auraColor}50;margin-bottom:8px">👑 ${p.eliteTitle.replace(/_/g," ").toUpperCase()}</div>`:""}
-      <div>
-        <span class="chip">🌑 ${p.archetype||"misterioso"}</span>
-        ${p.aura&&p.aura!=="comum"?`<span class="chip" style="color:${auraColor}">✨ ${p.aura}</span>`:""}
-      </div>
-      ${p.bio?`<div style="font-size:13px;color:var(--muted);margin-top:12px;font-style:italic">"${p.bio}"</div>`:""}
-    </div>
-
-    <div class="grid3">
-      ${p.age?`<div class="stat"><div class="stat-label">🎂 Idade</div><div class="stat-val">${p.age}</div></div>`:""}
-      ${p.gender?`<div class="stat"><div class="stat-label">⚧ Gênero</div><div class="stat-val" style="font-size:16px">${p.gender}</div></div>`:""}
-      ${p.location?`<div class="stat"><div class="stat-label">📍 Local</div><div class="stat-val" style="font-size:16px">${p.location}</div></div>`:""}
-      <div class="stat"><div class="stat-label">⭐ Reputação</div><div class="stat-val c-gold">${fmt(p.reputation)}</div></div>
-      ${p.favoriteGame?`<div class="stat"><div class="stat-label">🎮 Jogo Fav.</div><div class="stat-val" style="font-size:14px">${p.favoriteGame}</div></div>`:""}
-    </div>
-
-    ${(p.hobbies||[]).length?`<div class="card"><div class="sec" style="margin-top:0">🎯 Hobbies</div><div>${p.hobbies.map(h=>`<span class="chip">${h}</span>`).join("")}</div></div>`:""}
-    ${(p.badges||[]).length?`<div class="card"><div class="sec" style="margin-top:0">🏅 Badges</div><div>${p.badges.map(b=>`<span class="chip">${b}</span>`).join("")}</div></div>`:""}
-
-    <div class="card">
-      <div class="sec" style="margin-top:0">🎲 Atributos RPG</div>
-      ${rpgStats.map(s=>`
-        <div class="rpg-row">
-          <div class="rpg-label">${s.name}</div>
-          ${rpgBar(rpg[s.key]||0,30,s.color)}
-          <div class="rpg-val" style="color:${s.color}">${rpg[s.key]||0}</div>
-        </div>`).join("")}
-    </div>
-  `;
+// ── Category filter ───────────────────────────────────────────────────────────
+function setFilter(cat, btn) {
+  activeFilter = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filterAll();
 }
 
-// ── SOCIAL ───────────────────────────────────────────────────────────────────
-function renderSocial(){
-  const u=currentUser, s=u.social||{}, r=u.relationship||{};
-  const xpNeeded=Math.floor(100*Math.pow(1.5,(s.level||1)-1));
-  const pct=Math.min(100,Math.floor((s.xp||0)/xpNeeded*100));
-  const stageMap={none:"Solteiro",conhecendo:"👀 Conhecendo",flertando:"😏 Flertando",ficante:"💫 Ficante",namorando:"💕 Namorando",alianca:"💍 Aliança",casado:"💍 Casado"};
-  document.getElementById("tabSocial").innerHTML=`
-    <div class="grid2">
-      <div class="stat"><div class="stat-label">⭐ Nível</div><div class="stat-val c-gold">${s.level||1}</div></div>
-      <div class="stat"><div class="stat-label">💬 Mensagens</div><div class="stat-val">${fmt(s.messages)}</div></div>
-    </div>
-    <div class="card">
-      <div class="sec" style="margin-top:0">📊 XP — Nível ${s.level||1}</div>
-      <div class="prog-wrap">
-        <div class="prog-labels"><span>${fmt(s.xp||0)} XP</span><span>${fmt(xpNeeded)} XP</span></div>
-        ${progBar(pct)}
-      </div>
-    </div>
-
-    <div class="sec">❤️ Relacionamento</div>
-    <div class="card">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
-        <div>
-          <div class="rel-badge">${stageMap[r.stage||"none"]||"Solteiro"}</div>
-          ${r.partnerId?`<div style="font-size:13px;color:var(--muted);margin-top:8px">Com <strong style="color:var(--text)">${r.partnerName||"—"}</strong></div>`:""}
-        </div>
-        ${r.stage&&r.stage!=="none"&&r.stageStartedAt?`<div class="stat" style="min-width:100px"><div class="stat-label">📅 Juntos há</div><div class="stat-val">${Math.floor((Date.now()-new Date(r.stageStartedAt))/86400000)} dias</div></div>`:""}
-      </div>
-      ${(r.children||[]).length?`<hr/><div class="stat-label" style="margin-bottom:6px">👶 Filhos</div><div>${r.children.map(c=>`<span class="chip">${c.name||"Filho"}</span>`).join("")}</div>`:""}
-    </div>
-
-    <div class="sec">💘 Perfil de Namoro</div>
-    <div class="card">
-      <div style="display:flex;gap:14px;flex-wrap:wrap">
-        <div class="stat" style="flex:1"><div class="stat-label">Status</div><div class="stat-val" style="font-size:15px">${u.dating?.active?"✅ Ativo":"❌ Inativo"}</div></div>
-        <div class="stat" style="flex:1"><div class="stat-label">Matches</div><div class="stat-val c-pink">${u.dating?.matchCount||0}</div></div>
-        <div class="stat" style="flex:1"><div class="stat-label">Duo</div><div class="stat-val" style="font-size:15px">${u.duo?.active?"✅ Ativo":"❌ Inativo"}</div></div>
-      </div>
-    </div>
-  `;
-}
-
-// ── PSICOLOGIA ───────────────────────────────────────────────────────────────
-function renderPsicologia(){
-  const p=currentUser.profile?.psychProfile||{loneliness:50,popularity:50,activityLevel:0};
-  function gauge(label,val,colorA,colorB){
-    return `<div class="psych-row">
-      <div class="psych-top"><span>${label}</span><span style="font-weight:700">${val}/100</span></div>
-      ${progBar(val,`linear-gradient(90deg,${colorA},${colorB})`)}
-    </div>`;
+// ── Mobile search (open header search on scroll) ──────────────────────────────
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault();
+    document.getElementById('searchBox').focus();
   }
-  document.getElementById("tabPsicologia").innerHTML=`
-    <div class="card">
-      <div class="sec" style="margin-top:0">🧠 Perfil Psicológico</div>
-      ${gauge("😢 Solidão",p.loneliness||50,"#667eea","#764ba2")}
-      ${gauge("🌟 Popularidade",p.popularity||50,"#f093fb","#f5576c")}
-      ${gauge("⚡ Nível de Atividade",Math.min(100,p.activityLevel||0),"#4facfe","#00f2fe")}
-    </div>
-    <div class="card">
-      <div class="sec" style="margin-top:0">📊 Interpretação</div>
-      <div style="font-size:13px;color:var(--muted);line-height:1.8">
-        ${(p.loneliness||50)>70?"💔 Altamente solitário — precisando de atenção":""}
-        ${(p.loneliness||50)>70?"<br>":""} 
-        ${(p.popularity||50)>70?"🌟 Muito popular no servidor! As pessoas te adoram!":""}
-        ${(p.activityLevel||0)>50?"<br>⚡ Usuário extremamente ativo":""}
-        ${(p.loneliness||50)<=70&&(p.popularity||50)<=70&&(p.activityLevel||0)<=50?"Perfil equilibrado. Continue interagindo!":""}
-      </div>
-    </div>
-  `;
-}
-
-// ── DARK LOVE ────────────────────────────────────────────────────────────────
-function renderDarkLove(){
-  const dl=currentUser.darkLove||{role:"none"};
-  const roleMap={none:{label:"Sem papel",cls:"dl-none",icon:"💤"},dom:{label:"Dominante",cls:"dl-dom",icon:"🔴"},sub:{label:"Submisso",cls:"dl-sub",icon:"⛓️"}};
-  const role=roleMap[dl.role]||roleMap.none;
-  document.getElementById("tabDarklove").innerHTML=`
-    <div class="card">
-      <div class="sec" style="margin-top:0">🖤 Status Dark Love</div>
-      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-        <span class="dl-badge ${role.cls}">${role.icon} ${role.label}</span>
-        ${dl.coleira?`<span class="chip" style="color:var(--pink)">⛓️ Coleira ativa</span>`:""}
-      </div>
-      ${dl.contractWith?`<div style="margin-top:12px;font-size:13px;color:var(--muted)">Contrato com <strong style="color:var(--text)"><@${dl.contractWith}></strong> — tipo: <strong>${dl.contractType||"?"}</strong></div>`:""}
-    </div>
-    <div class="grid2">
-      <div class="stat"><div class="stat-label">🤝 Confiança</div><div class="stat-val c-purple">${dl.trustLevel||0}/100</div></div>
-      <div class="stat"><div class="stat-label">✅ Tarefas</div><div class="stat-val">${dl.tasksCompleted||0}</div></div>
-    </div>
-    ${dl.trustLevel>=0?`<div class="card">
-      <div class="sec" style="margin-top:0">📊 Confiança</div>
-      ${progBar(dl.trustLevel||0,"linear-gradient(90deg,#9b27ff,#e91e8c)")}
-    </div>`:""}
-  `;
-}
-
-// ── VIDA ─────────────────────────────────────────────────────────────────────
-function renderVida(){
-  const h=currentUser.house||{}, pet=currentUser.pet||{adopted:false}, inv=currentUser.inventory||[];
-  document.getElementById("tabVida").innerHTML=`
-    <div class="sec">🏡 Casa Virtual</div>
-    ${h.level>0?`
-    <div class="card">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
-        <span style="font-size:28px">🏠</span>
-        <div><div style="font-weight:700;font-size:16px">${h.name||"Sua Casa"}</div><div style="color:var(--muted);font-size:12px">Nível ${h.level} • ${h.theme||"Default"}</div></div>
-      </div>
-      ${h.description?`<div style="font-size:13px;color:var(--muted);font-style:italic">"${h.description}"</div>`:""}
-      <hr/>
-      <div class="grid2">
-        <div class="stat"><div class="stat-label">💎 Valor</div><div class="stat-val c-gold">${fmtM(h.value)}</div></div>
-        <div class="stat"><div class="stat-label">👥 Visitas</div><div class="stat-val">${h.visitors||0}</div></div>
-      </div>
-    </div>`:
-    `<div class="card" style="text-align:center;padding:30px"><div style="font-size:36px">🏚️</div><div style="color:var(--muted);margin-top:10px">Sem casa ainda. Use <code>!casa comprar</code></div></div>`}
-
-    <div class="sec">🐾 Pet</div>
-    ${pet.adopted?`
-    <div class="card pet-card">
-      <span class="pet-emoji">${pet.emoji||"🐾"}</span>
-      <div style="font-size:18px;font-weight:700">${pet.name||"Sem nome"} <span style="color:var(--muted);font-size:14px">(${pet.type||"?"})</span></div>
-      <div class="grid2" style="margin-top:14px">
-        <div class="stat"><div class="stat-label">🍖 Fome</div>${progBar(pet.hunger||0,"linear-gradient(90deg,#f093fb,#f5576c)")}</div>
-        <div class="stat"><div class="stat-label">😊 Felicidade</div>${progBar(pet.happiness||0,"linear-gradient(90deg,#4facfe,#00f2fe)")}</div>
-      </div>
-    </div>`:
-    `<div class="card" style="text-align:center;padding:30px"><div style="font-size:36px">🐾</div><div style="color:var(--muted);margin-top:10px">Sem pet. Use <code>!pet adotar</code></div></div>`}
-
-    ${inv.length?`
-    <div class="sec">🎒 Inventário</div>
-    <div class="card">
-      ${inv.map(i=>`<span class="chip">${i.name||i.itemId||"Item"}</span>`).join("")}
-    </div>`:""}
-  `;
-}
-
-// ── Ranking ──────────────────────────────────────────────────────────────────
-async function loadRankingInto(elId, guildId){
-  const el=document.getElementById(elId);
-  if (!el) return;
-  try {
-    const res=await fetch(`/api/ranking/${guildId||"global"}`);
-    if (!res.ok){ el.innerHTML=`<div class="loading" style="padding:20px 0">Ranking indisponível</div>`; return; }
-    const list=await res.json();
-    if (!list.length){ el.innerHTML=`<div class="loading" style="padding:20px 0">Nenhum usuário ainda</div>`; return; }
-    const medalColors=["var(--gold)","#aab","#cd7f32"];
-    const medalIcons=["🥇","🥈","🥉"];
-    el.innerHTML=list.map((u,i)=>`
-      <div class="rank-item">
-        <div class="rank-num" style="color:${medalColors[i]||"var(--muted)"}">${i<3?medalIcons[i]:i+1}</div>
-        <div class="rank-info">
-          <div class="rank-name">${u.username}</div>
-          <div class="rank-badge">${u.card?.icon||""} ${u.card?.name||""} • Lv.${u.level||1}</div>
-        </div>
-        <div class="rank-total c-green">${fmtM(u.total)}</div>
-      </div>`).join("");
-  } catch(e){ el.innerHTML=`<div class="loading" style="padding:20px 0">Erro ao carregar ranking</div>`; }
-}
-
-async function loadRanking(guildId){ await loadRankingInto("rankList",guildId); }
-
-// ── Auto-load from URL ────────────────────────────────────────────────────────
-(function init(){
-  const p=new URLSearchParams(window.location.search);
-  const g=p.get("g")||p.get("guildId")||"";
-  const parts=window.location.pathname.split("/");
-  const autoId=parts[1]==="bank"&&parts[2]?parts[2]:"";
-  if (autoId){
-    document.getElementById("searchId").value=autoId;
-    document.getElementById("searchGuild").value=g;
-    document.getElementById("searchWrap").style.display="none";
-    loadUser();
-  }
-  loadRanking(g||"");
-
-  (function removeBadge(){
-    function nuke(el){ if(el){ el.style.cssText="display:none!important;"; el.remove&&el.remove(); } }
-    function sweep(){ document.querySelectorAll('[id*="badge-container"],[class*="badge-ui"],iframe[src*="/badge"]').forEach(nuke); }
-    sweep();
-    new MutationObserver(sweep).observe(document.documentElement,{childList:true,subtree:true});
-  })();
-})();
+});
 </script>
 </body>
 </html>

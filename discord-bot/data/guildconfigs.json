@@ -24,7 +24,7 @@
       "staffRoleId": null,
       "panelChannelId": null,
       "panelMessageId": null,
-      "count": 0
+      "count": 1
     },
     "privateCalls": {
       "enabled": false,
@@ -52,6 +52,6 @@
       "punishAction": "ban"
     },
     "createdAt": "2026-05-23T06:38:53.908Z",
-    "updatedAt": "2026-05-23T06:38:53.908Z"
+    "updatedAt": "2026-05-23T09:19:25.624Z"
   }
 ]
