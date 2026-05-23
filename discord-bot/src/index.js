@@ -14,6 +14,9 @@ try {
       try {
         process.kill(oldPid, "SIGTERM");
         logger.info(`🔄 Instância anterior (PID ${oldPid}) encerrada.`);
+        // Wait for old process to release the Discord gateway before we connect
+        const deadline = Date.now() + 2000;
+        while (Date.now() < deadline) { /* sync spin — intentional startup delay */ }
       } catch (_) {}
     }
   }
@@ -51,11 +54,17 @@ client.pendingMarriages = new Map();
 client.pendingCollars = new Map();
 client.privateCallTimers = new Map();
 
+// ── Remove any ghost listeners left by a partial Replit restart ──────────────
+client.removeAllListeners();
+
 loadCommands(client);
 loadEvents(client);
 loadButtons(client);
 loadModals(client);
 loadSelectMenus(client);
+
+// ── Confirm listener counts at startup — should always be exactly 1 each ────
+logger.info(`🔍 Listeners — messageCreate: ${client.listenerCount("messageCreate")} | interactionCreate: ${client.listenerCount("interactionCreate")} | ready: ${client.listenerCount("ready")}`);
 
 startWebServer(client);
 logger.info("🗄️  Usando banco de dados local (JSON files)");
