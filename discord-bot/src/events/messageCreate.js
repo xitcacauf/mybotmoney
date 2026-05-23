@@ -1,4 +1,5 @@
 const fs     = require("fs");
+const path   = require("path");
 const config = require("../config/config");
 const logger = require("../utils/logger");
 const { checkCooldown } = require("../utils/cooldown");
@@ -11,34 +12,31 @@ const { addBondXP } = require("../systems/ObsessionSystem");
 const { addHeat } = require("../systems/SocialHeat");
 const { isEventActive } = require("../systems/EventSystem");
 
-// ── Dedup em memória (intra-processo) ────────────────────────────────────────
-const processedMessages  = new Set();
-const activeCommands     = new Set();
+// ─────────────────────────────────────────────────────────────────────────────
+// DEDUP — três camadas independentes:
+//   1. Set em memória        → bloqueia dentro do mesmo processo
+//   2. Arquivo atômico /tmp  → bloqueia cross-processo/instância (flag:'wx')
+//   3. activeCommands Set    → bloqueia execução concorrente do mesmo cmd/user
+// ─────────────────────────────────────────────────────────────────────────────
+const processedMessages = new Set();
+const activeCommands    = new Set();
 const recentChannelUsers = new Map();
 
-// ── Dedup persistente em arquivo (inter-processo / múltiplas instâncias) ─────
-const DEDUP_FILE = "/tmp/.ll_cmd_dedup.json";
-const DEDUP_TTL  = 20_000; // 20 segundos
+const LOCK_DIR = "/tmp/ll_locks";
+try { fs.mkdirSync(LOCK_DIR, { recursive: true }); } catch {}
 
 function claimMessage(msgId) {
-  // Retorna true se pode processar, false se já foi processado por outra instância
-  let store = {};
-  try { store = JSON.parse(fs.readFileSync(DEDUP_FILE, "utf8")); } catch {}
-
-  const now = Date.now();
-  // Limpar entradas antigas
-  for (const id of Object.keys(store)) {
-    if (now - store[id] > DEDUP_TTL) delete store[id];
+  // Camada atômica: writeFileSync com flag 'wx' falha se o arquivo já existe.
+  // É a única operação verdadeiramente atômica no sistema de arquivos Unix.
+  const lockPath = path.join(LOCK_DIR, `${msgId}.lock`);
+  try {
+    fs.writeFileSync(lockPath, String(Date.now()), { flag: "wx" });
+    // Remove o lock após 20 segundos para não acumular arquivos
+    setTimeout(() => { try { fs.unlinkSync(lockPath); } catch {} }, 20_000);
+    return true;  // conseguimos o lock = podemos processar
+  } catch {
+    return false; // arquivo já existe = outra instância já processou
   }
-
-  if (store[msgId]) {
-    // Já processado por outra instância — silenciosamente ignora
-    return false;
-  }
-
-  store[msgId] = now;
-  try { fs.writeFileSync(DEDUP_FILE, JSON.stringify(store)); } catch {}
-  return true;
 }
 
 module.exports = {
@@ -46,15 +44,15 @@ module.exports = {
   async execute(message, client) {
     if (message.author.bot || !message.guild) return;
 
-    // ── Ignorar mensagens antigas (replay do gateway no reconnect) ────────────
+    // ── Ignorar replays do gateway (mensagens enviadas antes do bot iniciar) ──
     if (Date.now() - message.createdTimestamp > 5000) return;
 
-    // ── Dedup 1: Set em memória (rápido, síncrono) ────────────────────────────
+    // ── Camada 1: Set em memória ──────────────────────────────────────────────
     if (processedMessages.has(message.id)) return;
     processedMessages.add(message.id);
-    setTimeout(() => processedMessages.delete(message.id), DEDUP_TTL);
+    setTimeout(() => processedMessages.delete(message.id), 20_000);
 
-    // ── Dedup 2: arquivo compartilhado (cross-instância) ─────────────────────
+    // ── Camada 2: lock atômico em arquivo ────────────────────────────────────
     if (!claimMessage(message.id)) return;
 
     const prefix    = config.prefix;
@@ -92,7 +90,6 @@ module.exports = {
           }
         }
         chUsers.set(message.author.id, Date.now());
-
         if (chUsers.size > 20) {
           for (const [uid, ts] of chUsers.entries()) {
             if (Date.now() - ts > 300000) chUsers.delete(uid);
@@ -105,7 +102,7 @@ module.exports = {
       if (!isCommand) return;
     }
 
-    // ── Executar comando ──────────────────────────────────────────────────────
+    // ── Parsear comando ───────────────────────────────────────────────────────
     const args        = message.content.slice(prefix.length).trim().split(/\s+/);
     const commandName = args.shift().toLowerCase();
     if (!commandName) return;
@@ -116,45 +113,40 @@ module.exports = {
 
     if (!command) return;
 
-    // ── Dedup 3: guard de execução concorrente do mesmo cmd/usuário ───────────
+    // ── Camada 3: guard de execução concorrente ───────────────────────────────
     const execKey = `${message.author.id}_${command.name}`;
     if (activeCommands.has(execKey)) return;
     activeCommands.add(execKey);
 
     try {
+      // ── Permissões ────────────────────────────────────────────────────────
       if (command.staffOnly && !checkPermission(message, "staff")) {
-        return message
-          .reply({ embeds: [errorEmbed("Sem Permissão", "Você não tem permissão para usar este comando.")] })
-          .then((m) => setTimeout(() => m.delete().catch(() => {}), 5000));
+        return message.reply({ embeds: [errorEmbed("Sem Permissão", "Você não tem permissão para usar este comando.")] }).catch(() => {});
       }
-
       if (command.adminOnly && !checkPermission(message, "admin")) {
-        return message
-          .reply({ embeds: [errorEmbed("Sem Permissão", "Apenas administradores podem usar este comando.")] })
-          .then((m) => setTimeout(() => m.delete().catch(() => {}), 5000));
+        return message.reply({ embeds: [errorEmbed("Sem Permissão", "Apenas administradores podem usar este comando.")] }).catch(() => {});
       }
-
       if (command.ownerOnly && !checkPermission(message, "owner")) {
-        return message
-          .reply({ embeds: [errorEmbed("Sem Permissão", "Apenas o dono pode usar este comando.")] })
-          .then((m) => setTimeout(() => m.delete().catch(() => {}), 5000));
+        return message.reply({ embeds: [errorEmbed("Sem Permissão", "Apenas o dono pode usar este comando.")] }).catch(() => {});
       }
 
+      // ── Cooldown ──────────────────────────────────────────────────────────
       const cooldownSecs = command.cooldown || config.cooldowns?.default || 3;
       const cd = checkCooldown(message.author.id, command.name, cooldownSecs);
       if (cd.onCooldown) {
-        // Não auto-deletar — usuário precisa VER que está em cooldown para não reenviar
-        return message
-          .reply({ embeds: [warningEmbed("⏳ Cooldown", `Aguarde **${cd.timeLeft}s** antes de usar \`!${command.name}\` novamente.`)] })
-          .catch(() => {});
+        return message.reply({
+          embeds: [warningEmbed("⏳ Cooldown", `Aguarde **${cd.timeLeft}s** antes de usar \`!${command.name}\` novamente.`)],
+        }).catch(() => {});
       }
 
+      // ── Typing indicator: dá sensação de processamento ────────────────────
+      message.channel.sendTyping().catch(() => {});
+
+      // ── Executar ──────────────────────────────────────────────────────────
       await command.execute(message, args, client);
     } catch (err) {
       logger.error(`Erro no comando [${commandName}]: ${err.message}\n${err.stack}`);
-      message
-        .reply({ embeds: [errorEmbed("Erro Interno", "Ocorreu um erro ao executar o comando.")] })
-        .catch(() => {});
+      message.reply({ embeds: [errorEmbed("Erro Interno", "Ocorreu um erro ao executar o comando.")] }).catch(() => {});
     } finally {
       activeCommands.delete(execKey);
     }

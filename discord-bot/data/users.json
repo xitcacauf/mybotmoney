@@ -13,7 +13,20 @@
       "hobbies": [],
       "favoriteGame": "",
       "badges": [],
-      "reputation": 0
+      "reputation": 0,
+      "archetype": "misterioso",
+      "aura": "comum",
+      "auraExpiry": null,
+      "eliteTitle": null,
+      "eliteTitleExpiry": null,
+      "_lastArchetypeChange": null,
+      "lastPost": null,
+      "psychProfile": {
+        "loneliness": 50,
+        "popularity": 50,
+        "activityLevel": 0,
+        "lastAnalyzed": null
+      }
     },
     "economy": {
       "wallet": 810,
@@ -21,32 +34,44 @@
       "totalEarned": 0,
       "lastDaily": null,
       "lastWork": null,
-      "lastCrime": null
+      "lastCrime": null,
+      "lastInterest": null,
+      "streak": 0,
+      "invested": 0,
+      "ledger": [],
+      "activeInvestment": null
     },
     "inventory": [],
     "house": {
       "level": 0,
       "name": "",
       "furniture": [],
-      "value": 0
+      "value": 0,
+      "description": ""
     },
     "relationship": {
       "status": "single",
       "partnerId": null,
       "partnerName": "",
       "marriedAt": null,
-      "children": []
+      "children": [],
+      "memories": [],
+      "stage": "none"
     },
     "social": {
       "xp": 14,
       "level": 1,
       "messages": 7,
-      "voiceMinutes": 0
+      "voiceMinutes": 0,
+      "lastSeen": null
     },
     "darkLove": {
       "role": "Dominante",
       "coleira": null,
-      "coleiradoAt": null
+      "coleiradoAt": null,
+      "contractWith": null,
+      "contractType": null,
+      "contractTerms": null
     },
     "dating": {
       "active": true,
@@ -63,7 +88,7 @@
       "matches": []
     },
     "duo": {
-      "active": true,
+      "active": false,
       "profileData": {
         "game": "Free Fire",
         "rank": "Diamante",
@@ -77,7 +102,7 @@
     "punishments": [],
     "warnings": [],
     "createdAt": "2026-05-21T20:12:49.462Z",
-    "updatedAt": "2026-05-23T06:48:38.085Z",
+    "updatedAt": "2026-05-23T09:28:28.440Z",
     "pet": {
       "adopted": false,
       "name": "",
@@ -87,7 +112,18 @@
       "happiness": 100,
       "lastCare": null,
       "adoptedAt": null
-    }
+    },
+    "bonds": {},
+    "rpg": {
+      "charm": 10,
+      "manipulation": 5,
+      "seduction": 5,
+      "intelligence": 10,
+      "dominance": 5,
+      "carencia": 5
+    },
+    "secretAdmiring": null,
+    "secretAdmirers": []
   },
   {
     "userId": "1494490832064086148",

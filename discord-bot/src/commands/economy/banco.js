@@ -1,12 +1,6 @@
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 const config = require("../../config/config");
 const User = require("../../models/User");
-
-function getBankURL() {
-  if (process.env.REPLIT_DEV_DOMAIN) return `https://${process.env.REPLIT_DEV_DOMAIN}`;
-  if (process.env.BANK_URL) return process.env.BANK_URL.replace(/\/$/, "");
-  return `http://localhost:${process.env.WEB_PORT || 3000}`;
-}
 
 const INTEREST_RATE = 0.02; // 2% ao dia
 const INTEREST_INTERVAL_HOURS = 24;
@@ -63,13 +57,7 @@ module.exports = {
         .setFooter({ text: "Use !banco depositar | !banco sacar" })
         .setTimestamp();
 
-      const row = new ActionRowBuilder().addComponents(
-        new ButtonBuilder()
-          .setLabel("🌐 Abrir Bank UI")
-          .setStyle(ButtonStyle.Link)
-          .setURL(`${getBankURL()}/bank/${message.author.id}?g=${message.guild.id}`)
-      );
-      return message.reply({ embeds: [embed], components: [row] });
+      return message.reply({ embeds: [embed] });
     }
 
     if (sub === "depositar" || sub === "dep") {
