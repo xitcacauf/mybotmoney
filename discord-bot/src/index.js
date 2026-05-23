@@ -6,7 +6,7 @@ const fs = require("fs");
 const path = require("path");
 
 // ── Instância única: mata processo antigo antes de iniciar ───────────────────
-const LOCK_FILE = path.join(__dirname, "../.bot.pid");
+const LOCK_FILE = "/tmp/.bot.pid";
 try {
   if (fs.existsSync(LOCK_FILE)) {
     const oldPid = parseInt(fs.readFileSync(LOCK_FILE, "utf-8").trim(), 10);

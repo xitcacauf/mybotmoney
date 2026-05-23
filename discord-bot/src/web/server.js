@@ -131,7 +131,7 @@ function startWebServer(client) {
   });
 
   app.listen(WEB_PORT, "0.0.0.0", () => {
-    logger.info(`🌐 Bank UI online: ${BASE_URL}`);
+    logger.info("🌐 Bank UI online!");
   });
 
   return { BASE_URL };
