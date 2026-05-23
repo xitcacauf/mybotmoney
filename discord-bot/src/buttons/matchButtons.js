@@ -2,14 +2,10 @@ const {
   EmbedBuilder,
   ChannelType,
   PermissionFlagsBits,
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle,
 } = require("discord.js");
 const config = require("../config/config");
 const User = require("../models/User");
-const Match = require("../models/Match");
-const { calcCompatibility, getCompatibilityEmoji } = require("../systems/CompatibilityEngine");
+const { getCompatibilityEmoji } = require("../systems/CompatibilityEngine");
 const GuildConfig = require("../models/GuildConfig");
 
 module.exports = {
@@ -17,26 +13,20 @@ module.exports = {
   async execute(interaction, client) {
     const id = interaction.customId;
 
+    // Defer immediately to prevent double-click from processing twice
+    await interaction.deferReply({ ephemeral: id === "duo_deactivate" });
+
     if (id === "duo_deactivate") {
       await User.findOneAndUpdate(
         { userId: interaction.user.id, guildId: interaction.guild.id },
         { $set: { "duo.active": false } }
       );
-      return interaction.reply({ content: "✅ Perfil de duo desativado.", ephemeral: true });
+      return interaction.editReply({ content: "✅ Perfil de duo desativado." });
     }
 
     if (id === "duo_accept") {
-      const originalUserId = interaction.message.content?.match(/<@(\d+)>/)?.[1] ||
-        interaction.message.embeds[0]?.author?.name;
-
-      const targetUser = interaction.guild.members.cache.find(
-        (m) => interaction.message.author?.id !== interaction.user.id && m.id !== interaction.user.id
-      );
-
-      const gConfig = await GuildConfig.findOrCreate(interaction.guild.id);
-      const [caller1, caller2] = [interaction.user, interaction.message.author || { id: "unknown" }];
-
       const compat = Math.floor(60 + Math.random() * 40);
+      const gConfig = await GuildConfig.findOrCreate(interaction.guild.id);
 
       const privateCall = await interaction.guild.channels.create({
         name: `🎮 Duo Match`,
@@ -56,7 +46,7 @@ module.exports = {
 
       if (privateCall) embed.addFields({ name: "🔊 Call privada", value: `<#${privateCall.id}>` });
 
-      await interaction.reply({ embeds: [embed] });
+      return interaction.editReply({ embeds: [embed] });
     }
   },
 };

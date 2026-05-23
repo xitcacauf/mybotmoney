@@ -1,10 +1,22 @@
 const logger = require("../utils/logger");
 const { errorEmbed } = require("../utils/embed");
 
+// Dedup: Discord can occasionally deliver the same interaction twice.
+// We claim each interaction ID once — subsequent deliveries are silently dropped.
+const processedInteractions = new Set();
+
 module.exports = {
   name: "interactionCreate",
   async execute(interaction, client) {
     try {
+      // Layer 1: interaction ID dedup (synchronous, same-process)
+      if (processedInteractions.has(interaction.id)) return;
+      processedInteractions.add(interaction.id);
+      setTimeout(() => processedInteractions.delete(interaction.id), 15_000);
+
+      // Layer 2: guard against already-acknowledged interactions
+      if (interaction.replied || interaction.deferred) return;
+
       if (interaction.isButton()) {
         let handler = client.buttons.get(interaction.customId);
         if (!handler && client._buttonPatterns) {

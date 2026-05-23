@@ -12,15 +12,18 @@ const GuildConfig = require("../models/GuildConfig");
 module.exports = {
   customId: /^match_accept_|^match_ignore_/,
   async execute(interaction, client) {
+    // Defer immediately — prevents double-click from processing twice
+    await interaction.deferReply({ ephemeral: false });
+
     const isAccept = interaction.customId.startsWith("match_accept_");
     const targetUserId = interaction.customId.replace(/^match_accept_|^match_ignore_/, "");
 
     if (interaction.user.id === targetUserId) {
-      return interaction.reply({ content: "❌ Você não pode dar match em si mesmo!", ephemeral: true });
+      return interaction.editReply({ content: "❌ Você não pode dar match em si mesmo!" });
     }
 
     if (!isAccept) {
-      return interaction.reply({ content: "✅ Perfil ignorado.", ephemeral: true });
+      return interaction.editReply({ content: "✅ Perfil ignorado." });
     }
 
     const user1 = await User.findOne({ userId: targetUserId, guildId: interaction.guild.id });
@@ -81,7 +84,7 @@ module.exports = {
     if (callChannel) embed.addFields({ name: "💬 Chat privado", value: `<#${callChannel.id}>`, inline: true });
     if (privateCall) embed.addFields({ name: "🔊 Call privada", value: `<#${privateCall.id}>`, inline: true });
 
-    await interaction.reply({ embeds: [embed] });
+    await interaction.editReply({ embeds: [embed] });
 
     if (callChannel) {
       const intro = new EmbedBuilder()
