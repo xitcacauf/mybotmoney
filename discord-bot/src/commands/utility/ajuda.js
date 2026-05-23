@@ -33,12 +33,12 @@ module.exports = {
         },
         {
           name: "❤️ Social & Relacionamentos",
-          value: "`!perfil` `!namoro` `!casar` `!divorcio` `!cantada` `!segredo` `!vinculo` `!feed`",
+          value: "`!perfil` `!namoro` `!casar` `!divorcio` `!cantada` `!segredo` `!vinculo` `!duo` `!feed`",
           inline: false,
         },
         {
           name: "🧠 Psicologia & Identidade",
-          value: "`!personalidade` `!memorias` `!status` `!reputacao` `!calor` `!vinculo`",
+          value: "`!personalidade` `!memorias` `!status` `!reputacao` `!calor` `!niveis`",
           inline: false,
         },
         {
@@ -53,7 +53,7 @@ module.exports = {
         },
         {
           name: "ℹ️ Utilitários",
-          value: "`!ping` `!serverinfo` `!userinfo` `!niveis` `!duo` `!ticket` `!bio`",
+          value: "`!ping` `!serverinfo` `!userinfo` `!ticket` `!bio` `!apoie`",
           inline: false,
         },
         isStaff
