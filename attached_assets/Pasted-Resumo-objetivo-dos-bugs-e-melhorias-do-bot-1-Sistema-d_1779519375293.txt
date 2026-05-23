@@ -1,0 +1,103 @@
+Resumo objetivo dos bugs e melhorias do bot:
+
+1. Sistema de Calls
+
+- Ao executar comandos de call, o bot continua duplicando canais/salas.
+- Calls criadas não fecham automaticamente após finalização.
+- Verificar lógica de criação, encerramento automático e cooldown anti-duplicação.
+
+2. Sistema de Tickets
+
+- Tickets não estão abrindo corretamente.
+- Erro de interação ao criar ticket.
+- Chat do ticket não é criado.
+- Sistema de deletar/fechar ticket não funciona.
+- Revisar permissions, interactions, collectors e criação de canais.
+
+3. Sistema de Relacionamento
+
+- Opção “tirar coleira” deve funcionar para ambas as partes.
+- Sistema de casamento bugado:
+  - Usuário usa anel e casa.
+  - Status continua “solteiro”.
+  - Não atualiza banco de dados corretamente.
+- Comando de filhos não aparece.
+- Sistema de filhos não possui utilidade/funções.
+
+4. Sistema de Desafios
+
+- Desafio não deve ser automático.
+- Deve existir comando manual:
+  !desafio @user texto
+- Criar comando:
+  !prova @user imagem/video
+- Apenas o usuário mencionado pode visualizar mídia.
+- Após visualização, mídia deve ser deletada automaticamente do servidor.
+- Implementar controle de acesso e auto-delete seguro.
+
+5. Sistema de Economia
+
+- Economia extremamente bugada.
+- Falta integração entre sistemas.
+- Melhorar para virar um ecossistema complexo:
+  - trabalhos
+  - lojas
+  - inventário
+  - bancos
+  - transferências
+  - casas
+  - itens úteis
+  - recompensas
+  - progressão
+  - eventos
+  - upgrades
+- Corrigir sincronização de saldo e banco de dados.
+
+6. Sistema de Casas
+
+- Comando de casa não possui utilidade.
+- Não existe sistema funcional para comprar casas.
+- Interações geram erro.
+- Necessário criar sistema completo:
+  - compra
+  - venda
+  - upgrades
+  - armazenamento
+  - integração com família/casamento.
+
+7. Erros Gerais de Interação
+
+- Diversos botões, menus e comandos geram “erro de interação”.
+- Revisar:
+  - interaction.reply
+  - interaction.deferReply
+  - interaction.update
+  - tempo limite de interação
+  - collectors expirando
+  - permissões
+  - callbacks duplicados.
+
+8. Sistema de Ranking
+
+- Ranking deve mostrar apenas dinheiro/saldo.
+- Remover ou refatorar:
+  - !rank da seção games
+  - comando squad
+- Atualmente são inúteis/desnecessários.
+
+9. Revisão Geral Necessária
+
+- Fazer auditoria completa no bot.
+- Corrigir:
+  - comandos duplicando execução
+  - collectors quebrados
+  - listeners duplicados
+  - problemas de banco de dados
+  - interações expirando
+  - inconsistência de status
+  - erros de permissão
+  - canais não sendo deletados
+  - vazamento de memória/eventos.
+
+Objetivo final:
+Deixar o bot estável, sem erros de interação, com sistemas integrados, economia complexa e comandos totalmente funcionais.

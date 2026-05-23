@@ -38,9 +38,9 @@
       "children": []
     },
     "social": {
-      "xp": 12,
+      "xp": 14,
       "level": 1,
-      "messages": 6,
+      "messages": 7,
       "voiceMinutes": 0
     },
     "darkLove": {
@@ -49,18 +49,35 @@
       "coleiradoAt": null
     },
     "dating": {
-      "active": false,
-      "profileData": {},
+      "active": true,
+      "profileData": {
+        "name": "Trashboy",
+        "age": 21,
+        "gender": "Homem",
+        "bio": "Criar coisas",
+        "location": "RJ",
+        "hobbies": "Criar coisas",
+        "favoriteGame": "",
+        "desiredGender": "Qualquer"
+      },
       "matches": []
     },
     "duo": {
-      "active": false,
-      "profileData": {}
+      "active": true,
+      "profileData": {
+        "game": "Free Fire",
+        "rank": "Diamante",
+        "platform": "Mobile",
+        "objective": "Rankeada",
+        "schedule": "18h",
+        "playstyle": "Flex",
+        "microphone": true
+      }
     },
     "punishments": [],
     "warnings": [],
     "createdAt": "2026-05-21T20:12:49.462Z",
-    "updatedAt": "2026-05-22T16:52:17.532Z",
+    "updatedAt": "2026-05-23T06:48:38.085Z",
     "pet": {
       "adopted": false,
       "name": "",

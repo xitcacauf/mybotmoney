@@ -5,9 +5,13 @@ const { checkPermission } = require("../utils/permissions");
 const { errorEmbed, warningEmbed } = require("../utils/embed");
 const AntiSpamSystem = require("../systems/AntiSpam");
 const User = require("../models/User");
+const { checkLevelUp } = require("../systems/LevelSystem");
+const { addBondXP } = require("../systems/ObsessionSystem");
+const { addHeat } = require("../systems/SocialHeat");
+const { isEventActive } = require("../systems/EventSystem");
 
-// Deduplicação: evita processar o mesmo comando duas vezes (ex: restart com processo antigo ainda vivo)
 const processedMessages = new Set();
+const recentChannelUsers = new Map();
 
 module.exports = {
   name: "messageCreate",
@@ -17,7 +21,6 @@ module.exports = {
     const prefix = config.prefix;
     const isCommand = message.content.startsWith(prefix);
 
-    // XP e anti-spam rodam em silêncio — erros aqui nunca chegam ao usuário
     try {
       await User.findOrCreate(message.author.id, message.guild.id, message.author.username);
 
@@ -25,10 +28,41 @@ module.exports = {
       if (spamResult) return;
 
       if (!isCommand) {
+        let xpGain = 2;
+        if (isEventActive("bonus_xp")) xpGain = 6;
+
         await User.findOneAndUpdate(
           { userId: message.author.id, guildId: message.guild.id },
-          { $inc: { "social.messages": 1, "social.xp": 2 } }
+          {
+            $inc: { "social.messages": 1, "social.xp": xpGain },
+            $set: { "social.lastSeen": new Date().toISOString() },
+          }
         );
+
+        // Verificar level up
+        await checkLevelUp(message.author.id, message.guild.id, message.channel).catch(() => {});
+
+        // Calor social
+        await addHeat(message.guild.id, 1).catch(() => {});
+
+        // Rastrear vínculo com outros usuários ativos no canal
+        const chId = message.channel.id;
+        if (!recentChannelUsers.has(chId)) recentChannelUsers.set(chId, new Map());
+        const chUsers = recentChannelUsers.get(chId);
+
+        for (const [uid, ts] of chUsers.entries()) {
+          if (uid !== message.author.id && Date.now() - ts < 300000) {
+            await addBondXP(message.author.id, message.guild.id, uid, 0.5).catch(() => {});
+          }
+        }
+        chUsers.set(message.author.id, Date.now());
+
+        if (chUsers.size > 20) {
+          for (const [uid, ts] of chUsers.entries()) {
+            if (Date.now() - ts > 300000) chUsers.delete(uid);
+          }
+        }
+
         return;
       }
     } catch (err) {
@@ -36,9 +70,6 @@ module.exports = {
       if (!isCommand) return;
     }
 
-    // A partir daqui só mensagens com prefixo chegam
-
-    // Bloqueia dupla execução do mesmo comando
     if (processedMessages.has(message.id)) return;
     processedMessages.add(message.id);
     setTimeout(() => processedMessages.delete(message.id), 10000);
@@ -80,7 +111,6 @@ module.exports = {
         .then((m) => setTimeout(() => m.delete().catch(() => {}), 4000));
     }
 
-    // Execução do comando — só aqui o "Erro Interno" faz sentido
     try {
       await command.execute(message, args, client);
     } catch (err) {

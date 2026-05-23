@@ -1,6 +1,7 @@
 const { EmbedBuilder } = require("discord.js");
 const config = require("../config/config");
 const User = require("../models/User");
+const { addMemory } = require("../systems/MemorySystem");
 
 module.exports = {
   customId: /^marry_(accept|reject)_/,
@@ -21,10 +22,9 @@ module.exports = {
 
     client.pendingMarriages.delete(proposerId);
 
+    try { await interaction.message.edit({ components: [] }); } catch {}
+
     if (!isAccept) {
-      try {
-        await interaction.message.edit({ components: [] });
-      } catch {}
       const rejectEmbed = new EmbedBuilder()
         .setColor(config.colors.error)
         .setTitle("💔 Pedido Recusado")
@@ -33,8 +33,8 @@ module.exports = {
       return interaction.message.reply({ embeds: [rejectEmbed] }).catch(() => {});
     }
 
-    const senderDb = await User.findOne({ userId: proposerId, guildId: interaction.guild.id });
-    const targetDb = await User.findOne({ userId: pending.targetId, guildId: interaction.guild.id });
+    const senderDb = await User.findOrCreate(proposerId, interaction.guild.id, pending.proposerName);
+    const targetDb = await User.findOrCreate(pending.targetId, interaction.guild.id, interaction.user.username);
 
     if (senderDb?.relationship?.status === "married") {
       return interaction.editReply({ content: "❌ O autor do pedido já está casado!" });
@@ -43,23 +43,54 @@ module.exports = {
       return interaction.editReply({ content: "❌ Você já está casado(a)!" });
     }
 
+    const now = new Date().toISOString();
+
+    // Atualiza proposer
+    const proposerInventory = (senderDb.inventory || []).filter((i) => {
+      if (i.itemId === "ring" && !i._consumed) { i._consumed = true; return false; }
+      return true;
+    });
     await User.findOneAndUpdate(
       { userId: proposerId, guildId: interaction.guild.id },
-      { $set: { "relationship.status": "married", "relationship.partnerId": pending.targetId, "relationship.partnerName": interaction.user.username, "relationship.marriedAt": new Date().toISOString() } }
-    );
-    await User.findOneAndUpdate(
-      { userId: pending.targetId, guildId: interaction.guild.id },
-      { $set: { "relationship.status": "married", "relationship.partnerId": proposerId, "relationship.partnerName": pending.proposerName, "relationship.marriedAt": new Date().toISOString() } }
+      {
+        $set: {
+          inventory: proposerInventory,
+          "relationship.status": "married",
+          "relationship.partnerId": pending.targetId,
+          "relationship.partnerName": interaction.user.username,
+          "relationship.marriedAt": now,
+          "relationship.anniversary": now,
+          "relationship.stage": "casado",
+          "relationship.stageStartedAt": now,
+        },
+      }
     );
 
-    try {
-      await interaction.message.edit({ components: [] });
-    } catch {}
+    // Atualiza target
+    await User.findOneAndUpdate(
+      { userId: pending.targetId, guildId: interaction.guild.id },
+      {
+        $set: {
+          "relationship.status": "married",
+          "relationship.partnerId": proposerId,
+          "relationship.partnerName": pending.proposerName,
+          "relationship.marriedAt": now,
+          "relationship.anniversary": now,
+          "relationship.stage": "casado",
+          "relationship.stageStartedAt": now,
+        },
+      }
+    );
+
+    await addMemory(proposerId, interaction.guild.id, "got_married", `Casou com ${interaction.user.username}`);
+    await addMemory(pending.targetId, interaction.guild.id, "got_married", `Casou com ${pending.proposerName}`);
 
     const successEmbed = new EmbedBuilder()
       .setColor(config.colors.success)
       .setTitle("💍 Casamento Realizado!")
-      .setDescription(`🎊 <@${proposerId}> e <@${pending.targetId}> agora são casados! Parabéns! 🎊\n\nQue sejam muito felizes juntos! 💕`)
+      .setDescription(
+        `🎊 <@${proposerId}> e <@${pending.targetId}> agora são casados! Parabéns! 🎊\n\nQue sejam muito felizes juntos! 💕\n\n*Use \`!memorias\` para ver as memórias do casal.*`
+      )
       .setTimestamp();
 
     await interaction.editReply({ content: "💍 Você aceitou!" });

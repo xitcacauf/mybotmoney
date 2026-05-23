@@ -1,0 +1,57 @@
+[
+  {
+    "guildId": "1507041710956351638",
+    "prefix": "!",
+    "welcome": {
+      "enabled": false,
+      "channelId": null,
+      "message": "Bem-vindo(a) ao servidor, {user}!",
+      "imageEnabled": false,
+      "roleId": null
+    },
+    "moderation": {
+      "logChannelId": null,
+      "modLogChannelId": null,
+      "antiSpam": true,
+      "antiLink": false,
+      "antiRaid": true,
+      "maxWarnings": 3,
+      "antiFlood": true
+    },
+    "tickets": {
+      "enabled": false,
+      "categoryId": null,
+      "staffRoleId": null,
+      "panelChannelId": null,
+      "panelMessageId": null,
+      "count": 0
+    },
+    "privateCalls": {
+      "enabled": false,
+      "categoryId": null,
+      "joinChannelId": null
+    },
+    "dating": {
+      "enabled": false,
+      "channelId": null,
+      "allowedGenders": []
+    },
+    "economy": {
+      "enabled": true,
+      "currency": "💰",
+      "currencyName": "Moedas"
+    },
+    "roles": {
+      "memberRoleId": null,
+      "boosterRoleId": null
+    },
+    "antiNuke": {
+      "enabled": true,
+      "maxChannelDeletes": 3,
+      "maxBans": 5,
+      "punishAction": "ban"
+    },
+    "createdAt": "2026-05-23T06:38:53.908Z",
+    "updatedAt": "2026-05-23T06:38:53.908Z"
+  }
+]

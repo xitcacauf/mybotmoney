@@ -1,18 +1,23 @@
 const { EmbedBuilder } = require("discord.js");
 const config = require("../../config/config");
 const User = require("../../models/User");
+const { isEventActive } = require("../../systems/EventSystem");
+const { addHeat } = require("../../systems/SocialHeat");
 
 const crimes = [
-  { name: "Hackear banco", success: "💻 Você hackeou um banco e escapou!", fail: "💻 A polícia rastreou você!" },
-  { name: "Roubar loja", success: "🏪 Você roubou uma loja sem ser visto!", fail: "🏪 A câmera te filmou!" },
-  { name: "Hackear servidor", success: "🖥️ Você vendeu dados roubados!", fail: "🖥️ O sistema te rastreou!" },
-  { name: "Contrabando", success: "📦 A entrega passou pela fronteira!", fail: "📦 A encomenda foi interceptada!" },
+  { name: "Hackear banco", success: "💻 Você hackeou um banco e escapou sem deixar rastros!", fail: "💻 A polícia rastreou o IP e te prendeu!" },
+  { name: "Roubar loja", success: "🏪 Você roubou uma loja e vendeu tudo no mercado negro!", fail: "🏪 A câmera de segurança te filmou em HD!" },
+  { name: "Hackear servidor", success: "🖥️ Você vendeu dados roubados na darkweb!", fail: "🖥️ O sistema de segurança te rastreou!" },
+  { name: "Contrabando", success: "📦 A entrega passou pela fronteira sem ser inspecionada!", fail: "📦 A encomenda foi interceptada pela Receita Federal!" },
+  { name: "Golpe do pix", success: "📱 O golpe funcionou! Você fugiu antes de ser pego!", fail: "📱 A vítima não caiu e chamou a polícia!" },
+  { name: "Fraude de cartão", success: "💳 Você clonou o cartão e usou antes de bloquear!", fail: "💳 O banco detectou a fraude em tempo real!" },
+  { name: "Pickpocket", success: "🎩 Você tirou a carteira sem que ninguém percebesse!", fail: "🎩 Você foi pego no flagra pela câmera!" },
 ];
 
 module.exports = {
   name: "crime",
-  aliases: ["roubar", "hack"],
-  description: "Tente cometer um crime (arrisque!)",
+  aliases: ["hack", "golpe", "criminoso"],
+  description: "Tente cometer um crime (arrisque!). Ex: !crime",
   cooldown: 3,
   async execute(message, args, client) {
     const dbUser = await User.findOrCreate(message.author.id, message.guild.id, message.author.username);
@@ -23,15 +28,24 @@ module.exports = {
     if (lastCrime && now - lastCrime < cooldownMs) {
       const remaining = cooldownMs - (now - lastCrime);
       const mins = Math.floor(remaining / 60000);
-      return message.reply({ embeds: [new EmbedBuilder()
-        .setColor(config.colors.warning)
-        .setTitle("⏳ Aguarde!")
-        .setDescription(`Aguarde **${mins} minutos** antes do próximo crime.`)
-        .setTimestamp()] });
+      return message.reply({
+        embeds: [
+          new EmbedBuilder()
+            .setColor(config.colors.warning)
+            .setTitle("⏳ Aguarde!")
+            .setDescription(`Aguarde **${mins} minuto(s)** antes do próximo crime.`)
+            .setTimestamp(),
+        ],
+      });
     }
 
     const crime = crimes[Math.floor(Math.random() * crimes.length)];
-    const success = Math.random() > config.economy.crimeFail;
+
+    // Tempestade econômica aumenta chance de falha
+    let failChance = config.economy.crimeFail;
+    if (isEventActive("tempestade_economica")) failChance = Math.min(0.85, failChance + 0.5);
+
+    const success = Math.random() > failChance;
 
     let amount, description, color;
     if (success) {
@@ -42,15 +56,20 @@ module.exports = {
         { userId: message.author.id, guildId: message.guild.id },
         { $inc: { "economy.wallet": amount, "economy.totalEarned": amount }, $set: { "economy.lastCrime": now.toISOString() } }
       );
+      await addHeat(message.guild.id, 2).catch(() => {});
     } else {
-      amount = Math.floor(Math.random() * 200) + 50;
+      amount = Math.floor(Math.random() * 300) + 50;
       description = `❌ ${crime.fail}\n\nVocê pagou **${amount.toLocaleString("pt-BR")} 💰** de multa!`;
       color = config.colors.error;
-      const fine = Math.min(amount, dbUser.economy.wallet);
+      const fine = Math.min(amount, dbUser.economy.wallet || 0);
       await User.findOneAndUpdate(
         { userId: message.author.id, guildId: message.guild.id },
         { $inc: { "economy.wallet": -fine }, $set: { "economy.lastCrime": now.toISOString() } }
       );
+    }
+
+    if (isEventActive("tempestade_economica")) {
+      description += "\n\n⚡ *Tempestade Econômica ativa: riscos aumentados!*";
     }
 
     const embed = new EmbedBuilder()

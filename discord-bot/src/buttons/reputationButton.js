@@ -1,21 +1,25 @@
 const { successEmbed, warningEmbed, errorEmbed } = require("../utils/embed");
 const User = require("../models/User");
+const { addBondXP } = require("../systems/ObsessionSystem");
 
 const repCooldownMap = new Map();
 
 module.exports = {
   customId: /^rep_/,
   async execute(interaction, client) {
+    await interaction.deferReply({ ephemeral: true });
+
     const targetId = interaction.customId.replace("rep_", "");
     if (targetId === interaction.user.id) {
-      return interaction.reply({ embeds: [errorEmbed("Erro", "Você não pode se reputar.")], ephemeral: true });
+      return interaction.editReply({ embeds: [errorEmbed("Erro", "Você não pode se dar reputação.")] });
     }
 
     const key = `${interaction.user.id}-${targetId}`;
     const now = Date.now();
     const cooldownMs = 24 * 60 * 60 * 1000;
     if (repCooldownMap.has(key) && now - repCooldownMap.get(key) < cooldownMs) {
-      return interaction.reply({ embeds: [warningEmbed("Cooldown", "Você já deu reputação hoje!")], ephemeral: true });
+      const hoursLeft = Math.ceil((cooldownMs - (now - repCooldownMap.get(key))) / 3600000);
+      return interaction.editReply({ embeds: [warningEmbed("Cooldown", `Você já deu reputação hoje! Aguarde **${hoursLeft}h**.`)] });
     }
 
     repCooldownMap.set(key, now);
@@ -25,9 +29,10 @@ module.exports = {
       { new: true }
     );
 
-    await interaction.reply({
-      embeds: [successEmbed("⭐ Reputação!", `Você deu +1 ⭐ para <@${targetId}>!\nEles agora têm **${updated?.profile?.reputation || 1}** ⭐.`)],
-      ephemeral: true,
+    await addBondXP(interaction.user.id, interaction.guild.id, targetId, 5).catch(() => {});
+
+    return interaction.editReply({
+      embeds: [successEmbed("⭐ Reputação Dada!", `Você deu +1 ⭐ para <@${targetId}>!\nEle(a) agora tem **${updated?.profile?.reputation || 1}** ⭐.`)],
     });
   },
 };
