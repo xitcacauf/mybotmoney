@@ -2,7 +2,7 @@ const { EmbedBuilder } = require("discord.js");
 const config = require("../config/config");
 const User = require("../models/User");
 const { addMemory } = require("../systems/MemorySystem");
-const { withLock } = require("../utils/userLock");
+const logger = require("../utils/logger");
 
 module.exports = {
   customId: /^marry_(accept|reject)_/,
@@ -33,8 +33,7 @@ module.exports = {
       return;
     }
 
-    const key = `marry:${[proposerId, pending.targetId].sort().join(":")}:${interaction.guild.id}`;
-    await withLock(key, async () => {
+    try {
       const senderDb = await User.findOrCreate(proposerId, interaction.guild.id, pending.proposerName);
       const targetDb = await User.findOrCreate(pending.targetId, interaction.guild.id, interaction.user.username);
 
@@ -51,6 +50,7 @@ module.exports = {
         if (i.itemId === "ring" && !i._consumed) { i._consumed = true; return false; }
         return true;
       });
+
       await User.findOneAndUpdate(
         { userId: proposerId, guildId: interaction.guild.id },
         {
@@ -95,6 +95,9 @@ module.exports = {
 
       await interaction.editReply({ content: "💍 Você aceitou!" });
       await interaction.channel.send({ embeds: [successEmbed] }).catch(() => {});
-    });
+    } catch (err) {
+      logger.error(`[MARRIAGE BUTTON] ${err.message}\n${err.stack}`);
+      interaction.editReply({ content: "❌ Erro ao processar casamento. Tente novamente." }).catch(() => {});
+    }
   },
 };

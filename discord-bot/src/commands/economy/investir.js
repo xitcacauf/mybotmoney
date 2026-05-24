@@ -3,7 +3,7 @@ const config = require("../../config/config");
 const User = require("../../models/User");
 const { addHeat } = require("../../systems/SocialHeat");
 const { addLedgerEntry } = require("./extrato");
-const { withLock } = require("../../utils/userLock");
+const logger = require("../../utils/logger");
 
 const investTypes = {
   acoes: {
@@ -44,6 +44,7 @@ module.exports = {
   description: "Invista em ações, crypto, imóveis. Ex: !investir 5000 crypto | !investir resgatar",
   cooldown: 10,
   async execute(message, args, client) {
+    try {
     const sub = args[0]?.toLowerCase();
 
     if (!sub || sub === "ver" || sub === "lista") {
@@ -66,8 +67,6 @@ module.exports = {
       return message.reply({ embeds: [embed] });
     }
 
-    const key = `investir:${message.author.id}:${message.guild.id}`;
-    await withLock(key, async () => {
       const dbUser = await User.findOrCreate(message.author.id, message.guild.id, message.author.username);
 
       if (sub === "resgatar" || sub === "sacar" || sub === "retirar") {
@@ -202,6 +201,9 @@ module.exports = {
         .setFooter({ text: "*Projeção aproximada. Use !investir resgatar quando o prazo terminar." })
         .setTimestamp();
       return message.reply({ embeds: [embed] });
-    });
+    } catch (err) {
+      logger.error(`[INVESTIR] ${err.message}\n${err.stack}`);
+      message.reply("❌ Erro ao processar investimento. Tente novamente.").catch(() => {});
+    }
   },
 };

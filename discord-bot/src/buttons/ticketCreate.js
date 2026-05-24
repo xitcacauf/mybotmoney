@@ -10,7 +10,6 @@ const config = require("../config/config");
 const GuildConfig = require("../models/GuildConfig");
 const Ticket = require("../models/Ticket");
 const logger = require("../utils/logger");
-const { withLock } = require("../utils/userLock");
 
 module.exports = {
   customId: ["ticket_create", "ticket_list"],
@@ -32,8 +31,7 @@ module.exports = {
 
     await interaction.deferReply({ ephemeral: true });
 
-    const key = `ticket_create:${interaction.user.id}:${interaction.guild.id}`;
-    await withLock(key, async () => {
+    try {
       const gConfig = await GuildConfig.findOrCreate(interaction.guild.id);
       const existing = await Ticket.findOne({
         userId: interaction.user.id,
@@ -87,7 +85,7 @@ module.exports = {
           permissionOverwrites: overwrites,
         });
       } catch (err) {
-        logger.error(`Erro ao criar ticket: ${err.message}`);
+        logger.error(`[TICKET CREATE] Erro ao criar canal: ${err.message}`);
         return interaction.editReply({ content: "❌ Erro ao criar ticket. Verifique as permissões do bot." });
       }
 
@@ -118,6 +116,9 @@ module.exports = {
 
       await channel.send({ content: `<@${interaction.user.id}>`, embeds: [embed], components: [row] });
       await interaction.editReply({ content: `✅ Ticket criado: <#${channel.id}>` });
-    });
+    } catch (err) {
+      logger.error(`[TICKET CREATE] ${err.message}\n${err.stack}`);
+      interaction.editReply({ content: "❌ Erro ao criar ticket. Tente novamente." }).catch(() => {});
+    }
   },
 };
