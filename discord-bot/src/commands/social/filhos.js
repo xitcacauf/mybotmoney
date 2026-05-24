@@ -28,9 +28,10 @@ module.exports = {
         return message.reply({ embeds: [embed] });
       }
 
-      const childList = children.map((c, i) =>
-        `**${i + 1}.** ${c.emoji || "👶"} **${c.name}** | Fase: ${c.phase || "bebê"} | Felicidade: ${c.happiness || 100}% | XP: ${c.xp || 0}`
-      ).join("\n");
+      const childList = children.map((c, i) => {
+        const origin = c.type === "natural" ? "🧬 Natural" : "💕 Adotado";
+        return `**${i + 1}.** ${c.emoji || "👶"} **${c.name}** | ${origin} | Fase: ${c.phase || "bebê"} | Felicidade: ${c.happiness || 100}% | XP: ${c.xp || 0}`;
+      }).join("\n");
 
       const embed = new EmbedBuilder()
         .setColor(config.colors.secondary)

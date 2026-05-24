@@ -16,6 +16,8 @@ const { isEventActive } = require("../systems/EventSystem");
 const processedMessages = new Set();
 // ── Per-user, per-command guard — claimed SYNCHRONOUSLY before any await
 const activeCommands    = new Set();
+
+// recentChannelUsers: Map<channelId, Map<userId, timestamp>>
 const recentChannelUsers = new Map();
 
 const LOCK_DIR = "/tmp/ll_locks";
@@ -40,10 +42,10 @@ module.exports = {
   async execute(message, client) {
     if (message.author.bot || !message.guild) return;
 
-    // Ignore gateway replays (messages sent before the bot started)
+    // Ignora replays do gateway (mensagens enviadas antes do bot iniciar)
     if (Date.now() - message.createdTimestamp > 5000) return;
 
-    // ── Layer 1: in-memory dedup by message ID (synchronous) ─────────────────
+    // ── Layer 1: dedup em memória por message ID (síncrono) ──────────────────
     if (processedMessages.has(message.id)) {
       logger.warn(`[DEDUP-1] message ${message.id} already in-memory — dropped`);
       return;
@@ -51,7 +53,7 @@ module.exports = {
     processedMessages.add(message.id);
     setTimeout(() => processedMessages.delete(message.id), 20_000);
 
-    // ── Layer 2: atomic file lock — blocks cross-process duplicates (synchronous)
+    // ── Layer 2: lock de arquivo atômico — bloqueia duplicatas cross-process ──
     if (!claimMessage(message.id)) {
       logger.warn(`[DEDUP-2] message ${message.id} claimed by another process — dropped`);
       return;
@@ -60,9 +62,6 @@ module.exports = {
     const prefix    = config.prefix;
     const isCommand = message.content.startsWith(prefix);
 
-    // ── For commands: parse name and claim the per-user guard SYNCHRONOUSLY ──
-    //    Must happen before any `await` so rapid duplicate messages are blocked
-    //    before any async gap opens.
     let command   = null;
     let args      = [];
     let execKey   = null;
@@ -79,7 +78,7 @@ module.exports = {
       if (command) {
         execKey = `${message.author.id}_${command.name}`;
 
-        // ── Layer 3: per-user/per-command guard (synchronous, before any await) ──
+        // ── Layer 3: guard por usuário/comando (síncrono, antes de qualquer await)
         if (activeCommands.has(execKey)) {
           logger.warn(`[DEDUP-3] ${execKey} already executing — dropped (msgId=${message.id})`);
           return;
@@ -93,7 +92,7 @@ module.exports = {
       }
     }
 
-    // ── Passive systems (XP, heat, bonds) — run for all messages ─────────────
+    // ── Sistemas passivos (XP, heat, bonds) — roda em todas as mensagens ─────
     try {
       await User.findOrCreate(message.author.id, message.guild.id, message.author.username);
 
@@ -118,21 +117,26 @@ module.exports = {
         await checkLevelUp(message.author.id, message.guild.id, message.channel).catch(() => {});
         await addHeat(message.guild.id, 1).catch(() => {});
 
+        // ── Vínculos entre usuários no mesmo canal ──────────────────────────
         const chId = message.channel.id;
         if (!recentChannelUsers.has(chId)) recentChannelUsers.set(chId, new Map());
         const chUsers = recentChannelUsers.get(chId);
 
         for (const [uid, ts] of chUsers.entries()) {
-          if (uid !== message.author.id && Date.now() - ts < 300000) {
+          if (uid !== message.author.id && Date.now() - ts < 300_000) {
             await addBondXP(message.author.id, message.guild.id, uid, 0.5).catch(() => {});
           }
         }
         chUsers.set(message.author.id, Date.now());
-        if (chUsers.size > 20) {
-          for (const [uid, ts] of chUsers.entries()) {
-            if (Date.now() - ts > 300000) chUsers.delete(uid);
-          }
+
+        // ── Cleanup: remove entradas velhas e Maps vazios (evita memory leak) ─
+        const now = Date.now();
+        for (const [uid, ts] of chUsers.entries()) {
+          if (now - ts > 300_000) chUsers.delete(uid);
         }
+        // Remove o Map do canal se ficou vazio
+        if (chUsers.size === 0) recentChannelUsers.delete(chId);
+
         return;
       }
     } catch (err) {
@@ -140,10 +144,11 @@ module.exports = {
       if (!isCommand) return;
     }
 
-    // ── Command execution ──────────────────────────────────────────────────────
+    // ── Execução do comando ───────────────────────────────────────────────────
     if (!command) return;
 
     try {
+      // Checar permissões ANTES de mostrar "digitando..."
       if (command.staffOnly && !checkPermission(message, "staff")) {
         return message.reply({ embeds: [errorEmbed("Sem Permissão", "Você não tem permissão para usar este comando.")] }).catch(() => {});
       }
@@ -162,6 +167,7 @@ module.exports = {
         }).catch(() => {});
       }
 
+      // Só mostra "digitando..." após passar todas as verificações
       message.channel.sendTyping().catch(() => {});
 
       logger.info(`[CMD:${traceId}] EXECUTING command.execute()`);

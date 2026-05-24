@@ -76,6 +76,8 @@ const defaultUser = (userId, guildId, username) => ({
     trustLevel: 0,
     tasksCompleted: 0,
     punishments: 0,
+    lastIntimar: null,
+    intimarStreak: 0,
   },
   dating: { active: false, profileData: {}, matches: [] },
   duo: { active: false, profileData: {} },
@@ -123,8 +125,10 @@ const defaultUser = (userId, guildId, username) => ({
 const ensureFields = (user) => {
   if (!user.bonds) user.bonds = {};
   if (!user.rpg) user.rpg = { charm: 10, manipulation: 5, seduction: 5, intelligence: 10, dominance: 5, carencia: 5 };
-  if (!user.darkLove) user.darkLove = { role: "none", coleira: null, coleiradoAt: null, contractWith: null, contractType: null, contractTerms: null, trustLevel: 0, tasksCompleted: 0, punishments: 0 };
+  if (!user.darkLove) user.darkLove = { role: "none", coleira: null, coleiradoAt: null, contractWith: null, contractType: null, contractTerms: null, trustLevel: 0, tasksCompleted: 0, punishments: 0, lastIntimar: null, intimarStreak: 0 };
   if (user.darkLove && user.darkLove.contractWith === undefined) { user.darkLove.contractWith = null; user.darkLove.contractType = null; user.darkLove.contractTerms = null; }
+  if (user.darkLove && user.darkLove.lastIntimar === undefined) user.darkLove.lastIntimar = null;
+  if (user.darkLove && user.darkLove.intimarStreak === undefined) user.darkLove.intimarStreak = 0;
   if (!user.profile) user.profile = {};
   if (user.profile.archetype === undefined) user.profile.archetype = "misterioso";
   if (user.profile.aura === undefined) user.profile.aura = "comum";

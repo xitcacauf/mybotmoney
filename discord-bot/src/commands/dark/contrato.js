@@ -42,16 +42,17 @@ const contractTypes = {
       "ℹ️ O monitoramento é baseado em desafios e provas diárias",
     ],
   },
-  treino: {
-    label: "Contrato de Treino",
-    emoji: "📋",
-    desc: "Os dois se comprometem em sessões de treino e entrosamento conjunto regulares.",
+  intimar: {
+    label: "Contrato de Intimidade",
+    emoji: "🔥",
+    desc: "Os dois se comprometem a se intimar diariamente. A intimidade constante pode resultar em filhos naturais.",
     rules: [
-      "✅ Ambos devem participar de sessões regulares de treino",
-      "✅ Use `!faculdade estudar` em conjunto como check-in",
-      "✅ O dono passa desafios de crescimento periódicos",
-      "✅ Foco no crescimento mútuo como equipe",
-      "ℹ️ Inatividade prolongada pode quebrar o contrato",
+      "✅ Ambos devem usar `!intimar` diariamente (cooldown: 12h)",
+      "✅ Cada sessão constrói vínculo e tem chance de gerar um filho",
+      "✅ Filhos nascidos naturalmente aparecem no perfil como `👶 Natural`",
+      "✅ Manter streak de 7 dias dá bônus especial de economia",
+      "❌ Faltar 3+ dias consecutivos quebra o vínculo de intimidade",
+      "ℹ️ O dono define desafios de intimidade via `!desafio`",
     ],
   },
   adoracao: {

@@ -1,0 +1,44 @@
+Encontrei vários bugs reais no código atual (não só o de duplicação que já discutimos):
+
+🔴 Bugs críticos
+
+1. index.js — busy-wait que trava o Node por 2 segundos
+js
+const deadline = Date.now() + 2000;
+while (Date.now() < deadline) { /* sync spin */ }
+
+Isso bloqueia o event loop inteiro (100% CPU). Deveria ser await new Promise(r =&gt; setTimeout(r, 2000)). Como o startup não é async, o jeito certo é envolver toda a inicialização numa IIFE async.
+
+1. web/server.js — porta errada no Railway
+js
+const WEB_PORT = process.env.WEB_PORT || 3000;
+
+O Railway injeta PORT, não WEB_PORT. O healthcheck/web UI quebra em produção. Correto:
+js
+const WEB_PORT = process.env.PORT || process.env.WEB_PORT || 3000;
+
+
+1. Lock de PID entre máquinas é inútil
+/tmp/.bot.pid (em index.js) e /tmp/ll_locks/* (em messageCreate.js) só funcionam dentro da mesma máquina. Não previnem nada entre Replit ↔ Railway — é exatamente por isso que a duplicação acontecia. Mantenha-os, mas saiba que não substituem desligar uma das instâncias.
+
+🟡 Bugs médios
+
+1. messageCreate.js — vazamento de memória em recentChannelUsers
+Limpa entradas antigas dentro de cada canal, mas nunca remove o Map vazio. Em servidores grandes, acumula um Map por canal para sempre.
+
+1. ready.js — setInterval/setTimeout sem cleanup
+A rotação de presença (setInterval(rotate, 15000)) e scheduleNextEvent nunca são limpos. Em restarts parciais (como os do Replit) podem virar listeners zumbis.
+
+1. ready.js — rotação de presença a cada 15s
+É o mínimo aceito pelo Discord; qualquer hiccup gera rate-limit. Recomendado: 60s ou mais.
+
+1. messageCreate.js — sendTyping() antes de checar permissão
+Mostra "digitando…" mesmo quando o comando vai falhar por falta de permissão. Cosmético, mas confunde usuário.
+
+🟢 Observação
+
+1. User.find(...) é síncrono mas é usado com await em ready.js. Funciona (await em não-Promise resolve direto), mas é enganoso — sugere I/O assíncrono que não existe.
+
+───
+
+Quer que eu já aplique os fixes dos itens 1, 2, 4 e 5 (os que têm impacto real em produção)?

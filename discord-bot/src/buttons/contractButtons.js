@@ -9,7 +9,7 @@ const contractTypes = {
   submissao: { label: "Submissão Total", emoji: "⛓️" },
   protecao: { label: "Pacto de Proteção", emoji: "🛡️" },
   fidelidade: { label: "Pacto de Fidelidade", emoji: "💎" },
-  treino: { label: "Contrato de Treino", emoji: "📋" },
+  intimar: { label: "Contrato de Intimidade", emoji: "🔥" },
   adoracao: { label: "Adoração", emoji: "🌹" },
 };
 

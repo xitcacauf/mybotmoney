@@ -6,7 +6,8 @@ const logger = require("../utils/logger");
 const DATA_DIR = path.join(__dirname, "../../data");
 const PUBLIC_DIR = path.join(__dirname, "public");
 
-const WEB_PORT = process.env.WEB_PORT || 3000;
+// Railway injeta PORT; fallback para WEB_PORT ou 3000
+const WEB_PORT = process.env.PORT || process.env.WEB_PORT || 3000;
 
 function readDB(name) {
   try {
@@ -128,7 +129,7 @@ function startWebServer(client) {
   });
 
   app.listen(WEB_PORT, "0.0.0.0", () => {
-    logger.info("🌐 Bank UI online!");
+    logger.info(`🌐 Bank UI online na porta ${WEB_PORT}!`);
   });
 
   return app;
